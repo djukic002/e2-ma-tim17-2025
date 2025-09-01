@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1065098188518",
+    "project_id": "valorquest-6969",
+    "storage_bucket": "valorquest-6969.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1065098188518:android:122dc87deac5a6d9cf4d27",
+        "android_client_info": {
+          "package_name": "com.example.valorquest"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDhQ_DEh6mWapiyEHFFQ9RtzSRBJqNN67Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

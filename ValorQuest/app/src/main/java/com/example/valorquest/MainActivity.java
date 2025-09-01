@@ -2,10 +2,12 @@ package com.example.valorquest;
 
 import android.os.Bundle;
 
+import com.example.valorquest.model.repositories.AuthRepository;
 import com.google.android.material.snackbar.Snackbar;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.util.Log;
 import android.view.View;
 
 import androidx.navigation.NavController;
@@ -14,6 +16,7 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.example.valorquest.databinding.ActivityMainBinding;
+import com.google.firebase.FirebaseApp;
 
 import android.view.Menu;
 import android.view.MenuItem;
@@ -26,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        FirebaseApp.initializeApp(this);
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());

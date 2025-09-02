@@ -16,7 +16,8 @@ public class AuthRepository {
         userRepository = new UserRepository();
     }
 
-    public void register(String email, String password, String name,
+    public void register(String email, String password, String username,
+                         int avatarId,
                          MutableLiveData<FirebaseUser> userLiveData,
                          MutableLiveData<String> errorLiveData) {
 
@@ -25,8 +26,9 @@ public class AuthRepository {
                     if (task.isSuccessful()) {
                         FirebaseUser firebaseUser = auth.getCurrentUser();
                         if (firebaseUser != null) {
+                            firebaseUser.sendEmailVerification();
                             // Create User object
-                            User user = new User(firebaseUser.getUid(), name, email);
+                            User user = new User(firebaseUser.getUid(), email, username, avatarId);
 
                             // Use BaseRepository save method
                             userRepository.save(firebaseUser.getUid(), user, (OnCompleteListener<Void>) firestoreTask -> {

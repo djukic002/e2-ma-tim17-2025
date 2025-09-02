@@ -3,9 +3,11 @@ plugins {
     id 'com.google.gms.google-services'
 }
 
+apply plugin: 'dagger.hilt.android.plugin'
+
 android {
     namespace 'com.example.valorquest'
-    compileSdk 36
+    compileSdkVersion 36
 
     defaultConfig {
         applicationId "com.example.valorquest"
@@ -47,4 +49,16 @@ dependencies {
     implementation 'com.google.firebase:firebase-analytics'
     implementation 'com.google.firebase:firebase-firestore'
     implementation 'com.google.firebase:firebase-auth'
+
+    // ROOM
+    implementation "androidx.room:room-runtime:2.6.1"
+    annotationProcessor "androidx.room:room-compiler:2.6.1"
+
+    // Optional LiveData support
+    implementation "androidx.lifecycle:lifecycle-livedata:2.6.2"
+    implementation "androidx.lifecycle:lifecycle-viewmodel:2.6.2"
+
+    // HILT
+    implementation "com.google.dagger:hilt-android:2.47"
+    annotationProcessor "com.google.dagger:hilt-android-compiler:2.47"
 }

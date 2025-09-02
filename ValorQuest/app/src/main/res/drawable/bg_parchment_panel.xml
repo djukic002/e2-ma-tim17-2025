@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <bitmap
+            android:src="@drawable/card_background"
+            android:tileMode="repeat"
+            android:gravity="fill" />
+    </item>
+    <!-- soft vignette for readability over parchment -->
+    <item>
+        <shape android:shape="rectangle">
+            <gradient
+                android:startColor="#1A000000"
+                android:centerColor="#00000000"
+                android:endColor="#1A000000"
+                android:angle="270" />
+        </shape>
+    </item>
+</layer-list>

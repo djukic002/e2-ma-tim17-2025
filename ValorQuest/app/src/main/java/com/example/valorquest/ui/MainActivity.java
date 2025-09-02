@@ -1,13 +1,12 @@
-package com.example.valorquest;
+package com.example.valorquest.ui;
 
 import android.os.Bundle;
 
-import com.example.valorquest.model.repositories.AuthRepository;
+import com.example.valorquest.R;
 import com.google.android.material.snackbar.Snackbar;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.util.Log;
 import android.view.View;
 
 import androidx.navigation.NavController;

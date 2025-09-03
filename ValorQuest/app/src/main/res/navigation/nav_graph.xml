@@ -30,26 +30,26 @@
 
     <fragment
         android:id="@+id/questsFragment"
-        android:name="com.example.valorquest.ui.QuestsFragment"
+        android:name="com.example.valorquest.ui.quests.QuestsFragment"
         android:label="Quests"
         tools:layout="@layout/fragment_quests" />
 
     <fragment
         android:id="@+id/profileFragment"
-        android:name="com.example.valorquest.ui.ProfileFragment"
+        android:name="com.example.valorquest.ui.profile.ProfileFragment"
         android:label="Profile"
         tools:layout="@layout/fragment_profile" />
 
     <!-- New fragments -->
     <fragment
         android:id="@+id/marketFragment"
-        android:name="com.example.valorquest.ui.MarketFragment"
+        android:name="com.example.valorquest.ui.market.MarketFragment"
         android:label="Market"
         tools:layout="@layout/fragment_market" />
 
     <fragment
         android:id="@+id/categoryFragment"
-        android:name="com.example.valorquest.ui.CategoryFragment"
+        android:name="com.example.valorquest.ui.category.CategoryFragment"
         android:label="Categories"
         tools:layout="@layout/fragment_category" />
 </navigation>

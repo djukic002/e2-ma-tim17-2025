@@ -1,4 +1,4 @@
-package com.example.valorquest.ui;
+package com.example.valorquest.ui.category;
 
 import android.os.Bundle;
 

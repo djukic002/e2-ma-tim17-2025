@@ -1,4 +1,4 @@
-package com.example.valorquest.ui;
+package com.example.valorquest.ui.market;
 
 import android.os.Bundle;
 

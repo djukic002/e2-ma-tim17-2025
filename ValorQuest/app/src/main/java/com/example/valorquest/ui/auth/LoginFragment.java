@@ -2,59 +2,98 @@ package com.example.valorquest.ui.auth;
 
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.example.valorquest.R;
+import com.example.valorquest.viewmodel.AuthViewModel;
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.textfield.TextInputEditText;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link LoginFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class LoginFragment extends Fragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    private AuthViewModel viewModel;
+    private TextInputEditText emailInput, passwordInput;
+    private MaterialButton loginButton, goToRegisterButton;
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        viewModel = ((AuthActivity) requireActivity()).getViewModel();
+        initializeViews(view);
+        setupListeners();
+        observeViewModel();
+    }
+
+    private void initializeViews(View view) {
+        emailInput = view.findViewById(R.id.et_email);
+        passwordInput = view.findViewById(R.id.et_password);
+        loginButton = view.findViewById(R.id.btn_login);
+        goToRegisterButton = view.findViewById(R.id.btn_register);
+    }
+
+    private void setupListeners() {
+        emailInput.setOnFocusChangeListener((v, hasFocus) -> {
+            if (!hasFocus)
+                viewModel.updateLoginEmail(emailInput.getText().toString());
+        });
+
+        passwordInput.setOnFocusChangeListener((v, hasFocus) -> {
+            if (!hasFocus) {
+                viewModel.updateLoginPassword(passwordInput.getText().toString());
+            }
+        });
+
+        goToRegisterButton.setOnClickListener(v -> {
+            viewModel.goToRegister();
+        });
+
+        loginButton.setOnClickListener(v -> {
+            viewModel.updateLoginEmail(emailInput.getText().toString());
+            viewModel.updateLoginPassword(passwordInput.getText().toString());
+            viewModel.login();
+        });
+    }
+
+    private void observeViewModel() {
+        viewModel.getErrorMessage().observe(getViewLifecycleOwner(), errorMessage -> {
+            if (errorMessage != null && !errorMessage.isEmpty()) {
+                Toast.makeText(requireContext(), errorMessage, Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        viewModel.getIsLoading().observe(getViewLifecycleOwner(), isLoading -> {
+            if (isLoading != null) {
+                loginButton.setEnabled(!isLoading);
+                if (isLoading)
+                    loginButton.setText("Logging in...");
+                else
+                    loginButton.setText("Enter");
+            }
+        });
+
+        viewModel.getLoginPassword().observe(getViewLifecycleOwner(), password -> {
+            if (password != null && !password.isEmpty()) {
+                passwordInput.setText(password);
+            }
+        });
+
+        viewModel.getLoginEmail().observe(getViewLifecycleOwner(), email -> {
+            if (email != null && !email.isEmpty()) {
+                emailInput.setText(email);
+            }
+        });
+    }
 
     public LoginFragment() {
         // Required empty public constructor
-    }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment LoginFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static LoginFragment newInstance(String param1, String param2) {
-        LoginFragment fragment = new LoginFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
     }
 
     @Override

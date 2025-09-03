@@ -27,7 +27,7 @@ public class AuthActivity extends AppCompatActivity {
         viewModel = new ViewModelProvider(this).get(AuthViewModel.class);
 
         if (savedInstanceState == null)
-            loadFragment(new RegisterFragment());
+            loadFragment(new LoginFragment());
 
         observeViewModel();
     }
@@ -39,13 +39,6 @@ public class AuthActivity extends AppCompatActivity {
                 viewModel.resetNavigation();
             }
         });
-
-//        viewModel.getNavigateToComplete().observe(this, shouldNavigate -> {
-//            if (shouldNavigate) {
-//                loadFragment(new AvatarSelectionFragment());
-//                viewModel.resetNavigation();
-//            }
-//        });
 
         viewModel.getNavigateToLogin().observe(this, shouldNavigate -> {
             if (shouldNavigate) {
@@ -61,16 +54,16 @@ public class AuthActivity extends AppCompatActivity {
             }
         });
 
-//        viewModel.getNavigateToMain().observe(this, shouldNavigate -> {
-//            if (shouldNavigate) {
-//                // Navigate to MainActivity
-//                Intent intent = new Intent(this, MainActivity.class);
-//                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-//                startActivity(intent);
-//                finish();
-//                viewModel.resetNavigation();
-//            }
-//        });
+        viewModel.getNavigateToMain().observe(this, shouldNavigate -> {
+            if (shouldNavigate) {
+                // Navigate to MainActivity
+                Intent intent = new Intent(this, MainActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
+                finish();
+                viewModel.resetNavigation();
+            }
+        });
 
         // Observe loading state
         viewModel.getIsLoading().observe(this, isLoading -> {

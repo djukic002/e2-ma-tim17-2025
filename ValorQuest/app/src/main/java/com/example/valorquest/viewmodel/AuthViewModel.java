@@ -1,11 +1,14 @@
 package com.example.valorquest.viewmodel;
 
+import android.util.Log;
+
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.valorquest.data.repositories.AuthRepository;
 import com.example.valorquest.model.User;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 public class AuthViewModel extends ViewModel {
@@ -19,11 +22,14 @@ public class AuthViewModel extends ViewModel {
 //    private MutableLiveData<Boolean> navigateToComplete = new MutableLiveData<>();
     private MutableLiveData<Boolean> navigateToRegister = new MutableLiveData<>();
     private MutableLiveData<Boolean> navigateToLogin = new MutableLiveData<>();
-//    private MutableLiveData<Boolean> navigateToMain = new MutableLiveData<>();
+    private MutableLiveData<Boolean> navigateToMain = new MutableLiveData<>();
 
     private MutableLiveData<FirebaseUser> currentUser = new MutableLiveData<>();
     private MutableLiveData<String> errorMessage = new MutableLiveData<>();
     private MutableLiveData<Boolean> isLoading = new MutableLiveData<>();
+
+    private MutableLiveData<String> loginEmail = new MutableLiveData<>();
+    private MutableLiveData<String> loginPassword = new MutableLiveData<>();
 
     public AuthViewModel() {
         authRepository = new AuthRepository();
@@ -50,6 +56,14 @@ public class AuthViewModel extends ViewModel {
 
     public void updateRegistrationPassword(String password) {
         registrationPassword.setValue(password);
+    }
+
+    public void updateLoginEmail(String email) {
+        loginEmail.setValue(email);
+    }
+
+    public void updateLoginPassword(String password) {
+        loginPassword.setValue(password);
     }
 
     public void goBackToLogin() {
@@ -85,7 +99,33 @@ public class AuthViewModel extends ViewModel {
         navigateToAvatarSelection.setValue(false);
 //        navigateToComplete.setValue(false);
         navigateToLogin.setValue(false);
-//        navigateToMain.setValue(false);
+        navigateToRegister.setValue(false);
+    }
+
+    public void login() {
+        String email = getLoginEmail().getValue();
+        String password = getLoginPassword().getValue();
+        currentUser.setValue(null);
+
+        Log.i("email", email);
+        Log.i("password", "Password is: " + password);
+
+        isLoading.setValue(true);
+
+        authRepository.login(email, password, currentUser, errorMessage);
+
+        currentUser.observeForever(firebaseUser -> {
+            if (firebaseUser != null) {
+                isLoading.setValue(false);
+                navigateToMain.setValue(true);
+            }
+        });
+
+        errorMessage.observeForever(error -> {
+            if (error != null && !error.isEmpty()) {
+                isLoading.setValue(false);
+            }
+        });
     }
 
     public void performRegistration() {
@@ -144,6 +184,14 @@ public class AuthViewModel extends ViewModel {
     public LiveData<User> getRegistrationData() { return registrationData; }
     public LiveData<Integer> getSelectedAvatarId() { return selectedAvatarId; }
 
+    public LiveData<String> getLoginEmail() {
+        return loginEmail;
+    }
+
+    public LiveData<String> getLoginPassword() {
+        return loginPassword;
+    }
+
     public LiveData<String> getRegistrationPassword() {
         return registrationPassword;
     }
@@ -151,7 +199,7 @@ public class AuthViewModel extends ViewModel {
 //    public LiveData<Boolean> getNavigateToComplete() { return navigateToComplete; }
     public LiveData<Boolean> getNavigateToLogin() { return navigateToLogin; }
     public LiveData<Boolean> getNavigateToRegister() { return navigateToRegister; }
-//    public LiveData<Boolean> getNavigateToMain() { return navigateToMain; }
+    public LiveData<Boolean> getNavigateToMain() { return navigateToMain; }
     public LiveData<FirebaseUser> getCurrentUser() { return currentUser; }
     public LiveData<String> getErrorMessage() { return errorMessage; }
     public LiveData<Boolean> getIsLoading() { return isLoading; }

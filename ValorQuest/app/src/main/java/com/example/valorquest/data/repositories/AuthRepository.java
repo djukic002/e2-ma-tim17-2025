@@ -44,6 +44,31 @@ public class AuthRepository {
                     }
                 });
     }
+
+    public void login(String email, String password,
+                      MutableLiveData<FirebaseUser> userLiveData,
+                      MutableLiveData<String> errorLiveData) {
+
+        auth.signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        FirebaseUser firebaseUser = auth.getCurrentUser();
+                        if (firebaseUser != null) {
+                            if (firebaseUser.isEmailVerified()) {
+                                // Login successful and email verified
+                                userLiveData.postValue(firebaseUser);
+                            } else {
+                                // Email not verified
+                                errorLiveData.postValue("Please verify your email before logging in.");
+                            }
+                        } else {
+                            errorLiveData.postValue("Login failed. User not found.");
+                        }
+                    } else {
+                        errorLiveData.postValue(task.getException().getMessage());
+                    }
+                });
+    }
 }
 
 

@@ -24,7 +24,6 @@ public class AppModule {
     public AppDatabase provideDatabase(@ApplicationContext Context context) {
         return Room.databaseBuilder(context, AppDatabase.class, "app_database")
                 .fallbackToDestructiveMigration()
-                .allowMainThreadQueries() // ❌ for testing only, use coroutines/Executors later
                 .build();
     }
 

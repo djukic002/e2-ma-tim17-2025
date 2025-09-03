@@ -1,5 +1,6 @@
 package com.example.valorquest.data.local;
 
+import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.Query;
@@ -12,17 +13,17 @@ import java.util.List;
 @Dao
 public interface CategoryDao {
     @Insert
-    long insertCategory(Category category);
+    void insertCategory(Category category);
 
     @Update
     void updateCategory(Category category);
 
     @Query("SELECT * FROM categories WHERE userId = :userId")
-    List<Category> getCategoriesForUser(String userId);
+    LiveData<List<Category>> getCategoriesForUser(String userId);
+
+    @Query("SELECT * FROM categories WHERE id = :id LIMIT 1")
+    Category getCategoryById(int id);
 
     @Query("SELECT * FROM categories WHERE userId = :userId AND color = :color LIMIT 1")
     Category getCategoryByColor(String userId, String color);
-
-    @Query("SELECT * FROM categories WHERE id = :categoryId")
-    Category getCategoryById(int categoryId);
 }

@@ -28,19 +28,19 @@ public class CategoryViewModel extends ViewModel {
         return categoriesLiveData;
     }
 
-    public void loadCategories(String userId) {
-        categoriesLiveData.setValue(repository.getCategoriesForUser(userId));
-    }
-
-    public boolean addCategory(Category category) {
-        boolean result = repository.addCategory(category);
-        if (result) loadCategories(category.getUserId());
-        return result;
-    }
-
-    public boolean changeCategoryColor(int categoryId, String userId, String newColor) {
-        boolean result = repository.changeCategoryColor(categoryId, userId, newColor);
-        if (result) loadCategories(userId);
-        return result;
-    }
+//    public void loadCategories(String userId) {
+//        categoriesLiveData.setValue(repository.getCategoriesForUser(userId));
+//    }
+//
+//    public boolean addCategory(Category category) {
+//        boolean result = repository.addCategory(category);
+//        if (result) loadCategories(category.getUserId());
+//        return result;
+//    }
+//
+//    public boolean changeCategoryColor(int categoryId, String userId, String newColor) {
+//        boolean result = repository.changeCategoryColor(categoryId, userId, newColor);
+//        if (result) loadCategories(userId);
+//        return result;
+//    }
 }

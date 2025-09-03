@@ -18,6 +18,14 @@
         <action
             android:id="@+id/action_mainMenuFragment_to_profileFragment"
             app:destination="@id/profileFragment" />
+
+        <action
+            android:id="@+id/action_mainMenuFragment_to_marketFragment"
+            app:destination="@id/marketFragment" />
+        <action
+            android:id="@+id/action_mainMenuFragment_to_categoryFragment"
+            app:destination="@id/categoryFragment" />
+
     </fragment>
 
     <fragment
@@ -31,4 +39,17 @@
         android:name="com.example.valorquest.ui.ProfileFragment"
         android:label="Profile"
         tools:layout="@layout/fragment_profile" />
+
+    <!-- New fragments -->
+    <fragment
+        android:id="@+id/marketFragment"
+        android:name="com.example.valorquest.ui.MarketFragment"
+        android:label="Market"
+        tools:layout="@layout/fragment_market" />
+
+    <fragment
+        android:id="@+id/categoryFragment"
+        android:name="com.example.valorquest.ui.CategoryFragment"
+        android:label="Categories"
+        tools:layout="@layout/fragment_category" />
 </navigation>

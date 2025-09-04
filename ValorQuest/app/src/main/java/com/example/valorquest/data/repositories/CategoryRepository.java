@@ -1,10 +1,12 @@
 package com.example.valorquest.data.repositories;
 
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 
 import com.example.valorquest.data.local.AppDatabase;
 import com.example.valorquest.data.local.CategoryDao;
 import com.example.valorquest.model.Category;
+import com.example.valorquest.model.Result;
 
 import java.util.List;
 import javax.inject.Inject;
@@ -23,25 +25,19 @@ public class CategoryRepository {
         return categoryDao.getCategoriesForUser(userId);
     }
 
-    public void addCategory(Category category) {
+    public LiveData<Result<String>> addCategory(Category category) {
+        MutableLiveData<Result<String>> result = new MutableLiveData<>();
+
         AppDatabase.databaseWriteExecutor.execute(() -> {
             Category existing = categoryDao.getCategoryByColor(category.getUserId(), category.getColor());
             if (existing == null) {
                 categoryDao.insertCategory(category);
+                result.postValue(Result.success("Category inserted successfully"));
+            } else {
+                result.postValue(Result.error("Color already exists"));
             }
         });
-    }
 
-    public void changeCategoryColor(int categoryId, String userId, String newColor) {
-        AppDatabase.databaseWriteExecutor.execute(() -> {
-            Category existing = categoryDao.getCategoryByColor(userId, newColor);
-            if (existing == null) {
-                Category category = categoryDao.getCategoryById(categoryId);
-                if (category != null) {
-                    category.setColor(newColor);
-                    categoryDao.updateCategory(category);
-                }
-            }
-        });
+        return result;
     }
 }

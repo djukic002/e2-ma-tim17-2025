@@ -6,8 +6,7 @@ import androidx.lifecycle.ViewModel;
 
 import com.example.valorquest.data.repositories.CategoryRepository;
 import com.example.valorquest.model.Category;
-
-import java.util.List;
+import com.example.valorquest.model.Result;
 
 import javax.inject.Inject;
 
@@ -34,8 +33,8 @@ public class AddCategoryViewModel extends ViewModel {
         return selectedColorHex;
     }
 
-    public void addCategory(String userId, String name, String colorHex) {
+    public LiveData<Result<String>> addCategory(String userId, String name, String colorHex) {
         Category category = new Category(userId, name, colorHex);
-        repository.addCategory(category);
+        return repository.addCategory(category);
     }
 }

@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.example.valorquest.R;
+import com.example.valorquest.model.Result;
 import com.example.valorquest.viewmodel.AddCategoryViewModel;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.card.MaterialCardView;
@@ -97,11 +98,17 @@ public class AddCategoryFragment extends Fragment {
                 return;
             }
 
-            // Save through ViewModel → Repository → Room
-            viewModel.addCategory(user.getUid(), name, selectedColor);
-
-            Toast.makeText(requireContext(), "Category added", Toast.LENGTH_SHORT).show();
-            Navigation.findNavController(v).popBackStack();
+            // Save through ViewModel → Repository → Room and observe the result
+            viewModel.addCategory(user.getUid(), name, selectedColor).observe(
+                    getViewLifecycleOwner(), result -> {
+                        if (result.getStatus() == Result.Status.SUCCESS) {
+                            Toast.makeText(requireContext(), result.getData(), Toast.LENGTH_SHORT).show();
+                            Navigation.findNavController(v).popBackStack();
+                        } else if (result.getStatus() == Result.Status.ERROR) {
+                            Toast.makeText(requireContext(), result.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    }
+            );
         });
     }
 }

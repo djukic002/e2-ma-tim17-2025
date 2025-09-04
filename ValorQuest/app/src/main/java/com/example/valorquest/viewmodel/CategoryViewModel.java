@@ -27,4 +27,8 @@ public class CategoryViewModel extends ViewModel {
     public LiveData<List<Category>> getCategories() {
         return categoriesLiveData;
     }
+
+    public LiveData<List<Category>> getCategoriesForUser(String userId) {
+        return repository.getCategoriesForUser(userId);
+    }
 }

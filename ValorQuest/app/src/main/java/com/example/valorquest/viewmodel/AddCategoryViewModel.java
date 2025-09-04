@@ -33,8 +33,12 @@ public class AddCategoryViewModel extends ViewModel {
         return selectedColorHex;
     }
 
-    public LiveData<Result<String>> addCategory(String userId, String name, String colorHex) {
-        Category category = new Category(userId, name, colorHex);
+    public LiveData<Result<String>> addCategory(String userId, String name) {
+        Category category = new Category(userId, name, selectedColorHex);
         return repository.addCategory(category);
+    }
+
+    public LiveData<Result<String>> changeCategoryColor(int categoryId, String userId) {
+        return repository.changeCategoryColorSafe(categoryId, userId, selectedColorHex);
     }
 }

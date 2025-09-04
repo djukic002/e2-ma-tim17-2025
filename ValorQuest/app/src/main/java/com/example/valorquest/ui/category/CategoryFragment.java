@@ -47,9 +47,7 @@ public class CategoryFragment extends Fragment {
 
         ListView lvCategories = root.findViewById(R.id.lvCategories);
 
-        adapter = new CategoryArrayAdapter(requireContext(), new ArrayList<>(), category -> {
-            // Placeholder: Edit button does nothing for now
-        });
+        adapter = new CategoryArrayAdapter(requireContext(), new ArrayList<>());
 
         lvCategories.setAdapter(adapter);
 

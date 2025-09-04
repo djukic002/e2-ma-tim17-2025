@@ -124,7 +124,7 @@
         android:layout_width="0dp"
         android:layout_height="52dp"
         android:layout_marginTop="48dp"
-        android:text="Add Category"
+        android:text="Save"
         android:textAllCaps="false"
         android:textSize="18sp"
         android:textColor="#C9A227"

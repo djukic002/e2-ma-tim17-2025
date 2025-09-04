@@ -40,4 +40,27 @@ public class CategoryRepository {
 
         return result;
     }
+    public LiveData<Result<String>> changeCategoryColorSafe(int categoryId, String userId, String newColor) {
+        MutableLiveData<Result<String>> result = new MutableLiveData<>();
+
+        AppDatabase.databaseWriteExecutor.execute(() -> {
+            Category existing = categoryDao.getCategoryByColor(userId, newColor);
+            if (existing == null) {
+                Category category = categoryDao.getCategoryById(categoryId);
+                if (category != null) {
+                    category.setColor(newColor);
+                    categoryDao.updateCategory(category);
+                    result.postValue(Result.success("Category color updated successfully"));
+                } else {
+                    result.postValue(Result.error("Category not found"));
+                }
+            } else {
+                result.postValue(Result.error("Color already exists for this user"));
+            }
+        });
+
+        return result;
+    }
+
+
 }

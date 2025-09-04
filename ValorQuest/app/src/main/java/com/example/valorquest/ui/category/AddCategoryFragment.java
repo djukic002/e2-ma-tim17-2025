@@ -14,6 +14,7 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.valorquest.R;
@@ -33,6 +34,12 @@ public class AddCategoryFragment extends Fragment {
 
     private AddCategoryViewModel viewModel;
 
+    // edit mode args
+    private int argCategoryId = -1;
+    private String argUserId = "";
+    private String argName = "";
+    private String argColor = "";
+
     public AddCategoryFragment() { }
 
     @Override
@@ -47,11 +54,32 @@ public class AddCategoryFragment extends Fragment {
 
         viewModel = new ViewModelProvider(this).get(AddCategoryViewModel.class);
 
+        Bundle args = getArguments();
+        if (args != null) {
+            argCategoryId = args.getInt("categoryId", -1);
+            argUserId = args.getString("userId", "");
+            argName = args.getString("name", "");
+            argColor = args.getString("color", "");
+        }
+        final boolean isEdit = argCategoryId != -1;
+
         TextInputEditText etName = root.findViewById(R.id.et_category_name);
         TextInputLayout tilColor = root.findViewById(R.id.til_color_hex);
         TextInputEditText etColor = root.findViewById(R.id.et_color_hex);
         MaterialCardView colorPreview = root.findViewById(R.id.color_preview);
         MaterialButton btnAdd = root.findViewById(R.id.btn_add_category);
+        TextView title = root.findViewById(R.id.tvTitle);
+
+        // Prefill for edit mode
+        if (isEdit) {
+            title.setText("Edit Category");
+            etName.setText(argName);
+            etName.setEnabled(false); // only editing color; enable if you also want name edits
+            if (!TextUtils.isEmpty(argColor)) etColor.setText(argColor);
+        } else {
+            title.setText("Add Category");
+        }
+
 
         Runnable applyColor = () -> {
             String hex = etColor.getText() == null ? "" : etColor.getText().toString().trim();
@@ -81,12 +109,13 @@ public class AddCategoryFragment extends Fragment {
 
         btnAdd.setOnClickListener(v -> {
             String name = etName.getText() == null ? "" : etName.getText().toString().trim();
+            String selectedColor = viewModel.getSelectedColorHex();
+
             if (TextUtils.isEmpty(name)) {
                 Toast.makeText(requireContext(), "Please enter a category name", Toast.LENGTH_SHORT).show();
                 return;
             }
 
-            String selectedColor = viewModel.getSelectedColorHex();
             if (TextUtils.isEmpty(selectedColor)) {
                 Toast.makeText(requireContext(), "Please enter a valid color hex", Toast.LENGTH_SHORT).show();
                 return;
@@ -98,17 +127,30 @@ public class AddCategoryFragment extends Fragment {
                 return;
             }
 
-            // Save through ViewModel → Repository → Room and observe the result
-            viewModel.addCategory(user.getUid(), name, selectedColor).observe(
-                    getViewLifecycleOwner(), result -> {
-                        if (result.getStatus() == Result.Status.SUCCESS) {
-                            Toast.makeText(requireContext(), result.getData(), Toast.LENGTH_SHORT).show();
-                            Navigation.findNavController(v).popBackStack();
-                        } else if (result.getStatus() == Result.Status.ERROR) {
-                            Toast.makeText(requireContext(), result.getMessage(), Toast.LENGTH_SHORT).show();
+            if (isEdit) {
+
+                viewModel.changeCategoryColor(argCategoryId, user.getUid()).observe(
+                        getViewLifecycleOwner(), result -> {
+                            if (result.getStatus() == Result.Status.SUCCESS) {
+                                Toast.makeText(requireContext(), result.getData(), Toast.LENGTH_SHORT).show();
+                                Navigation.findNavController(v).popBackStack();
+                            } else if (result.getStatus() == Result.Status.ERROR) {
+                                Toast.makeText(requireContext(), result.getMessage(), Toast.LENGTH_SHORT).show();
+                            }
                         }
-                    }
-            );
+                );
+            } else {
+                viewModel.addCategory(user.getUid(), name).observe(
+                        getViewLifecycleOwner(), result -> {
+                            if (result.getStatus() == Result.Status.SUCCESS) {
+                                Toast.makeText(requireContext(), result.getData(), Toast.LENGTH_SHORT).show();
+                                Navigation.findNavController(v).popBackStack();
+                            } else if (result.getStatus() == Result.Status.ERROR) {
+                                Toast.makeText(requireContext(), result.getMessage(), Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                );
+            }
         });
     }
 }

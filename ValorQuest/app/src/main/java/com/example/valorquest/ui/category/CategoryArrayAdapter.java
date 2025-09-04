@@ -2,6 +2,7 @@ package com.example.valorquest.ui.category;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +11,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.navigation.Navigation;
 
 import com.example.valorquest.R;
 import com.example.valorquest.model.Category;
@@ -18,19 +20,11 @@ import com.google.android.material.button.MaterialButton;
 import java.util.List;
 
 public class CategoryArrayAdapter extends ArrayAdapter<Category> {
-
     private final Context context;
 
-    public interface OnCategoryActionListener {
-        void onEdit(Category category);
-    }
-
-    private final OnCategoryActionListener listener;
-
-    public CategoryArrayAdapter(@NonNull Context context, List<Category> categories, OnCategoryActionListener listener) {
+    public CategoryArrayAdapter(@NonNull Context context, List<Category> categories) {
         super(context, 0, categories);
         this.context = context;
-        this.listener = listener;
     }
 
     @NonNull
@@ -56,9 +50,12 @@ public class CategoryArrayAdapter extends ArrayAdapter<Category> {
             }
 
             btnEdit.setOnClickListener(v -> {
-                if (listener != null) {
-                    listener.onEdit(category);
-                }
+                Bundle args = new Bundle();
+                args.putInt("categoryId", category.getId());
+                args.putString("userId", category.getUserId());
+                args.putString("name", category.getName());
+                args.putString("color", category.getColor());
+                Navigation.findNavController(v).navigate(R.id.action_categoryFragment_to_addCategoryFragment, args);
             });
         }
 

@@ -61,5 +61,10 @@
         android:id="@+id/addCategoryFragment"
         android:name="com.example.valorquest.ui.category.AddCategoryFragment"
         android:label="Add Category"
-        tools:layout="@layout/fragment_add_category" />
+        tools:layout="@layout/fragment_add_category">
+        <argument android:name="categoryId" android:defaultValue="-1" app:argType="integer" />
+        <argument android:name="userId" android:defaultValue="" app:argType="string" />
+        <argument android:name="name" android:defaultValue="" app:argType="string" />
+        <argument android:name="color" android:defaultValue="" app:argType="string" />
+    </fragment>
 </navigation>

@@ -6,6 +6,7 @@ import androidx.room.Room;
 
 import com.example.valorquest.data.local.AppDatabase;
 import com.example.valorquest.data.local.CategoryDao;
+import com.example.valorquest.data.local.QuestDao;
 
 import javax.inject.Singleton;
 
@@ -30,5 +31,9 @@ public class AppModule {
     @Provides
     public CategoryDao provideCategoryDao(AppDatabase db) {
         return db.categoryDao();
+    }
+    @Provides
+    public QuestDao provideQuestDao(AppDatabase db) {
+        return db.questDao();
     }
 }

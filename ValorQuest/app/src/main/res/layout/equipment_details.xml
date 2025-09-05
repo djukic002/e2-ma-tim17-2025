@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <!-- Equipment Image and Basic Info -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="16dp">
+
+        <ImageView
+            android:id="@+id/detail_equipment_image"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:src="@drawable/coins"
+            android:contentDescription="Equipment"
+            android:scaleType="centerCrop"
+            android:layout_marginEnd="16dp" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/detail_equipment_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Equipment Name"
+                android:textColor="#8B1E1E"
+                android:textSize="20sp"
+                android:fontFamily="@font/main_font_family"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/detail_equipment_type"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Weapon"
+                android:textColor="#8B1E1E"
+                android:textSize="16sp"
+                android:fontFamily="@font/main_font_family"
+                android:layout_marginTop="4dp" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginTop="8dp">
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/coins"
+                    android:contentDescription="Price"
+                    android:layout_marginEnd="4dp" />
+
+                <TextView
+                    android:id="@+id/detail_equipment_price"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="100"
+                    android:textColor="#8B1E1E"
+                    android:textSize="18sp"
+                    android:fontFamily="@font/main_font_family"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <!-- Description -->
+    <TextView
+        android:id="@+id/detail_equipment_description"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Equipment description goes here..."
+        android:textColor="#8B1E1E"
+        android:textSize="14sp"
+        android:fontFamily="@font/main_font_family"
+        android:layout_marginBottom="16dp" />
+
+    <!-- Stats -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Stats:"
+            android:textColor="#8B1E1E"
+            android:textSize="16sp"
+            android:fontFamily="@font/main_font_family"
+            android:textStyle="bold"
+            android:layout_marginBottom="8dp" />
+
+        <TextView
+            android:id="@+id/detail_equipment_stats"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Strength +15%"
+            android:textColor="#8B1E1E"
+            android:textSize="14sp"
+            android:fontFamily="@font/main_font_family"
+            android:layout_marginBottom="4dp" />
+
+        <TextView
+            android:id="@+id/detail_equipment_durability"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Durability: 100/100"
+            android:textColor="#8B1E1E"
+            android:textSize="14sp"
+            android:fontFamily="@font/main_font_family" />
+
+    </LinearLayout>
+
+</LinearLayout>

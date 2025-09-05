@@ -28,7 +28,7 @@ public class MainMenuFragment extends Fragment {
 
         // Initialize all 4 buttons
         MaterialButton btnQuests = view.findViewById(R.id.btnQuests);
-        MaterialButton btnMarket = view.findViewById(R.id.btnMarket);
+        MaterialButton btnShop = view.findViewById(R.id.btnShop);
         MaterialButton btnProfile = view.findViewById(R.id.btnProfile);
         MaterialButton btnCategories = view.findViewById(R.id.btnCategories);
 
@@ -37,13 +37,13 @@ public class MainMenuFragment extends Fragment {
                 Navigation.findNavController(v)
                         .navigate(R.id.action_mainMenuFragment_to_questsFragment));
 
-        btnMarket.setOnClickListener(v ->
-                Navigation.findNavController(v)
-                        .navigate(R.id.action_mainMenuFragment_to_marketFragment));
-
         btnProfile.setOnClickListener(v ->
                 Navigation.findNavController(v)
                         .navigate(R.id.action_mainMenuFragment_to_profileFragment));
+
+        btnShop.setOnClickListener(v ->
+                Navigation.findNavController(v)
+                        .navigate(R.id.action_mainMenuFragment_to_shopFragment));
 
         btnCategories.setOnClickListener(v ->
                 Navigation.findNavController(v)

@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/background">
+
+    <!-- Main vertical layout -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <!-- Upper Panel: Equipment List -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/equipment_list_card"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:layout_margin="16dp"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="8dp"
+            app:strokeColor="#C9A227"
+            app:strokeWidth="2dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:padding="16dp"
+                android:background="@drawable/bg_parchment_panel">
+
+                <ListView
+                    android:id="@+id/lv_equipment"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:divider="@android:color/transparent"
+                    android:dividerHeight="8dp"
+                    tools:listItem="@layout/item_equipment_card" />
+
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Lower Panel: Equipment Details -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/equipment_details_card"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:layout_margin="16dp"
+            android:layout_marginTop="8dp"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="8dp"
+            app:strokeColor="#C9A227"
+            app:strokeWidth="2dp">
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="16dp"
+                android:background="@drawable/bg_parchment_panel">
+
+                <!-- No selection state -->
+                <TextView
+                    android:id="@+id/no_equipment_selected"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="What can I get ya?"
+                    android:gravity="center"
+                    android:textColor="@color/black"
+                    android:textSize="18sp"
+                    android:fontFamily="@font/main_font_family" />
+
+                <!-- Details state -->
+                <LinearLayout
+                    android:id="@+id/equipment_details_container"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+
+                    <!-- Top row: image + name/bonus/type -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <ImageView
+                            android:id="@+id/equipment_details_image"
+                            android:layout_width="80dp"
+                            android:layout_height="80dp"
+                            android:src="@drawable/avatar_1"
+                            android:contentDescription="Avatar 1"
+                            android:scaleType="centerCrop" />
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:orientation="vertical"
+                            android:layout_marginStart="16dp"
+                            android:gravity="center_vertical">
+
+                            <TextView
+                                android:id="@+id/equipment_details_name"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Warrior"
+                                android:textColor="@color/black"
+                                android:textSize="24sp"
+                                android:fontFamily="@font/main_font_family"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/equipment_details_bonus"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="A mighty warrior with unbreakable spirit"
+                                android:textColor="@color/black"
+                                android:textSize="16sp"
+                                android:fontFamily="@font/main_font_family"
+                                android:gravity="center_vertical" />
+
+                        </LinearLayout>
+
+                        <TextView
+                            android:id="@+id/equipment_details_type"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:text="Sword"
+                            android:textColor="#7A0F0F"
+                            android:gravity="center" />
+
+                    </LinearLayout>
+
+                    <!-- Description + purchase button -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginTop="25dp">
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/equipment_details_description"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/black"
+                                android:text="diawjhdijawidjhwaiuhduiahwduihawuidhuiawhduiawhddhuiwahdiuwahudhawduiwahd"
+                                android:layout_weight="1" />
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btn_purchase"
+                                android:layout_width="match_parent"
+                                android:layout_height="52dp"
+                                android:text="Purchase 100"
+                                android:textAllCaps="false"
+                                android:textSize="16sp"
+                                android:textColor="#C9A227"
+                                android:fontFamily="@font/main_font_family"
+                                android:textStyle="bold"
+                                android:background="@drawable/bg_button_fantasy"
+                                app:backgroundTint="@null"
+                                app:rippleColor="#33C9A227"
+                                app:cornerRadius="14dp"
+                                app:iconTint="@null"
+                                app:icon="@drawable/coins"
+                                app:iconGravity="textEnd" />
+                        </LinearLayout>
+
+                        <View
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1" />
+
+                    </LinearLayout>
+                </LinearLayout>
+            </FrameLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+    </LinearLayout>
+
+    <!-- Fixed bottom-right image -->
+    <ImageView
+        android:id="@+id/bottom_right_image"
+        android:layout_width="500px"
+        android:layout_height="500px"
+        android:layout_gravity="bottom|end"
+        android:src="@drawable/shopkeeper"
+        android:contentDescription="Fixed Image" />
+
+</FrameLayout>

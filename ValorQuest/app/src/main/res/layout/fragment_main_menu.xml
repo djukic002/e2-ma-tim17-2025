@@ -61,10 +61,10 @@
         app:layout_constraintEnd_toEndOf="parent" />
 
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnMarket"
+        android:id="@+id/btnShop"
         android:layout_width="0dp"
         android:layout_height="64dp"
-        android:text="Market"
+        android:text="Shop"
         android:textAllCaps="false"
         android:textSize="20sp"
         android:textColor="#C9A227"
@@ -96,7 +96,7 @@
         app:iconGravity="textStart"
         android:layout_marginTop="32dp"
         app:layout_constraintWidth_percent="0.5"
-        app:layout_constraintTop_toBottomOf="@id/btnMarket"
+        app:layout_constraintTop_toBottomOf="@id/btnShop"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 

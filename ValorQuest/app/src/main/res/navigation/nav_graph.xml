@@ -22,23 +22,50 @@
         <action
             android:id="@+id/action_mainMenuFragment_to_shopFragment"
             app:destination="@id/shopFragment" />
+
+        <action
+            android:id="@+id/action_mainMenuFragment_to_categoryFragment"
+            app:destination="@id/categoryFragment" />
+
     </fragment>
 
     <fragment
         android:id="@+id/questsFragment"
-        android:name="com.example.valorquest.ui.QuestsFragment"
+        android:name="com.example.valorquest.ui.quests.QuestsFragment"
         android:label="Quests"
         tools:layout="@layout/fragment_quests" />
 
     <fragment
         android:id="@+id/profileFragment"
-        android:name="com.example.valorquest.ui.ProfileFragment"
+        android:name="com.example.valorquest.ui.profile.ProfileFragment"
         android:label="Profile"
         tools:layout="@layout/fragment_profile" />
 
     <fragment
         android:id="@+id/shopFragment"
-        android:name="com.example.valorquest.ui.ShopFragment"
+        android:name="com.example.valorquest.ui.shop.ShopFragment"
         android:label="Shop"
         tools:layout="@layout/fragment_shop" />
+
+    <fragment
+        android:id="@+id/categoryFragment"
+        android:name="com.example.valorquest.ui.category.CategoryFragment"
+        android:label="Categories"
+        tools:layout="@layout/fragment_category">
+
+        <action
+            android:id="@+id/action_categoryFragment_to_addCategoryFragment"
+            app:destination="@id/addCategoryFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/addCategoryFragment"
+        android:name="com.example.valorquest.ui.category.AddCategoryFragment"
+        android:label="Add Category"
+        tools:layout="@layout/fragment_add_category">
+        <argument android:name="categoryId" android:defaultValue="-1" app:argType="integer" />
+        <argument android:name="userId" android:defaultValue="" app:argType="string" />
+        <argument android:name="name" android:defaultValue="" app:argType="string" />
+        <argument android:name="color" android:defaultValue="" app:argType="string" />
+    </fragment>
 </navigation>

@@ -1,4 +1,4 @@
-package com.example.valorquest.ui;
+package com.example.valorquest.ui.profile;
 
 import android.os.Bundle;
 

@@ -1,7 +1,6 @@
-package com.example.valorquest.ui;
+package com.example.valorquest.ui.shop;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,16 +12,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.valorquest.R;
 import com.example.valorquest.model.Equipment;
-import com.example.valorquest.ui.adapter.EquipmentAdapter;
 import com.example.valorquest.viewmodel.ShopViewModel;
 import com.google.android.material.button.MaterialButton;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class ShopFragment extends Fragment {
     private ShopViewModel viewModel;

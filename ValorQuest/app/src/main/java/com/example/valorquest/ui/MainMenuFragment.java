@@ -66,6 +66,7 @@ public class MainMenuFragment extends Fragment {
 
         Button btnQuests = view.findViewById(R.id.btnQuests);
         Button btnProfile = view.findViewById(R.id.btnProfile);
+        Button btnShop = view.findViewById(R.id.btnShop);
 
         btnQuests.setOnClickListener(v ->
                 Navigation.findNavController(v)
@@ -74,6 +75,10 @@ public class MainMenuFragment extends Fragment {
         btnProfile.setOnClickListener(v ->
                 Navigation.findNavController(v)
                         .navigate(R.id.action_mainMenuFragment_to_profileFragment));
+
+        btnShop.setOnClickListener(v ->
+                Navigation.findNavController(v)
+                        .navigate(R.id.action_mainMenuFragment_to_shopFragment));
 
         return view;
     }

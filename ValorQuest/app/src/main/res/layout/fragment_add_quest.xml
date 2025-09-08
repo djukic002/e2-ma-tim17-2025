@@ -1,0 +1,397 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/background"
+    android:paddingBottom="40dp">
+
+    <!-- Title -->
+    <TextView
+        android:id="@+id/tvTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="New Quest"
+        android:textColor="#C9A227"
+        android:textSize="40sp"
+        android:textStyle="bold"
+        android:fontFamily="@font/main_font_family"
+        android:shadowColor="#99000000"
+        android:shadowDx="0"
+        android:shadowDy="2"
+        android:shadowRadius="4"
+        android:layout_marginTop="50dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Subtitle -->
+    <TextView
+        android:id="@+id/tvSubtitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Start your new journey"
+        android:textColor="#8B1E1E"
+        android:textSize="24sp"
+        android:fontFamily="@font/main_font_family"
+        android:layout_marginTop="6dp"
+        app:layout_constraintTop_toBottomOf="@id/tvTitle"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Scrollable Content (inputs + button) -->
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/scrollableContent"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        android:paddingHorizontal="24dp"
+        app:layout_constraintTop_toBottomOf="@id/tvSubtitle"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+    <!-- Name -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/til_name"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp"
+        android:hint="Quest name"
+        app:boxBackgroundMode="none"
+        app:hintTextColor="#8B1E1E"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/et_name"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            android:textSize="22sp"
+            android:textColor="#111111"
+            android:textColorHint="#7A0F0F"
+            android:fontFamily="@font/main_font_family"
+            android:background="@android:color/transparent" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- Description -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/til_description"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp"
+        android:hint="Description"
+        app:boxBackgroundMode="none"
+        app:hintTextColor="#8B1E1E"
+        app:layout_constraintTop_toBottomOf="@id/til_name"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/et_description"
+            android:layout_width="match_parent"
+            android:layout_height="120dp"
+            android:gravity="top|start"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            android:textSize="22sp"
+            android:inputType="textMultiLine"
+            android:overScrollMode="always"
+            android:textColor="#111111"
+            android:textColorHint="#7A0F0F"
+            android:fontFamily="@font/main_font_family"
+            android:background="@android:color/transparent" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- Difficulty (Material exposed dropdown) -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/til_difficulty_select"
+        style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp"
+        android:hint="Select difficulty"
+        app:layout_constraintTop_toBottomOf="@id/til_description"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <com.google.android.material.textfield.MaterialAutoCompleteTextView
+            android:id="@+id/act_difficulty_select"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            android:textSize="22sp"
+            android:inputType="none"
+            android:textColor="#111111"
+            android:textColorHint="#7A0F0F"
+            android:fontFamily="@font/main_font_family"
+            android:background="@android:color/transparent" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- Importance -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/til_importance_select"
+        style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp"
+        android:hint="Select importance"
+        app:layout_constraintTop_toBottomOf="@id/til_difficulty_select"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <com.google.android.material.textfield.MaterialAutoCompleteTextView
+            android:id="@+id/act_importance_select"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            android:textSize="22sp"
+            android:inputType="none"
+            android:textColor="#111111"
+            android:textColorHint="#7A0F0F"
+            android:fontFamily="@font/main_font_family"
+            android:background="@android:color/transparent" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- NEW: Category -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/til_category_select"
+        style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp"
+        android:hint="Select category"
+        app:layout_constraintTop_toBottomOf="@id/til_importance_select"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <com.google.android.material.textfield.MaterialAutoCompleteTextView
+            android:id="@+id/act_category_select"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            android:textSize="22sp"
+            android:inputType="none"
+            android:textColor="#111111"
+            android:textColorHint="#7A0F0F"
+            android:fontFamily="@font/main_font_family"
+            android:background="@android:color/transparent" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- Checkbox -->
+    <CheckBox
+        android:id="@+id/cb_enable_advanced"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Repeating quest"
+        android:paddingStart="12dp"
+        android:layout_marginLeft="30dp"
+        android:paddingEnd="12dp"
+        android:textColor="#8B1E1E"
+        android:textSize="22sp"
+        android:fontFamily="@font/main_font_family"
+        android:layout_marginTop="16dp"
+        app:layout_constraintTop_toBottomOf="@id/til_category_select"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <!-- Single due date (shown when checkbox is NOT checked) -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/section_single_date"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp"
+        android:hint="Due date"
+        app:endIconMode="custom"
+        app:layout_constraintTop_toBottomOf="@id/cb_enable_advanced"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/et_due_date"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:focusable="false"
+            android:clickable="true"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            android:textSize="24sp"
+            android:textColor="#111111"
+            android:textColorHint="#7A0F0F"
+            android:fontFamily="@font/main_font_family"
+            android:background="@android:color/transparent" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- Advanced section (shown when checkbox IS checked) -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/section_advanced"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:layout_marginTop="12dp"
+        app:layout_constraintTop_toBottomOf="@id/cb_enable_advanced"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <!-- Two number inputs side by side -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/til_repeating_interval"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginEnd="8dp"
+            android:hint="Interval"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/til_repeating_unit">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_repeating_interval"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:inputType="number"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                android:textSize="24sp"
+                android:textColor="#111111"
+                android:textColorHint="#7A0F0F"
+                android:fontFamily="@font/main_font_family"
+                android:background="@android:color/transparent" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/til_repeating_unit"
+            style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="32dp"
+            android:hint="Unit"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toEndOf="@id/til_repeating_interval"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                android:id="@+id/et_repeating_unit"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                android:textSize="24sp"
+                android:inputType="none"
+                android:fontFamily="@font/main_font_family"
+                android:textColor="#111111"
+                android:textColorHint="#7A0F0F"
+                android:background="@android:color/transparent" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Two dates side by side -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/til_start_date"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:layout_marginStart="32dp"
+            android:layout_marginEnd="8dp"
+            android:hint="Start date"
+            app:layout_constraintTop_toBottomOf="@id/til_repeating_interval"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/til_end_date">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_start_date"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:focusable="false"
+                android:clickable="true"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                android:textSize="24sp"
+                android:textColor="#111111"
+                android:textColorHint="#7A0F0F"
+                android:fontFamily="@font/main_font_family"
+                android:background="@android:color/transparent" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/til_end_date"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="32dp"
+            android:hint="End date"
+            app:layout_constraintTop_toBottomOf="@id/til_repeating_unit"
+            app:layout_constraintStart_toEndOf="@id/til_start_date"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_end_date"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:focusable="false"
+                android:clickable="true"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                android:textSize="24sp"
+                android:textColor="#111111"
+                android:textColorHint="#7A0F0F"
+                android:fontFamily="@font/main_font_family"
+                android:background="@android:color/transparent" />
+        </com.google.android.material.textfield.TextInputLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <!-- Barrier -->
+        <androidx.constraintlayout.widget.Barrier
+            android:id="@+id/sectionsBarrier"
+            app:barrierDirection="bottom"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:constraint_referenced_ids="section_single_date,section_advanced" />
+
+        <!-- Button at bottom -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_add_quest"
+            android:layout_width="150dp"
+            android:layout_height="52dp"
+            android:layout_marginTop="18dp"
+            android:text="Create"
+            android:textAllCaps="false"
+            android:textSize="18sp"
+            android:textColor="#C9A227"
+            android:fontFamily="@font/main_font_family"
+            android:textStyle="bold"
+            android:background="@drawable/bg_button_fantasy"
+            app:backgroundTint="@null"
+            app:rippleColor="#33C9A227"
+            app:cornerRadius="14dp"
+            app:layout_constraintTop_toBottomOf="@id/sectionsBarrier"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.core.widget.NestedScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>

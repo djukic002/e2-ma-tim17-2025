@@ -33,7 +33,12 @@
         android:id="@+id/questsFragment"
         android:name="com.example.valorquest.ui.quests.QuestsFragment"
         android:label="Quests"
-        tools:layout="@layout/fragment_quests" />
+        tools:layout="@layout/fragment_quests">
+        <action
+            android:id="@+id/action_questsFragment_to_addQuestsFragment"
+            app:destination="@id/addQuestsFragment" />
+
+    </fragment>
 
     <fragment
         android:id="@+id/profileFragment"
@@ -68,4 +73,11 @@
         <argument android:name="name" android:defaultValue="" app:argType="string" />
         <argument android:name="color" android:defaultValue="" app:argType="string" />
     </fragment>
+
+    <fragment
+        android:id="@+id/addQuestsFragment"
+        android:name="com.example.valorquest.ui.quests.AddQuestFragment"
+        android:label="Quests"
+        tools:layout="@layout/fragment_add_category"/>
+
 </navigation>

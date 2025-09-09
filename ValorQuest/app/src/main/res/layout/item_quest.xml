@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="12dp"
+    android:background="?attr/selectableItemBackground"
+    android:gravity="center_vertical">
+
+    <!-- Category color circle -->
+    <View
+        android:id="@+id/viewCategoryColor"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:layout_marginEnd="12dp"
+        android:background="@drawable/bg_color_circle" />
+
+    <!-- Quest info -->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tvQuestName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Quest name"
+            android:textStyle="bold"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/tvQuestDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Date"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/tvQuestStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Status"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/tvQuestImportance"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Importance"
+            android:textSize="14sp" />
+    </LinearLayout>
+</LinearLayout>

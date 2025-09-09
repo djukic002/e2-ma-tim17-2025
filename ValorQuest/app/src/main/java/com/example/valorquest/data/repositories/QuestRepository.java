@@ -9,6 +9,7 @@ import com.example.valorquest.data.local.AppDatabase;
 import com.example.valorquest.data.local.QuestDao;
 import com.example.valorquest.model.Quest;
 import com.example.valorquest.model.QuestExecution;
+import com.example.valorquest.model.QuestWithExecutions;
 import com.example.valorquest.model.Result;
 import com.example.valorquest.model.dto.AddQuestDto;
 import com.example.valorquest.model.enums.QuestStatus;
@@ -16,6 +17,7 @@ import com.example.valorquest.model.enums.RepeatingUnit;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -29,6 +31,13 @@ public class QuestRepository {
         this.questDao = questDao;
     }
 
+    public LiveData<List<QuestWithExecutions>> getAllQuestsWithExecutions() {
+        return questDao.getAllQuestsWithExecutions();
+    }
+
+    public LiveData<List<QuestWithExecutions>> getAllQuestsWithExecutionsForUser(String userId) {
+        return questDao.getAllQuestsWithExecutionsForUser(userId);
+    }
     public LiveData<Result<String>> addQuest(AddQuestDto dto) {
         MutableLiveData<Result<String>> result = new MutableLiveData<>();
 

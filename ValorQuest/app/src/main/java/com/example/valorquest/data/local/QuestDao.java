@@ -1,5 +1,6 @@
 package com.example.valorquest.data.local;
 
+import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.Query;
@@ -35,5 +36,13 @@ public interface QuestDao {
 
     @Transaction
     @Query("SELECT * FROM quests")
-    List<QuestWithExecutions> getAllQuestsWithExecutions();
+    LiveData<List<QuestWithExecutions>> getAllQuestsWithExecutions();
+
+    @Transaction
+    @Query("SELECT * FROM quests " +
+            "WHERE userId = :userId " +
+            "ORDER BY (SELECT MIN(date) " +
+            "          FROM quest_executions " +
+            "          WHERE quest_executions.questId = quests.id) ASC")
+    LiveData<List<QuestWithExecutions>> getAllQuestsWithExecutionsForUser(String userId);
 }

@@ -1,14 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.quests.QuestsListFragment">
+    android:orientation="vertical"
+    android:padding="16dp">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <com.google.android.material.textfield.MaterialAutoCompleteTextView
+        android:id="@+id/act_filter"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="Hello list fragment" />
+        android:layout_height="wrap_content"
+        android:hint="Filter by status" />
 
-</FrameLayout>
+    <ListView
+        android:id="@+id/list_quests"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:divider="@null"
+        android:dividerHeight="12dp" />
+
+</LinearLayout>

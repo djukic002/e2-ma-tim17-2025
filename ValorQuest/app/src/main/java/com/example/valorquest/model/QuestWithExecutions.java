@@ -14,4 +14,10 @@ public class QuestWithExecutions {
             entityColumn = "questId"
     )
     public List<QuestExecution> executions;
+
+    @Relation(
+            parentColumn = "categoryId",
+            entityColumn = "id"
+    )
+    public Category category;
 }

@@ -11,6 +11,7 @@ public class AddQuestDto {
     public String description;
     public Difficulty difficulty;
     public Importance importance;
+
     public int categoryId;
     public boolean isRepeating;
     public String dueDate;

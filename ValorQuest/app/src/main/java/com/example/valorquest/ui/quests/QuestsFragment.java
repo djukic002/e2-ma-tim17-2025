@@ -12,6 +12,9 @@ import android.widget.Toast;
 
 import com.example.valorquest.R;
 
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public class QuestsFragment extends Fragment {
 
     @Override

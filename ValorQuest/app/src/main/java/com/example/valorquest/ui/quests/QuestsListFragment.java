@@ -7,12 +7,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import com.example.valorquest.R;
 
+import dagger.hilt.android.AndroidEntryPoint;
+
 /**
  * A simple {@link Fragment} subclass.
  * Use the {@link QuestsListFragment#newInstance} factory method to
  * create an instance of this fragment.
  *
  */
+@AndroidEntryPoint
 public class QuestsListFragment extends Fragment {
 
     // TODO: Rename parameter arguments, choose names that match

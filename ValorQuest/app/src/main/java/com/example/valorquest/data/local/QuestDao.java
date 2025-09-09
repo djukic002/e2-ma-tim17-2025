@@ -20,6 +20,16 @@ public interface QuestDao {
     void insertExecution(QuestExecution execution);
 
     @Transaction
+    default void insertQuestWithExecutions(QuestWithExecutions questWithExecutions) {
+        long questId = insertQuest(questWithExecutions.quest);
+
+        for (QuestExecution execution : questWithExecutions.executions) {
+            execution.setQuestId((int) questId);
+            insertExecution(execution);
+        }
+    }
+
+    @Transaction
     @Query("SELECT * FROM quests WHERE id = :questId")
     QuestWithExecutions getQuestWithExecutions(int questId);
 

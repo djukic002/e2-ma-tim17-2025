@@ -5,6 +5,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.Toast;
 
@@ -15,6 +16,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 
 import com.example.valorquest.R;
+import com.example.valorquest.model.Category;
 import com.example.valorquest.model.Result;
 import com.example.valorquest.model.dto.AddQuestDto;
 import com.example.valorquest.model.enums.Difficulty;
@@ -25,15 +27,23 @@ import com.google.android.material.button.MaterialButton;
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.textfield.MaterialAutoCompleteTextView;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public class AddQuestFragment extends Fragment {
-    //private AddQuestViewModel viewModel;
+    private AddQuestViewModel viewModel;
+    private int selectedCategoryId = -1;
     private final SimpleDateFormat dateFmt;
     {
         dateFmt = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
@@ -51,14 +61,14 @@ public class AddQuestFragment extends Fragment {
     public void onViewCreated(@NonNull View root, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(root, savedInstanceState);
 
-        //viewModel = new ViewModelProvider(this).get(AddQuestViewModel.class);
+        viewModel = new ViewModelProvider(this).get(AddQuestViewModel.class);
 
         TextInputEditText etName = root.findViewById(R.id.et_name);
         TextInputEditText etDescription = root.findViewById(R.id.et_description);
 
         MaterialAutoCompleteTextView difficultySelect = root.findViewById(R.id.act_difficulty_select);
         MaterialAutoCompleteTextView importanceSelect = root.findViewById(R.id.act_importance_select);
-        //MaterialAutoCompleteTextView categorySelect = root.findViewById(R.id.act_category_select);
+        MaterialAutoCompleteTextView categorySelect = root.findViewById(R.id.act_category_select);
 
         CheckBox cbAdvanced = root.findViewById(R.id.cb_enable_advanced);
         View sectionSingleDate = root.findViewById(R.id.section_single_date);
@@ -93,20 +103,61 @@ public class AddQuestFragment extends Fragment {
         etStartDate.setOnClickListener(v -> showDatePicker(date -> etStartDate.setText(date)));
         etEndDate.setOnClickListener(v -> showDatePicker(date -> etEndDate.setText(date)));
 
-        // ✅ Button click
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+        if (user != null) {
+            String userId = user.getUid();
+
+            viewModel.getCategoriesForUser(userId).observe(
+                    getViewLifecycleOwner(), categories -> {
+                        if (categories != null && !categories.isEmpty()) {
+                            List<String> names = new ArrayList<>();
+                            for (Category c : categories) {
+                                names.add(c.getName());
+                            }
+
+                            ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                                    requireContext(),
+                                    android.R.layout.simple_dropdown_item_1line,
+                                    names
+                            );
+                            categorySelect.setAdapter(adapter);
+
+                            categorySelect.setOnItemClickListener((parent, view, position, id) -> {
+                                Category selectedCategory = categories.get(position);
+                                this.selectedCategoryId = selectedCategory.getId();
+                            });
+                        }
+                    }
+            );
+        }
+
         btnNext.setOnClickListener(v -> {
             AddQuestDto dto = new AddQuestDto();
-            dto.userId = "123"; // TODO: replace with logged-in user ID
+
+            if (user == null) {
+                Toast.makeText(requireContext(), "You must be logged in", Toast.LENGTH_SHORT).show();
+                Navigation.findNavController(v).popBackStack();
+                return;
+            }
+
+            if(selectedCategoryId == -1){
+                Toast.makeText(requireContext(), "Please choose a category first", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            try {
+                dto.difficulty = Difficulty.valueOf(difficultySelect.getText().toString().toUpperCase(Locale.ROOT));
+                dto.importance = Importance.valueOf(importanceSelect.getText().toString().toUpperCase(Locale.ROOT));
+            } catch (IllegalArgumentException e) {
+                Toast.makeText(requireContext(), "Please choose difficulty and importance first", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            dto.userId = user.getUid();
             dto.name = etName.getText().toString().trim();
             dto.description = etDescription.getText().toString().trim();
-
-            // Map difficulty & importance from string → enum
-            dto.difficulty = Difficulty.valueOf(difficultySelect.getText().toString().toUpperCase(Locale.ROOT));
-            dto.importance = Importance.valueOf(importanceSelect.getText().toString().toUpperCase(Locale.ROOT));
-
-            // TODO: replace with actual category from DB dropdown
-            dto.categoryId = 1;
-
+            dto.categoryId = selectedCategoryId;
             dto.isRepeating = cbAdvanced.isChecked();
 
             if (dto.isRepeating) {
@@ -121,14 +172,14 @@ public class AddQuestFragment extends Fragment {
             Log.d("AddQuestFragment", dto.toString());
 
             // 🔥 Call ViewModel
-//            viewModel.addQuest(dto).observe(getViewLifecycleOwner(), result -> {
-//                if (result.getStatus() == Result.Status.SUCCESS) {
-//                    Toast.makeText(requireContext(), result.getData(), Toast.LENGTH_SHORT).show();
-//                    Navigation.findNavController(v).popBackStack();
-//                } else if (result.getStatus() == Result.Status.ERROR) {
-//                    Toast.makeText(requireContext(), result.getMessage(), Toast.LENGTH_SHORT).show();
-//                }
-//            });
+            viewModel.addQuest(dto).observe(getViewLifecycleOwner(), result -> {
+                if (result.getStatus() == Result.Status.SUCCESS) {
+                    Toast.makeText(requireContext(), result.getData(), Toast.LENGTH_SHORT).show();
+                    Navigation.findNavController(v).popBackStack();
+                } else if (result.getStatus() == Result.Status.ERROR) {
+                    Toast.makeText(requireContext(), result.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            });
         });
     }
 

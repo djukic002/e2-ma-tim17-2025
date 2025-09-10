@@ -49,7 +49,8 @@ public class QuestRepository {
                         dto.description,
                         dto.difficulty,
                         dto.importance,
-                        dto.categoryId
+                        dto.categoryId,
+                        dto.isRepeating
                 );
 
                 long questId = questDao.insertQuest(quest);

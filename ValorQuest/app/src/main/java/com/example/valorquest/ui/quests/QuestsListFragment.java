@@ -19,7 +19,6 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
@@ -28,7 +27,6 @@ public class QuestsListFragment extends Fragment {
     private QuestsViewModel viewModel;
     private QuestArrayAdapter adapter;
 
-    @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
@@ -43,21 +41,25 @@ public class QuestsListFragment extends Fragment {
         });
         listView.setAdapter(adapter);
 
-        String[] statuses = {"All", "Active", "Completed", "Failed"};
+        String[] filterOptions = {"All", "Repeating", "Non repeating"};
         ArrayAdapter<String> filterAdapter = new ArrayAdapter<>(requireContext(),
-                android.R.layout.simple_dropdown_item_1line, statuses);
+                android.R.layout.simple_dropdown_item_1line, filterOptions);
         filter.setAdapter(filterAdapter);
 
-        viewModel = new ViewModelProvider(this).get(QuestsViewModel.class);
+        filter.setText(filterOptions[0], false);
 
+        filter.setOnItemClickListener((parent, view, position, id) -> {
+            String selected = filterOptions[position];
+            adapter.filterByRepeating(selected);
+        });
+
+        viewModel = new ViewModelProvider(this).get(QuestsViewModel.class);
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
         viewModel.getAllQuestsWithExecutionsForUser(user.getUid()).observe(getViewLifecycleOwner(), quests -> {
-            adapter.clear();
-            adapter.addAll(quests);
-            adapter.notifyDataSetChanged();
+            adapter.setOriginalList(quests);
         });
 
         return root;
     }
-}
+    }

@@ -18,14 +18,12 @@ import com.example.valorquest.R;
 import com.example.valorquest.model.QuestExecution;
 import com.example.valorquest.model.QuestWithExecutions;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class QuestArrayAdapter extends ArrayAdapter<QuestWithExecutions> {
-
-    public interface OnQuestClickListener {
-        void onQuestClick(QuestWithExecutions quest);
-    }
-
+    private final List<QuestWithExecutions> originalList = new ArrayList<>();
+    private final List<QuestWithExecutions> displayList = new ArrayList<>();
     private final Context context;
     private final OnQuestClickListener listener;
 
@@ -35,7 +33,33 @@ public class QuestArrayAdapter extends ArrayAdapter<QuestWithExecutions> {
         super(context, 0, quests);
         this.context = context;
         this.listener = listener;
+        setOriginalList(quests);
     }
+
+    public void setOriginalList(List<QuestWithExecutions> quests) {
+        originalList.clear();
+        originalList.addAll(quests);
+        displayList.clear();
+        displayList.addAll(quests);
+        clear();
+        addAll(displayList);
+        notifyDataSetChanged();
+    }
+
+    public void filterByRepeating(String filter) {
+        displayList.clear();
+        for (QuestWithExecutions quest : originalList) {
+            if (filter.equals("All") ||
+                    (filter.equals("Repeating") && quest.quest.isRepeating()) ||
+                    (filter.equals("Non repeating") && !quest.quest.isRepeating())) {
+                displayList.add(quest);
+            }
+        }
+        clear();
+        addAll(displayList);
+        notifyDataSetChanged();
+    }
+
 
     @NonNull
     @Override
@@ -97,5 +121,9 @@ public class QuestArrayAdapter extends ArrayAdapter<QuestWithExecutions> {
         }
 
         return itemView;
+    }
+
+    public interface OnQuestClickListener {
+        void onQuestClick(QuestWithExecutions quest);
     }
 }

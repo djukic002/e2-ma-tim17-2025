@@ -28,13 +28,16 @@ public class Quest {
     private Difficulty difficulty;
     private Importance importance;
     private int categoryId;
-    public Quest(String userId, String name, @Nullable String description, Difficulty difficulty, Importance importance, int categoryId) {
+    private boolean isRepeating;
+
+    public Quest(String userId, String name, @Nullable String description, Difficulty difficulty, Importance importance, int categoryId, boolean isRepeating) {
         this.userId = userId;
         this.name = name;
         this.description = description;
         this.difficulty = difficulty;
         this.importance = importance;
         this.categoryId = categoryId;
+        this.isRepeating = isRepeating;
     }
 
     // Getters and Setters
@@ -87,4 +90,8 @@ public class Quest {
     public void setCategoryId(int categoryId) {
         this.categoryId = categoryId;
     }
+
+    public boolean isRepeating(){return isRepeating;}
+
+    public void setIsRepeating(boolean isRepeating){ this.isRepeating = isRepeating;}
 }

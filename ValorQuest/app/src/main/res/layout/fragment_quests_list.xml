@@ -5,11 +5,29 @@
     android:orientation="vertical"
     android:padding="16dp">
 
-    <com.google.android.material.textfield.MaterialAutoCompleteTextView
-        android:id="@+id/act_filter"
-        android:layout_width="match_parent"
+    <!-- Filter by repeating / non-repeating -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/til_filter"
+        style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
+        android:layout_width="200dp"
         android:layout_height="wrap_content"
-        android:hint="Filter by status" />
+        android:layout_marginBottom="16dp"
+        android:hint="Filter">
+
+        <com.google.android.material.textfield.MaterialAutoCompleteTextView
+            android:id="@+id/act_filter"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            android:textSize="16sp"
+            android:inputType="none"
+            android:focusable="false"
+            android:clickable="true"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:background="@android:color/transparent"/>
+    </com.google.android.material.textfield.TextInputLayout>
 
     <ListView
         android:id="@+id/list_quests"

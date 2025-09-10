@@ -169,9 +169,6 @@ public class AddQuestFragment extends Fragment {
                 dto.dueDate = etDueDate.getText().toString();
             }
 
-            Log.d("AddQuestFragment", dto.toString());
-
-            // 🔥 Call ViewModel
             viewModel.addQuest(dto).observe(getViewLifecycleOwner(), result -> {
                 if (result.getStatus() == Result.Status.SUCCESS) {
                     Toast.makeText(requireContext(), result.getData(), Toast.LENGTH_SHORT).show();

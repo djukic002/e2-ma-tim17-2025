@@ -2,7 +2,9 @@ package com.example.valorquest.ui.quests;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -50,6 +52,7 @@ public class QuestArrayAdapter extends ArrayAdapter<QuestWithExecutions> {
         TextView tvStatus = itemView.findViewById(R.id.tvQuestStatus);
         TextView tvImportance = itemView.findViewById(R.id.tvQuestImportance);
         View viewColor = itemView.findViewById(R.id.viewCategoryColor);
+        viewColor.setBackground(null);
 
         if (questWithExecutions != null) {
             tvName.setText(questWithExecutions.quest.getName());
@@ -62,11 +65,32 @@ public class QuestArrayAdapter extends ArrayAdapter<QuestWithExecutions> {
             }
 
             try {
-                int color = Color.parseColor(questWithExecutions.category.getColor());
-                GradientDrawable bg = (GradientDrawable) viewColor.getBackground();
-                bg.setColor(color);
+                String hex = questWithExecutions.category.getColor();
+                Log.d("color", hex);
+
+                // Ensure we have a GradientDrawable
+                Drawable bg = viewColor.getBackground();
+                GradientDrawable drawable;
+
+                if (bg instanceof GradientDrawable) {
+                    drawable = (GradientDrawable) bg;
+                } else {
+                    // Create a new oval drawable if current background is not a GradientDrawable
+                    drawable = new GradientDrawable();
+                    drawable.setShape(GradientDrawable.OVAL);
+                    viewColor.setBackground(drawable);
+                }
+
+                // Set the color
+                int color = Color.parseColor(hex);
+                drawable.setColor(color);
+
             } catch (Exception e) {
-                viewColor.setBackgroundColor(Color.GRAY);
+                // Fallback color if parsing fails
+                GradientDrawable fallbackDrawable = new GradientDrawable();
+                fallbackDrawable.setShape(GradientDrawable.OVAL);
+                fallbackDrawable.setColor(Color.GRAY);
+                viewColor.setBackground(fallbackDrawable);
             }
 
             itemView.setOnClickListener(v -> listener.onQuestClick(questWithExecutions));

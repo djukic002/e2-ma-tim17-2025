@@ -15,6 +15,8 @@ import androidx.lifecycle.ViewModelProvider;
 import com.example.valorquest.R;
 import com.example.valorquest.viewmodel.QuestsViewModel;
 import com.google.android.material.textfield.MaterialAutoCompleteTextView;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,7 +50,9 @@ public class QuestsListFragment extends Fragment {
 
         viewModel = new ViewModelProvider(this).get(QuestsViewModel.class);
 
-        viewModel.getAllQuestsWithExecutions().observe(getViewLifecycleOwner(), quests -> {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+        viewModel.getAllQuestsWithExecutionsForUser(user.getUid()).observe(getViewLifecycleOwner(), quests -> {
             adapter.clear();
             adapter.addAll(quests);
             adapter.notifyDataSetChanged();

@@ -1,12 +1,15 @@
 package com.example.valorquest.di;
 
 import android.content.Context;
+import android.util.Log;
 
 import androidx.room.Room;
 
 import com.example.valorquest.data.local.AppDatabase;
 import com.example.valorquest.data.local.CategoryDao;
 import com.example.valorquest.data.local.QuestDao;
+
+import java.util.concurrent.Executors;
 
 import javax.inject.Singleton;
 
@@ -23,7 +26,10 @@ public class AppModule {
     @Provides
     @Singleton
     public AppDatabase provideDatabase(@ApplicationContext Context context) {
-        return Room.databaseBuilder(context, AppDatabase.class, "app_database")
+        return Room.databaseBuilder(context, AppDatabase.class, "valorquest.db")
+                .setQueryCallback((sqlQuery, bindArgs) -> {
+                    Log.d("RoomQuery", "SQL: " + sqlQuery + " | Args: " + bindArgs);
+                }, Executors.newSingleThreadExecutor())
                 .fallbackToDestructiveMigration()
                 .build();
     }

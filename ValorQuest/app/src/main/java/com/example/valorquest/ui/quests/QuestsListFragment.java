@@ -37,7 +37,7 @@ public class QuestsListFragment extends Fragment {
         MaterialAutoCompleteTextView filter = root.findViewById(R.id.act_filter);
 
         adapter = new QuestArrayAdapter(requireContext(), new ArrayList<>(), quest -> {
-            System.out.println("Clicked quest: " + quest.quest.getName());
+            System.out.println("Clicked quest: " + quest.questName);
         });
         listView.setAdapter(adapter);
 
@@ -56,7 +56,7 @@ public class QuestsListFragment extends Fragment {
         viewModel = new ViewModelProvider(this).get(QuestsViewModel.class);
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
-        viewModel.getAllQuestsWithExecutionsForUser(user.getUid()).observe(getViewLifecycleOwner(), quests -> {
+        viewModel.getDetailedQuestExecutionsForUser(user.getUid()).observe(getViewLifecycleOwner(), quests -> {
             adapter.setOriginalList(quests);
         });
 

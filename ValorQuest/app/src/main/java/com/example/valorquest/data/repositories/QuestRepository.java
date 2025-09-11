@@ -4,6 +4,7 @@ import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Transformations;
 
 import com.example.valorquest.data.local.AppDatabase;
 import com.example.valorquest.data.local.QuestDao;
@@ -12,11 +13,13 @@ import com.example.valorquest.model.QuestExecution;
 import com.example.valorquest.model.QuestWithExecutions;
 import com.example.valorquest.model.Result;
 import com.example.valorquest.model.dto.AddQuestDto;
+import com.example.valorquest.model.dto.DetailedQuestExecutionDto;
 import com.example.valorquest.model.enums.QuestStatus;
 import com.example.valorquest.model.enums.RepeatingUnit;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -94,4 +97,25 @@ public class QuestRepository {
 
         return result;
     }
+
+    public LiveData<List<DetailedQuestExecutionDto>> getDetailedExecutionsForUser(String userId) {
+        return Transformations.map(
+                questDao.getAllQuestsWithExecutionsForUser(userId),
+                questList -> {
+                    List<DetailedQuestExecutionDto> detailedList = new ArrayList<>();
+                    for (QuestWithExecutions questWithExec : questList) {
+                        for (QuestExecution exec : questWithExec.executions) {
+                            detailedList.add(
+                                    new DetailedQuestExecutionDto(
+                                            questWithExec.quest, exec, questWithExec.category
+                                    )
+                            );
+                        }
+                    }
+                    return detailedList;
+                }
+        );
+    }
+
+
 }

@@ -15,20 +15,20 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.example.valorquest.R;
-import com.example.valorquest.model.QuestExecution;
 import com.example.valorquest.model.QuestWithExecutions;
+import com.example.valorquest.model.dto.DetailedQuestExecutionDto;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class QuestArrayAdapter extends ArrayAdapter<QuestWithExecutions> {
-    private final List<QuestWithExecutions> originalList = new ArrayList<>();
-    private final List<QuestWithExecutions> displayList = new ArrayList<>();
+public class QuestArrayAdapter extends ArrayAdapter<DetailedQuestExecutionDto> {
+    private final List<DetailedQuestExecutionDto> originalList = new ArrayList<>();
+    private final List<DetailedQuestExecutionDto> displayList = new ArrayList<>();
     private final Context context;
     private final OnQuestClickListener listener;
 
     public QuestArrayAdapter(@NonNull Context context,
-                             List<QuestWithExecutions> quests,
+                             List<DetailedQuestExecutionDto> quests,
                              OnQuestClickListener listener) {
         super(context, 0, quests);
         this.context = context;
@@ -36,7 +36,7 @@ public class QuestArrayAdapter extends ArrayAdapter<QuestWithExecutions> {
         setOriginalList(quests);
     }
 
-    public void setOriginalList(List<QuestWithExecutions> quests) {
+    public void setOriginalList(List<DetailedQuestExecutionDto> quests) {
         originalList.clear();
         originalList.addAll(quests);
         displayList.clear();
@@ -48,10 +48,10 @@ public class QuestArrayAdapter extends ArrayAdapter<QuestWithExecutions> {
 
     public void filterByRepeating(String filter) {
         displayList.clear();
-        for (QuestWithExecutions quest : originalList) {
+        for (DetailedQuestExecutionDto quest : originalList) {
             if (filter.equals("All") ||
-                    (filter.equals("Repeating") && quest.quest.isRepeating()) ||
-                    (filter.equals("Non repeating") && !quest.quest.isRepeating())) {
+                    (filter.equals("Repeating") && quest.isRepeating) ||
+                    (filter.equals("Non repeating") && !quest.isRepeating)) {
                 displayList.add(quest);
             }
         }
@@ -69,7 +69,7 @@ public class QuestArrayAdapter extends ArrayAdapter<QuestWithExecutions> {
             itemView = LayoutInflater.from(context).inflate(R.layout.item_quest, parent, false);
         }
 
-        QuestWithExecutions questWithExecutions = getItem(position);
+        DetailedQuestExecutionDto questExecDto = getItem(position);
 
         TextView tvName = itemView.findViewById(R.id.tvQuestName);
         TextView tvDate = itemView.findViewById(R.id.tvQuestDate);
@@ -78,18 +78,15 @@ public class QuestArrayAdapter extends ArrayAdapter<QuestWithExecutions> {
         View viewColor = itemView.findViewById(R.id.viewCategoryColor);
         viewColor.setBackground(null);
 
-        if (questWithExecutions != null) {
-            tvName.setText(questWithExecutions.quest.getName());
-            tvImportance.setText(questWithExecutions.quest.getImportance().toString());
+        if (questExecDto != null) {
+            tvName.setText(questExecDto.questName);
+            tvImportance.setText(questExecDto.importance);
 
-            if (!questWithExecutions.executions.isEmpty()) {
-                QuestExecution execution = questWithExecutions.executions.get(0);
-                tvDate.setText(execution.getDate().toString());
-                tvStatus.setText(execution.getStatus().toString());
-            }
+            tvDate.setText(questExecDto.date.toString());
+            tvStatus.setText(questExecDto.status);
 
             try {
-                String hex = questWithExecutions.category.getColor();
+                String hex = questExecDto.categoryColor;
                 Log.d("color", hex);
 
                 // Ensure we have a GradientDrawable
@@ -117,13 +114,13 @@ public class QuestArrayAdapter extends ArrayAdapter<QuestWithExecutions> {
                 viewColor.setBackground(fallbackDrawable);
             }
 
-            itemView.setOnClickListener(v -> listener.onQuestClick(questWithExecutions));
+            itemView.setOnClickListener(v -> listener.onQuestClick(questExecDto));
         }
 
         return itemView;
     }
 
     public interface OnQuestClickListener {
-        void onQuestClick(QuestWithExecutions quest);
+        void onQuestClick(DetailedQuestExecutionDto quest);
     }
 }

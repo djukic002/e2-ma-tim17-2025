@@ -80,4 +80,10 @@
         android:label="Quests"
         tools:layout="@layout/fragment_add_category"/>
 
+    <fragment
+        android:id="@+id/detailedQuestFragment"
+        android:name="com.example.valorquest.ui.quests.DetailedQuestFragment"
+        android:label="Detailed Quest"
+        tools:layout="@layout/fragment_detailed_quest" />
+
 </navigation>

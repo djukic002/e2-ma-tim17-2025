@@ -2,6 +2,7 @@ package com.example.valorquest.data.local;
 
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
+import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Query;
 import androidx.room.Transaction;
@@ -45,4 +46,16 @@ public interface QuestDao {
             "          FROM quest_executions " +
             "          WHERE quest_executions.questId = quests.id) ASC")
     LiveData<List<QuestWithExecutions>> getAllQuestsWithExecutionsForUser(String userId);
+
+
+    @Transaction
+    @Query("SELECT * FROM quests WHERE id = (SELECT questId FROM quest_executions WHERE id = :executionId)")
+    LiveData<QuestWithExecutions> getQuestWithSingleExecution(int executionId);
+
+    // New methods
+    @Delete
+    void deleteExecution(QuestExecution execution);
+
+    @Delete
+    void deleteQuest(Quest quest);
 }

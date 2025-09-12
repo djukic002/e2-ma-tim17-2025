@@ -117,5 +117,69 @@ public class QuestRepository {
         );
     }
 
+    public LiveData<DetailedQuestExecutionDto> getDetailedExecutionById(int executionId) {
+        return Transformations.map(
+                questDao.getQuestWithSingleExecution(executionId),
+                questWithExec -> {
+                    if (questWithExec == null || questWithExec.executions == null) {
+                        return null;
+                    }
+
+                    for (QuestExecution exec : questWithExec.executions) {
+                        if (exec.getId() == executionId) {
+                            return new DetailedQuestExecutionDto(
+                                    questWithExec.quest,
+                                    exec,
+                                    questWithExec.category
+                            );
+                        }
+                    }
+                    return null;
+                }
+        );
+    }
+
+    public LiveData<Result<String>> deleteQuestsWithExecutions(int questId, int executionId){
+        MutableLiveData<Result<String>> result = new MutableLiveData<>();
+
+        AppDatabase.databaseWriteExecutor.execute(() -> {
+            try {
+                QuestWithExecutions questExec = questDao.getQuestWithExecutions(questId);
+
+                if(questExec.executions.size() > 1 && !questExec.quest.isRepeating()){
+                    throw new Exception("Fatal error, non repeatable quest has more that one execution");
+                }
+
+                if(questExec.quest.isRepeating()){
+                    int deletedCnt = 0;
+                    for (QuestExecution exec: questExec.executions) {
+                        if((exec.getStatus() != QuestStatus.ACTIVE ||
+                                exec.getStatus() != QuestStatus.PAUSED) &&
+                                exec.getDate().isAfter(LocalDateTime.now())){
+                            questDao.deleteExecution(exec);
+                            deletedCnt++;
+                        }
+                    }
+
+                    if(deletedCnt == questExec.executions.size()){
+                        questDao.deleteQuest(questExec.quest);
+                    }
+                }else{
+                    QuestExecution exec = questExec.executions.get(0);
+
+                    questDao.deleteExecution(exec);
+                    questDao.deleteQuest(questExec.quest);
+                }
+
+                result.postValue(Result.success("Quest deleted successfully"));
+
+            } catch (Exception e) {
+                result.postValue(Result.error("Error deleting quests: " + e.getMessage()));
+            }
+        });
+
+        return result;
+    }
+
 
 }

@@ -39,7 +39,7 @@ public class CategoryArrayAdapter extends ArrayAdapter<Category> {
 
         TextView tvName = itemView.findViewById(R.id.tvCategoryName);
         View viewColor = itemView.findViewById(R.id.viewColor);
-        MaterialButton btnEdit = itemView.findViewById(R.id.btnEdit);
+        MaterialButton btnEdit = itemView.findViewById(R.id.btnEditQuest);
 
         if (category != null) {
             tvName.setText(category.getName());

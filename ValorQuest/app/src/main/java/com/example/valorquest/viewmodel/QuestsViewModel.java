@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel;
 
 import com.example.valorquest.data.repositories.QuestRepository;
 import com.example.valorquest.model.QuestWithExecutions;
+import com.example.valorquest.model.Result;
 import com.example.valorquest.model.dto.DetailedQuestExecutionDto;
 
 import java.util.List;
@@ -28,4 +29,12 @@ public class QuestsViewModel extends ViewModel {
     public LiveData<List<DetailedQuestExecutionDto>> getDetailedQuestExecutionsForUser(String userId) {
         return questRepository.getDetailedExecutionsForUser(userId);
     }
+
+    public LiveData<DetailedQuestExecutionDto> getDetailedExecutionById(int executionId) {
+        return questRepository.getDetailedExecutionById(executionId);
+    }
+    public LiveData<Result<String>> deleteQuest(int questId, int executionId) {
+        return questRepository.deleteQuestsWithExecutions(questId, executionId);
+    }
+
 }

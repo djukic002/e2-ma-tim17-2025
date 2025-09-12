@@ -44,12 +44,12 @@
             app:layout_constraintStart_toEndOf="@id/viewColor"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/btnEdit"
+            app:layout_constraintEnd_toStartOf="@id/btnEditQuest"
             android:layout_marginStart="16dp" />
 
         <!-- Edit Button -->
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnEdit"
+            android:id="@+id/btnEditQuest"
             android:layout_width="wrap_content"
             android:layout_height="36dp"
             android:text="Edit"

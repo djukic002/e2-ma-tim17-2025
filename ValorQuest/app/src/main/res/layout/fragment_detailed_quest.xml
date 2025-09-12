@@ -1,0 +1,369 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/fragment_detailed_quest"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="30dp"
+    tools:context=".ui.quests.DetailedQuestFragment">
+
+    <TextView
+        android:id="@+id/tvQuestTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Quest Name"
+        android:textColor="#C9A227"
+        android:textSize="40sp"
+        android:textStyle="bold"
+        android:shadowColor="#99000000"
+        android:shadowDx="0"
+        android:shadowDy="2"
+        android:shadowRadius="4"
+        android:fontFamily="@font/main_font_family"
+        android:gravity="center"
+        android:layout_marginBottom="8dp"
+        android:layout_marginTop="30dp"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="24dp">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="horizontal"
+            android:gravity="start|center_vertical">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Importance:"
+                android:textSize="22sp"
+                android:fontFamily="@font/main_font_family"
+                android:textStyle="bold"
+                android:textColor="#8B0000"
+                android:shadowColor="#99000000"
+                android:shadowDx="1"
+                android:shadowDy="1"
+                android:shadowRadius="2"
+                android:layout_marginEnd="8dp" />
+            <TextView
+                android:id="@+id/tvImportance"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="High"
+                android:textSize="20sp"
+                android:fontFamily="@font/main_font_family"
+                android:textColor="@android:color/black" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="end">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnEditQuest"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                app:icon="@drawable/ic_edit"
+                app:iconTint="#C9A227"
+                app:iconGravity="textStart"
+                app:iconPadding="0dp"
+                android:insetLeft="0dp"
+                android:insetTop="0dp"
+                android:insetRight="0dp"
+                android:insetBottom="0dp"
+                android:background="@drawable/bg_button_fantasy"
+                app:backgroundTint="@null"
+                app:rippleColor="#33C9A227"
+                app:cornerRadius="14dp"
+                android:layout_marginEnd="8dp"
+                android:padding="0dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnDeleteQuest"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                app:icon="@drawable/ic_delete"
+                app:iconTint="#C9A227"
+                app:iconGravity="textStart"
+                app:iconPadding="0dp"
+                android:insetLeft="0dp"
+                android:insetTop="0dp"
+                android:insetRight="0dp"
+                android:insetBottom="0dp"
+                android:background="@drawable/bg_button_fantasy"
+                app:backgroundTint="@null"
+                app:rippleColor="#33C9A227"
+                app:cornerRadius="14dp"
+                android:padding="0dp" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="24dp">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Difficulty:"
+            android:textSize="22sp"
+            android:fontFamily="@font/main_font_family"
+            android:textStyle="bold"
+            android:textColor="#8B0000"
+            android:shadowColor="#99000000"
+            android:shadowDx="1"
+            android:shadowDy="1"
+            android:shadowRadius="2"
+            android:layout_marginEnd="8dp" />
+        <TextView
+            android:id="@+id/tvDifficulty"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Hard"
+            android:textSize="20sp"
+            android:fontFamily="@font/main_font_family"
+            android:textColor="@android:color/black" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="24dp">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Status:"
+            android:textSize="22sp"
+            android:fontFamily="@font/main_font_family"
+            android:textStyle="bold"
+            android:textColor="#8B0000"
+            android:shadowColor="#99000000"
+            android:shadowDx="1"
+            android:shadowDy="1"
+            android:shadowRadius="2"
+            android:layout_marginEnd="8dp" />
+        <TextView
+            android:id="@+id/tvStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Active"
+            android:textSize="20sp"
+            android:fontFamily="@font/main_font_family"
+            android:textColor="@android:color/black" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="24dp">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Repeating:"
+            android:textSize="22sp"
+            android:fontFamily="@font/main_font_family"
+            android:textStyle="bold"
+            android:textColor="#8B0000"
+            android:shadowColor="#99000000"
+            android:shadowDx="1"
+            android:shadowDy="1"
+            android:shadowRadius="2"
+            android:layout_marginEnd="8dp" />
+        <TextView
+            android:id="@+id/tvRepeating"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Yes"
+            android:textSize="20sp"
+            android:fontFamily="@font/main_font_family"
+            android:textColor="@android:color/black" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="24dp">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Category:"
+            android:textSize="22sp"
+            android:fontFamily="@font/main_font_family"
+            android:textStyle="bold"
+            android:textColor="#8B0000"
+            android:shadowColor="#99000000"
+            android:shadowDx="1"
+            android:shadowDy="1"
+            android:shadowRadius="2"
+            android:layout_marginEnd="8dp" />
+        <TextView
+            android:id="@+id/tvCategoryName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Quest"
+            android:textSize="20sp"
+            android:fontFamily="@font/main_font_family"
+            android:textColor="@android:color/black" />
+        <View
+            android:id="@+id/viewCategoryColor"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginStart="8dp"
+            android:background="@drawable/bg_color_circle"
+            android:backgroundTint="@android:color/transparent" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="24dp">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Date:"
+            android:textSize="22sp"
+            android:fontFamily="@font/main_font_family"
+            android:textStyle="bold"
+            android:textColor="#8B0000"
+            android:shadowColor="#99000000"
+            android:shadowDx="1"
+            android:shadowDy="1"
+            android:shadowRadius="2"
+            android:layout_marginEnd="8dp" />
+        <TextView
+            android:id="@+id/tvDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="2025-09-12"
+            android:textSize="20sp"
+            android:fontFamily="@font/main_font_family"
+            android:textColor="@android:color/black" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tvQuestDescription"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Quest description goes here..."
+        android:textSize="20sp"
+        android:textColor="@android:color/black"
+        android:fontFamily="@font/main_font_family"
+        android:layout_marginBottom="24dp"
+        android:gravity="center"
+        android:layout_marginTop="16dp" />
+
+    <LinearLayout
+        android:id="@+id/buttonBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginBottom="20dp">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnComplete"
+                android:layout_width="150dp"
+                android:layout_height="52dp"
+                android:text="Complete"
+                android:textAllCaps="false"
+                android:textSize="18sp"
+                android:textColor="#C9A227"
+                android:fontFamily="@font/main_font_family"
+                android:textStyle="bold"
+                android:background="@drawable/bg_button_fantasy"
+                app:backgroundTint="@null"
+                app:rippleColor="#33C9A227"
+                app:cornerRadius="14dp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginBottom="8dp">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnCancel"
+                android:layout_width="150dp"
+                android:layout_height="52dp"
+                android:text="Cancel"
+                android:textAllCaps="false"
+                android:textSize="18sp"
+                android:textColor="#C9A227"
+                android:fontFamily="@font/main_font_family"
+                android:textStyle="bold"
+                android:background="@drawable/bg_button_fantasy"
+                app:backgroundTint="@null"
+                app:rippleColor="#33C9A227"
+                app:cornerRadius="14dp"
+                android:layout_marginHorizontal="10dp"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnPause"
+                android:layout_width="150dp"
+                android:layout_height="52dp"
+                android:text="Pause"
+                android:textAllCaps="false"
+                android:textSize="18sp"
+                android:textColor="#C9A227"
+                android:fontFamily="@font/main_font_family"
+                android:textStyle="bold"
+                android:background="@drawable/bg_button_fantasy"
+                app:backgroundTint="@null"
+                app:rippleColor="#33C9A227"
+                app:cornerRadius="14dp"
+                android:layout_marginHorizontal="10dp"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnActivate"
+                android:layout_width="150dp"
+                android:layout_height="52dp"
+                android:text="Activate"
+                android:textAllCaps="false"
+                android:textSize="18sp"
+                android:textColor="#C9A227"
+                android:fontFamily="@font/main_font_family"
+                android:textStyle="bold"
+                android:background="@drawable/bg_button_fantasy"
+                app:backgroundTint="@null"
+                app:rippleColor="#33C9A227"
+                app:cornerRadius="14dp" />
+        </LinearLayout>
+
+    </LinearLayout>
+</LinearLayout>

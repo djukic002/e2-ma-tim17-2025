@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +14,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.navigation.Navigation;
 
 import com.example.valorquest.R;
 import com.example.valorquest.model.dto.DetailedQuestExecutionDto;
@@ -109,7 +111,11 @@ public class QuestArrayAdapter extends ArrayAdapter<DetailedQuestExecutionDto> {
                 viewColor.setBackground(fallbackDrawable);
             }
 
-            itemView.setOnClickListener(v -> listener.onQuestClick(questExecDto));
+            itemView.setOnClickListener(v -> {
+                Bundle bundle = new Bundle();
+                bundle.putInt(DetailedQuestFragment.ARG_EXECUTION_ID, questExecDto.executionId);
+                Navigation.findNavController(v).navigate(R.id.detailedQuestFragment, bundle);
+            });
         }
 
         return itemView;

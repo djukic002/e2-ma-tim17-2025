@@ -15,7 +15,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.example.valorquest.R;
-import com.example.valorquest.model.QuestWithExecutions;
 import com.example.valorquest.model.dto.DetailedQuestExecutionDto;
 
 import java.util.ArrayList;
@@ -89,25 +88,21 @@ public class QuestArrayAdapter extends ArrayAdapter<DetailedQuestExecutionDto> {
                 String hex = questExecDto.categoryColor;
                 Log.d("color", hex);
 
-                // Ensure we have a GradientDrawable
                 Drawable bg = viewColor.getBackground();
                 GradientDrawable drawable;
 
                 if (bg instanceof GradientDrawable) {
                     drawable = (GradientDrawable) bg;
                 } else {
-                    // Create a new oval drawable if current background is not a GradientDrawable
                     drawable = new GradientDrawable();
                     drawable.setShape(GradientDrawable.OVAL);
                     viewColor.setBackground(drawable);
                 }
 
-                // Set the color
                 int color = Color.parseColor(hex);
                 drawable.setColor(color);
 
             } catch (Exception e) {
-                // Fallback color if parsing fails
                 GradientDrawable fallbackDrawable = new GradientDrawable();
                 fallbackDrawable.setShape(GradientDrawable.OVAL);
                 fallbackDrawable.setColor(Color.GRAY);

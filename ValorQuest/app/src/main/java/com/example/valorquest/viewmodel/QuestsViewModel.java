@@ -10,6 +10,7 @@ import com.example.valorquest.model.QuestWithExecutions;
 import com.example.valorquest.model.Result;
 import com.example.valorquest.model.dto.AddQuestDto;
 import com.example.valorquest.model.dto.DetailedQuestExecutionDto;
+import com.example.valorquest.model.enums.QuestStatus;
 
 import java.util.List;
 
@@ -55,4 +56,11 @@ public class QuestsViewModel extends ViewModel {
         return categoryRepository.getCategoriesForUser(userId);
     }
 
+    public LiveData<Result<String>> changeActiveQuestStatus(int questId, int executionId, QuestStatus status){
+        return questRepository.changeActiveQuestStatus(questId,executionId,status);
+    }
+
+    public LiveData<Result<String>> unpauseQuest(int questId){
+        return questRepository.unpauseQuest(questId);
+    }
 }

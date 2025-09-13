@@ -21,6 +21,7 @@ import android.widget.Toast;
 import com.example.valorquest.R;
 import com.example.valorquest.model.Result;
 import com.example.valorquest.model.dto.DetailedQuestExecutionDto;
+import com.example.valorquest.model.enums.QuestStatus;
 import com.example.valorquest.viewmodel.QuestsViewModel;
 import com.google.android.material.button.MaterialButton;
 
@@ -108,6 +109,55 @@ public class DetailedQuestFragment extends Fragment {
                     })
                     .setNegativeButton("No", null)
                     .show();
+        });
+
+        // actions:
+        btnComplete.setOnClickListener(v -> {
+            viewModel.changeActiveQuestStatus(quest.questId, quest.executionId, QuestStatus.COMPLETED).observe(getViewLifecycleOwner(), result -> {
+                if (result.getStatus() == Result.Status.SUCCESS) {
+                    Toast.makeText(getContext(), result.getData(), Toast.LENGTH_SHORT).show();
+                } else if (result.getStatus() == Result.Status.ERROR) {
+                    Toast.makeText(getContext(), result.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            });
+        });
+
+        btnCancel.setOnClickListener(v -> {
+            new AlertDialog.Builder(getContext())
+                    .setTitle("Cancel Quest")
+                    .setMessage("Are you sure you want to cancel this quest? This action cannot be undone.")
+                    .setPositiveButton("Yes", (dialog, which) -> {
+                        viewModel.changeActiveQuestStatus(quest.questId, quest.executionId, QuestStatus.CANCELLED).observe(getViewLifecycleOwner(), result -> {
+                            if (result.getStatus() == Result.Status.SUCCESS) {
+                                Toast.makeText(getContext(), result.getData(), Toast.LENGTH_SHORT).show();
+                            } else if (result.getStatus() == Result.Status.ERROR) {
+                                Toast.makeText(getContext(), result.getMessage(), Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    })
+                    .setNegativeButton("No", null)
+                    .show();
+
+        });
+
+        btnPause.setOnClickListener(v -> {
+            viewModel.changeActiveQuestStatus(quest.questId, quest.executionId, QuestStatus.PAUSED).observe(getViewLifecycleOwner(), result -> {
+                if (result.getStatus() == Result.Status.SUCCESS) {
+                    Toast.makeText(getContext(), result.getData(), Toast.LENGTH_SHORT).show();
+                } else if (result.getStatus() == Result.Status.ERROR) {
+                    Toast.makeText(getContext(), result.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            });
+        });
+
+        btnActivate.setOnClickListener(v -> {
+            viewModel.unpauseQuest(quest.questId).observe(getViewLifecycleOwner(), result -> {
+                if (result.getStatus() == Result.Status.SUCCESS) {
+                    Toast.makeText(getContext(), result.getData(), Toast.LENGTH_SHORT).show();
+                } else if (result.getStatus() == Result.Status.ERROR) {
+                    Toast.makeText(getContext(), result.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            });
         });
     }
 

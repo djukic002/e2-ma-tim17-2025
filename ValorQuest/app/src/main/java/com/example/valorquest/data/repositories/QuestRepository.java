@@ -19,6 +19,8 @@ import com.example.valorquest.model.enums.RepeatingUnit;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -57,22 +59,26 @@ public class QuestRepository {
                 );
 
                 long questId = questDao.insertQuest(quest);
+                DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
 
                 if(!dto.isRepeating && dto.dueDate != null){
                     LocalDate date = LocalDate.parse(dto.dueDate);
-                    LocalDateTime dateTime = date.atStartOfDay();
+
+                    LocalTime time = LocalTime.parse(dto.time, timeFormatter);
+                    LocalDateTime dateTime = LocalDateTime.of(date, time);
 
                     QuestExecution execution = new QuestExecution(dateTime, QuestStatus.ACTIVE, (int)questId);
                     questDao.insertExecution(execution);
                 }
                 else if(dto.isRepeating && dto.startDate != null && dto.endDate != null){
                     LocalDate start = LocalDate.parse(dto.startDate);
-                    LocalDateTime startTime = start.atStartOfDay();
-
                     LocalDate end = LocalDate.parse(dto.endDate);
-                    LocalDateTime endTime = end.atStartOfDay();
 
-                    LocalDateTime current = startTime;
+                    LocalTime time = LocalTime.parse(dto.time, timeFormatter);
+
+                    LocalDateTime current = LocalDateTime.of(start, time);
+                    LocalDateTime endTime = LocalDateTime.of(end, time);
+
                     while (!current.isAfter(endTime)) {
                         QuestExecution execution = new QuestExecution(current, QuestStatus.ACTIVE, (int)questId);
                         questDao.insertExecution(execution);
@@ -92,6 +98,52 @@ public class QuestRepository {
             } catch (Exception e) {
                 Log.d("AddQuestFragment", e.getMessage());
                 result.postValue(Result.error("Error inserting quest: " + e.getMessage()));
+            }
+        });
+
+        return result;
+    }
+
+    public LiveData<Result<String>> updateQuest(int executionId, AddQuestDto dto){
+        MutableLiveData<Result<String>> result = new MutableLiveData<>();
+
+        AppDatabase.databaseWriteExecutor.execute(() -> {
+            try {
+                QuestWithExecutions questExec = questDao.getQuestWithSingleExecutionSync(executionId);
+                Quest quest = questExec.quest;
+
+                quest.setName(dto.name);
+                quest.setDescription(dto.description);
+                quest.setDifficulty(dto.difficulty);
+                quest.setImportance(dto.importance);
+
+                if(questDao.updateQuest(quest) != 1){
+                    throw new Exception("quest update failed");
+                }
+
+                for(QuestExecution exec: questExec.executions){
+                    QuestStatus status = exec.getStatus();
+                    if((status == QuestStatus.ACTIVE || status == QuestStatus.PAUSED)
+                            && exec.getDate().isAfter(LocalDateTime.now())){
+
+                        LocalDateTime originalDate = exec.getDate();
+
+                        LocalTime newTime = LocalTime.parse(dto.time, DateTimeFormatter.ofPattern("HH:mm"));
+                        LocalDateTime newDateTime = originalDate.withHour(newTime.getHour())
+                                .withMinute(newTime.getMinute())
+                                .withSecond(0)
+                                .withNano(0);
+
+                        exec.setDate(newDateTime);
+
+                        questDao.updateExecution(exec);
+                    }
+                }
+
+                result.postValue(Result.success("Quest updated successfully"));
+
+            } catch (Exception e) {
+                result.postValue(Result.error("Error updating quest: " + e.getMessage()));
             }
         });
 

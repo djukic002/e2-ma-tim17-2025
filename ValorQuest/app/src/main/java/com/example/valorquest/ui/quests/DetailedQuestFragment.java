@@ -9,6 +9,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 
 import android.view.LayoutInflater;
@@ -78,7 +79,12 @@ public class DetailedQuestFragment extends Fragment {
         });
 
         btnEdit.setOnClickListener(v -> {
-
+            Bundle args = new Bundle();
+            args.putInt("questExecutionId", quest.executionId);
+            Navigation.findNavController(v).navigate(
+                    R.id.action_detailedQuestFragment_to_addQuestsFragment,
+                    args
+            );
         });
 
         String repeatingAlert = "Are you sure you want to delete this quest? This will delete future repeating quests.";

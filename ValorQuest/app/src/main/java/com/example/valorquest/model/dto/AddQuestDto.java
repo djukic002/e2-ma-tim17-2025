@@ -8,12 +8,16 @@ public class AddQuestDto {
     public String userId;
 
     public String name;
+
     public String description;
+
     public Difficulty difficulty;
+
     public Importance importance;
 
     public int categoryId;
     public boolean isRepeating;
+    public String time;
     public String dueDate;
     public String startDate;
     public String endDate;

@@ -6,6 +6,7 @@ import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Query;
 import androidx.room.Transaction;
+import androidx.room.Update;
 
 import com.example.valorquest.model.Quest;
 import com.example.valorquest.model.QuestExecution;
@@ -47,15 +48,27 @@ public interface QuestDao {
             "          WHERE quest_executions.questId = quests.id) ASC")
     LiveData<List<QuestWithExecutions>> getAllQuestsWithExecutionsForUser(String userId);
 
+    @Query("SELECT * FROM quest_executions WHERE id = :executionId")
+    LiveData<QuestExecution> getExecutionById(int executionId);
+    @Query("SELECT * FROM quests WHERE id = :questId")
+    LiveData<Quest> getQuestById(int questId);
 
     @Transaction
     @Query("SELECT * FROM quests WHERE id = (SELECT questId FROM quest_executions WHERE id = :executionId)")
     LiveData<QuestWithExecutions> getQuestWithSingleExecution(int executionId);
 
-    // New methods
+    @Transaction
+    @Query("SELECT * FROM quests WHERE id = (SELECT questId FROM quest_executions WHERE id = :executionId)")
+    QuestWithExecutions getQuestWithSingleExecutionSync(int executionId);
+
     @Delete
     void deleteExecution(QuestExecution execution);
 
     @Delete
     void deleteQuest(Quest quest);
+
+    @Update
+    int updateQuest(Quest quest);
+    @Update
+    int updateExecution(QuestExecution execution);
 }

@@ -11,6 +11,7 @@ import androidx.room.Update;
 import com.example.valorquest.model.Quest;
 import com.example.valorquest.model.QuestExecution;
 import com.example.valorquest.model.QuestWithExecutions;
+import com.example.valorquest.model.enums.QuestStatus;
 
 import java.util.List;
 
@@ -49,9 +50,9 @@ public interface QuestDao {
     LiveData<List<QuestWithExecutions>> getAllQuestsWithExecutionsForUser(String userId);
 
     @Query("SELECT * FROM quest_executions WHERE id = :executionId")
-    LiveData<QuestExecution> getExecutionById(int executionId);
+    QuestExecution getExecutionByIdSync(int executionId);
     @Query("SELECT * FROM quests WHERE id = :questId")
-    LiveData<Quest> getQuestById(int questId);
+    Quest getQuestByIdSync(int questId);
 
     @Transaction
     @Query("SELECT * FROM quests WHERE id = (SELECT questId FROM quest_executions WHERE id = :executionId)")
@@ -71,4 +72,7 @@ public interface QuestDao {
     int updateQuest(Quest quest);
     @Update
     int updateExecution(QuestExecution execution);
+
+    @Query("SELECT * FROM quest_executions WHERE status = :status AND date < :now")
+    List<QuestExecution> getActiveExecutionsBefore(long now, QuestStatus status);
 }

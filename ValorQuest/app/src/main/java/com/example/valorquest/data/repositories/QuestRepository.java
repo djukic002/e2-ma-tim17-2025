@@ -16,6 +16,7 @@ import com.example.valorquest.model.dto.AddQuestDto;
 import com.example.valorquest.model.dto.DetailedQuestExecutionDto;
 import com.example.valorquest.model.enums.QuestStatus;
 import com.example.valorquest.model.enums.RepeatingUnit;
+import com.google.common.math.Stats;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -23,6 +24,9 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -233,5 +237,88 @@ public class QuestRepository {
         return result;
     }
 
+    // quest must be active
+    public LiveData<Result<String>> changeActiveQuestStatus(int questId, int executionId, QuestStatus status){
+        MutableLiveData<Result<String>> result = new MutableLiveData<>();
+
+        AppDatabase.databaseWriteExecutor.execute(() -> {
+            try {
+                QuestExecution execution = questDao.getExecutionByIdSync(executionId);
+                QuestWithExecutions questExec = questDao.getQuestWithExecutions(questId);
+
+                if(execution.getStatus() != QuestStatus.ACTIVE){
+                    throw new Exception("Quest isnt active!");
+                }
+
+                if(status == QuestStatus.COMPLETED){
+                    execution.setStatus(status);
+                    questDao.updateExecution(execution);
+                    // dodati xp korisniku i procitati iz questa koliko dobija
+
+                    result.postValue(Result.success("Quest completed successfully"));
+                }
+                else if(status == QuestStatus.CANCELLED){
+                    execution.setStatus(status);
+                    questDao.updateExecution(execution);
+
+                    result.postValue(Result.success("Quest cancelled successfully"));
+                }
+                else if(status == QuestStatus.PAUSED){
+                    for(QuestExecution exec: questExec.executions){
+                        if(exec.getStatus() == QuestStatus.ACTIVE){
+                            exec.setStatus(status);
+                            questDao.updateExecution(exec);
+                        }
+                    }
+                    result.postValue(Result.success("Quests paused successfully"));
+                }
+            } catch (Exception e) {
+                result.postValue(Result.error("Error changing quest status: " + e.getMessage()));
+            }
+        });
+
+        return result;
+    }
+
+    public LiveData<Result<String>> unpauseQuest(int questId){
+        MutableLiveData<Result<String>> result = new MutableLiveData<>();
+
+        AppDatabase.databaseWriteExecutor.execute(() -> {
+            try {
+                QuestWithExecutions questExec = questDao.getQuestWithExecutions(questId);
+
+                for(QuestExecution exec: questExec.executions){
+                    if(exec.getStatus() == QuestStatus.PAUSED){
+                        exec.setStatus(QuestStatus.ACTIVE);
+                        questDao.updateExecution(exec);
+                    }
+                }
+
+                result.postValue(Result.success("Quests unpaused successfully"));
+            } catch (Exception e) {
+                result.postValue(Result.error("Error changing quest status: " + e.getMessage()));
+            }
+        });
+
+        return result;
+    }
+
+    private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+    public void startAutoFailTask() {
+        Runnable task = () -> {
+            long nowMillis = System.currentTimeMillis();
+            try {
+                List<QuestExecution> overdueExecutions = questDao.getActiveExecutionsBefore(nowMillis, QuestStatus.ACTIVE);
+                for (QuestExecution exec : overdueExecutions) {
+                    exec.setStatus(QuestStatus.FAILED);
+                    questDao.updateExecution(exec);
+                }
+            } catch (Exception e) {
+                Log.e("QuestRepo", "Error auto-failing quests: " + e.getMessage());
+            }
+        };
+
+        scheduler.scheduleWithFixedDelay(task, 0, 5, TimeUnit.MINUTES);
+    }
 
 }

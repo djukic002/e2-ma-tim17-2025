@@ -154,18 +154,22 @@ public class QuestRepository {
         return result;
     }
 
-    public LiveData<List<DetailedQuestExecutionDto>> getDetailedExecutionsForUser(String userId) {
+    public LiveData<List<DetailedQuestExecutionDto>> getDetailedExecutionsForUser(String userId, boolean timeFilter) {
         return Transformations.map(
                 questDao.getAllQuestsWithExecutionsForUser(userId),
                 questList -> {
                     List<DetailedQuestExecutionDto> detailedList = new ArrayList<>();
                     for (QuestWithExecutions questWithExec : questList) {
                         for (QuestExecution exec : questWithExec.executions) {
-                            detailedList.add(
-                                    new DetailedQuestExecutionDto(
-                                            questWithExec.quest, exec, questWithExec.category
-                                    )
-                            );
+                            if (!timeFilter || exec.getDate().isAfter(LocalDateTime.now())) {
+                                detailedList.add(
+                                        new DetailedQuestExecutionDto(
+                                                questWithExec.quest,
+                                                exec,
+                                                questWithExec.category
+                                        )
+                                );
+                            }
                         }
                     }
                     return detailedList;

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.Log;
 
 import androidx.room.Room;
+import androidx.room.RoomDatabase;
 
 import com.example.valorquest.data.local.AppDatabase;
 import com.example.valorquest.data.local.CategoryDao;
@@ -29,8 +30,9 @@ public class AppModule {
         return Room.databaseBuilder(context, AppDatabase.class, "valorquest.db")
                 .setQueryCallback((sqlQuery, bindArgs) -> {
                     Log.d("RoomQuery", "SQL: " + sqlQuery + " | Args: " + bindArgs);
-                }, Executors.newSingleThreadExecutor())
-                .fallbackToDestructiveMigration()
+                }, Executors.newSingleThreadExecutor()) // ispise query u log cat
+                .fallbackToDestructiveMigration() //nova migracija unisti bazu
+                .setJournalMode(RoomDatabase.JournalMode.TRUNCATE) // da se mogu pokretati upiti
                 .build();
     }
 

@@ -128,7 +128,6 @@ public class AddCategoryFragment extends Fragment {
             }
 
             if (isEdit) {
-
                 viewModel.changeCategoryColor(argCategoryId, user.getUid()).observe(
                         getViewLifecycleOwner(), result -> {
                             if (result.getStatus() == Result.Status.SUCCESS) {

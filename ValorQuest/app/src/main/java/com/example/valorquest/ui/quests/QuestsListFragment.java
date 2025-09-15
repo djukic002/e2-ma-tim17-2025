@@ -56,7 +56,7 @@ public class QuestsListFragment extends Fragment {
         viewModel = new ViewModelProvider(this).get(QuestsViewModel.class);
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
-        viewModel.getDetailedQuestExecutionsForUser(user.getUid()).observe(getViewLifecycleOwner(), quests -> {
+        viewModel.getDetailedQuestExecutionsForUser(user.getUid(), true).observe(getViewLifecycleOwner(), quests -> {
             adapter.setOriginalList(quests);
         });
 

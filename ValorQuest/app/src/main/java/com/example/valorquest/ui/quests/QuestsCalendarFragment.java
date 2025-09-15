@@ -80,7 +80,7 @@ public class QuestsCalendarFragment extends Fragment {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
         if (user != null) {
-            viewModel.getDetailedQuestExecutionsForUser(user.getUid())
+            viewModel.getDetailedQuestExecutionsForUser(user.getUid(), false)
                     .observe(getViewLifecycleOwner(), quests -> {
                         allQuests = quests;
                         setQuestsOnCalendar(quests);

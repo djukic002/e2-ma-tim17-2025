@@ -33,8 +33,8 @@ public class QuestsViewModel extends ViewModel {
     public LiveData<List<QuestWithExecutions>> getAllQuestsWithExecutions() {
         return questRepository.getAllQuestsWithExecutions();
     }
-    public LiveData<List<DetailedQuestExecutionDto>> getDetailedQuestExecutionsForUser(String userId) {
-        return questRepository.getDetailedExecutionsForUser(userId);
+    public LiveData<List<DetailedQuestExecutionDto>> getDetailedQuestExecutionsForUser(String userId, boolean timeFilter) {
+        return questRepository.getDetailedExecutionsForUser(userId, timeFilter);
     }
 
     public LiveData<DetailedQuestExecutionDto> getDetailedExecutionById(int executionId) {

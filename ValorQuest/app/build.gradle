@@ -77,4 +77,6 @@ dependencies {
     debugImplementation libs.ui.test.manifest
 
     implementation 'com.applandeo:material-calendar-view:1.9.2'
+
+    implementation 'com.github.yukuku:ambilwarna:2.0.1'
 }

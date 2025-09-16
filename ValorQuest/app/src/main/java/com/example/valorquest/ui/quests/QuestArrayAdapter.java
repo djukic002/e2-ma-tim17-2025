@@ -19,8 +19,10 @@ import androidx.navigation.Navigation;
 import com.example.valorquest.R;
 import com.example.valorquest.model.dto.DetailedQuestExecutionDto;
 
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class QuestArrayAdapter extends ArrayAdapter<DetailedQuestExecutionDto> {
     private final List<DetailedQuestExecutionDto> originalList = new ArrayList<>();
@@ -83,7 +85,8 @@ public class QuestArrayAdapter extends ArrayAdapter<DetailedQuestExecutionDto> {
             tvName.setText(questExecDto.questName);
             tvImportance.setText(questExecDto.importance);
 
-            tvDate.setText(questExecDto.date.toString());
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm", Locale.getDefault());
+            tvDate.setText(questExecDto.date.format(formatter));
             tvStatus.setText(questExecDto.status);
 
             try {

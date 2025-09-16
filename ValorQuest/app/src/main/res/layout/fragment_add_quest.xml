@@ -54,7 +54,7 @@
             android:layout_height="wrap_content">
 
             <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/til_name"
+                android:id="@+id/til_quest_name"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
@@ -68,7 +68,7 @@
                 app:layout_constraintEnd_toEndOf="parent">
 
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/et_name"
+                    android:id="@+id/et_quest_name"
                     android:layout_width="match_parent"
                     android:layout_height="56dp"
                     android:paddingStart="12dp"
@@ -81,7 +81,7 @@
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/til_description"
+                android:id="@+id/til_quest_description"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
@@ -90,7 +90,7 @@
                 android:hint="Description"
                 app:boxBackgroundMode="none"
                 app:hintTextColor="#8B1E1E"
-                app:layout_constraintTop_toBottomOf="@id/til_name"
+                app:layout_constraintTop_toBottomOf="@id/til_quest_name"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent">
 
@@ -119,7 +119,7 @@
                 android:layout_marginStart="32dp"
                 android:layout_marginEnd="32dp"
                 android:hint="Select difficulty"
-                app:layout_constraintTop_toBottomOf="@id/til_description"
+                app:layout_constraintTop_toBottomOf="@id/til_quest_description"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent">
 
@@ -235,7 +235,7 @@
                 app:layout_constraintStart_toStartOf="parent" />
 
             <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/section_single_date"
+                android:id="@+id/til_due_date"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
@@ -272,15 +272,30 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent">
 
+                <!-- "Every" label -->
+                <TextView
+                    android:id="@+id/tv_every"
+                    android:layout_width="wrap_content"
+                    android:layout_height="56dp"
+                    android:gravity="center_vertical"
+                    android:layout_marginStart="32dp"
+                    android:text="Every"
+                    android:textSize="24sp"
+                    android:textColor="#111111"
+                    android:fontFamily="@font/main_font_family"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent" />
+
+                <!-- Interval -->
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/til_repeating_interval"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="32dp"
-                    android:layout_marginEnd="8dp"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginEnd="4dp"
                     android:hint="Interval"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/tv_every"
                     app:layout_constraintEnd_toStartOf="@id/til_repeating_unit">
 
                     <com.google.android.material.textfield.TextInputEditText
@@ -288,21 +303,20 @@
                         android:layout_width="match_parent"
                         android:layout_height="56dp"
                         android:inputType="number"
-                        android:paddingStart="12dp"
-                        android:paddingEnd="12dp"
-                        android:textSize="24sp"
+                        android:gravity="center"
+                        android:textSize="20sp"
                         android:textColor="#111111"
                         android:textColorHint="#7A0F0F"
                         android:fontFamily="@font/main_font_family"
                         android:background="@android:color/transparent" />
                 </com.google.android.material.textfield.TextInputLayout>
 
+                <!-- Unit -->
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/til_repeating_unit"
                     style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
                     android:layout_marginEnd="32dp"
                     android:hint="Unit"
                     app:layout_constraintTop_toTopOf="parent"
@@ -313,13 +327,12 @@
                         android:id="@+id/et_repeating_unit"
                         android:layout_width="match_parent"
                         android:layout_height="56dp"
-                        android:paddingStart="12dp"
-                        android:paddingEnd="12dp"
-                        android:textSize="24sp"
+                        android:gravity="center"
                         android:inputType="none"
-                        android:fontFamily="@font/main_font_family"
+                        android:textSize="20sp"
                         android:textColor="#111111"
                         android:textColorHint="#7A0F0F"
+                        android:fontFamily="@font/main_font_family"
                         android:background="@android:color/transparent" />
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -328,10 +341,10 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
-                    android:layout_marginStart="32dp"
+                    android:layout_marginStart="28dp"
                     android:layout_marginEnd="8dp"
                     android:hint="Start date"
-                    app:layout_constraintTop_toBottomOf="@id/til_repeating_interval"
+                    app:layout_constraintTop_toBottomOf="@id/tv_every"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toStartOf="@id/til_end_date">
 
@@ -356,7 +369,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
                     android:layout_marginStart="8dp"
-                    android:layout_marginEnd="32dp"
+                    android:layout_marginEnd="28dp"
                     android:hint="End date"
                     app:layout_constraintTop_toBottomOf="@id/til_repeating_unit"
                     app:layout_constraintStart_toEndOf="@id/til_start_date"
@@ -383,7 +396,7 @@
                 app:barrierDirection="bottom"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:constraint_referenced_ids="section_single_date,section_advanced" />
+                app:constraint_referenced_ids="til_due_date,section_advanced" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_add_quest"

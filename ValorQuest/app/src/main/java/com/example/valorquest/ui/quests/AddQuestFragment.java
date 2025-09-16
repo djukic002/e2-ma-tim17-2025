@@ -2,6 +2,7 @@ package com.example.valorquest.ui.quests;
 
 import android.app.TimePickerDialog;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,14 +26,16 @@ import com.example.valorquest.model.enums.Importance;
 import com.example.valorquest.model.enums.RepeatingUnit;
 import com.example.valorquest.viewmodel.QuestsViewModel;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.datepicker.CalendarConstraints;
+import com.google.android.material.datepicker.DateValidatorPointForward;
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.textfield.MaterialAutoCompleteTextView;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -56,6 +59,13 @@ public class AddQuestFragment extends Fragment {
     private int selectedHours = -1;
     private int selectedMins = -1;
     private AddQuestDto dto;
+    private TextInputEditText etName, etDescription, etTime, etDueDate, etStartDate, etEndDate, etInterval;
+    private MaterialAutoCompleteTextView difficultySelect, importanceSelect, categorySelect;
+    private TextInputLayout tilName, tilDescription, tilDifficulty, tilImportance, tilCategory,
+            tilTime, tilDueDate, tilStartDate, tilEndDate, tilInterval;
+
+    private CheckBox cbAdvanced;
+    private boolean isEditMode;
 
     public AddQuestFragment() { }
 
@@ -71,56 +81,69 @@ public class AddQuestFragment extends Fragment {
         viewModel = new ViewModelProvider(this).get(QuestsViewModel.class);
         dto = new AddQuestDto();
 
-        TextInputEditText etName = root.findViewById(R.id.et_name);
-        TextInputEditText etDescription = root.findViewById(R.id.et_description);
+        etName = root.findViewById(R.id.et_quest_name);
+        tilName = root.findViewById(R.id.til_quest_name);
 
-        MaterialAutoCompleteTextView difficultySelect = root.findViewById(R.id.act_difficulty_select);
-        MaterialAutoCompleteTextView importanceSelect = root.findViewById(R.id.act_importance_select);
-        MaterialAutoCompleteTextView categorySelect = root.findViewById(R.id.act_category_select);
+        etDescription = root.findViewById(R.id.et_description);
+        tilDescription = root.findViewById(R.id.til_quest_description);
 
-        CheckBox cbAdvanced = root.findViewById(R.id.cb_enable_advanced);
-        View sectionSingleDate = root.findViewById(R.id.section_single_date);
+        difficultySelect = root.findViewById(R.id.act_difficulty_select);
+        importanceSelect = root.findViewById(R.id.act_importance_select);
+        categorySelect = root.findViewById(R.id.act_category_select);
+
+        tilDifficulty = root.findViewById(R.id.til_difficulty_select);
+        tilImportance = root.findViewById(R.id.til_importance_select);
+        tilCategory = root.findViewById(R.id.til_category_select);
+
+        cbAdvanced = root.findViewById(R.id.cb_enable_advanced);
         View sectionAdvanced = root.findViewById(R.id.section_advanced);
 
-        TextInputEditText etTime = root.findViewById(R.id.et_time_select);
-        TextInputEditText etDueDate = root.findViewById(R.id.et_due_date);
-        TextInputEditText etStartDate = root.findViewById(R.id.et_start_date);
-        TextInputEditText etEndDate = root.findViewById(R.id.et_end_date);
+        etTime = root.findViewById(R.id.et_time_select);
+        tilTime = root.findViewById(R.id.til_time_select);
+
+        etDueDate = root.findViewById(R.id.et_due_date);
+        tilDueDate = root.findViewById(R.id.til_due_date);
+
+        etStartDate = root.findViewById(R.id.et_start_date);
+        tilStartDate = root.findViewById(R.id.til_start_date);
+
+        etEndDate = root.findViewById(R.id.et_end_date);
+        tilEndDate = root.findViewById(R.id.til_end_date);
 
         MaterialButton btnNext = root.findViewById(R.id.btn_add_quest);
 
-        TextInputEditText etInterval = root.findViewById(R.id.et_repeating_interval);
+        etInterval = root.findViewById(R.id.et_repeating_interval);
+        tilInterval = root.findViewById(R.id.til_repeating_interval);
 
         MaterialAutoCompleteTextView unitView = root.findViewById(R.id.et_repeating_unit);
-        unitView.setSimpleItems(Arrays.asList("Daily", "Weekly").toArray(new String[0]));
+        unitView.setSimpleItems(new String[]{"Days", "Weeks"});
 
-        // Populate selects (replace with your values or resources)
+        unitView.setText("Days", false);
+
         difficultySelect.setSimpleItems(Arrays.asList("Novice", "Adventurer", "Veteran", "Legendary").toArray(new String[0]));
         importanceSelect.setSimpleItems(Arrays.asList("Low", "Medium", "High", "Special").toArray(new String[0]));
 
-        // Toggle sections
         cbAdvanced.setOnCheckedChangeListener((buttonView, isChecked) -> {
             sectionAdvanced.setVisibility(isChecked ? View.VISIBLE : View.GONE);
-            sectionSingleDate.setVisibility(isChecked ? View.GONE : View.VISIBLE);
+            tilDueDate.setVisibility(isChecked ? View.GONE : View.VISIBLE);
         });
-        // Initialize
         sectionAdvanced.setVisibility(cbAdvanced.isChecked() ? View.VISIBLE : View.GONE);
-        sectionSingleDate.setVisibility(cbAdvanced.isChecked() ? View.GONE : View.VISIBLE);
+        tilDueDate.setVisibility(cbAdvanced.isChecked() ? View.GONE : View.VISIBLE);
 
-        etTime.setOnClickListener(v -> showTimePicker(selectedHours,selectedMins,time -> etTime.setText(time)));
-        etDueDate.setOnClickListener(v -> showDatePicker(date -> etDueDate.setText(date)));
-        etStartDate.setOnClickListener(v -> showDatePicker(date -> etStartDate.setText(date)));
-        etEndDate.setOnClickListener(v -> showDatePicker(date -> etEndDate.setText(date)));
+        etTime.setOnClickListener(v -> showTimePicker(selectedHours,selectedMins, etTime::setText));
+        etDueDate.setOnClickListener(v -> showDatePicker(etDueDate::setText));
+        etStartDate.setOnClickListener(v -> showDatePicker(etStartDate::setText));
+        etEndDate.setOnClickListener(v -> showDatePicker(etEndDate::setText));
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
         int questExecutionId = getArguments() != null
                 ? getArguments().getInt("questExecutionId") : -1;
 
-        boolean isEditMode = questExecutionId != -1;
+        isEditMode = questExecutionId != -1;
 
         if (isEditMode) {
-            root.findViewById(R.id.section_single_date).setVisibility(View.GONE);
+            tilDueDate.setVisibility(View.GONE);
             root.findViewById(R.id.cb_enable_advanced).setVisibility(View.GONE);
             root.findViewById(R.id.section_advanced).setVisibility(View.GONE);
             root.findViewById(R.id.til_category_select).setVisibility(View.GONE);
@@ -184,8 +207,12 @@ public class AddQuestFragment extends Fragment {
                 return;
             }
 
+            if (!validateQuestInputs()) {
+                return;
+            }
+
             if(selectedCategoryId == -1 && !isEditMode){
-                Toast.makeText(requireContext(), "Please choose a category first", Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), "Please choose a category!", Toast.LENGTH_SHORT).show();
                 return;
             }
 
@@ -241,10 +268,24 @@ public class AddQuestFragment extends Fragment {
     private interface DateCallback { void onDate(String formattedDate); }
 
     private void showDatePicker(DateCallback cb) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DAY_OF_MONTH, 0);
+        long tomorrow = calendar.getTimeInMillis();
+
+        Calendar maxCal = Calendar.getInstance();
+        maxCal.add(Calendar.YEAR, 1);
+        long maxDate = maxCal.getTimeInMillis();
+
+        CalendarConstraints constraints = new CalendarConstraints.Builder()
+                .setValidator(DateValidatorPointForward.from(tomorrow))
+                .setEnd(maxDate)
+                .build();
+
         MaterialDatePicker<Long> picker = MaterialDatePicker.Builder
                 .datePicker()
                 .setTitleText("Select date")
-                .setSelection(MaterialDatePicker.todayInUtcMilliseconds())
+                .setSelection(tomorrow)
+                .setCalendarConstraints(constraints)
                 .build();
 
         picker.addOnPositiveButtonClickListener(selection -> {
@@ -278,5 +319,103 @@ public class AddQuestFragment extends Fragment {
 
     public interface OnTimeSelectedListener {
         void onTimeSelected(String time);
+    }
+
+    private boolean validateQuestInputs() {
+        String name = etName.getText() == null ? "" : etName.getText().toString().trim();
+        String description = etDescription.getText() == null ? "" : etDescription.getText().toString().trim();
+        String time = etTime.getText() == null ? "" : etTime.getText().toString().trim();
+
+        boolean isValid = true;
+        boolean isRepeating = cbAdvanced.isChecked();
+
+        // Reset previous errors
+        tilName.setError(null);
+        tilDescription.setError(null);
+        tilTime.setError(null);
+
+        // name
+        if (TextUtils.isEmpty(name)) {
+            tilName.setError("Please enter a quest name");
+            isValid = false;
+        } else if (name.length() > 15) {
+            tilName.setError("Quest name must be at most 15 characters");
+            isValid = false;
+        } else if (!name.matches("[a-zA-Z0-9 ]+")) {
+            tilName.setError("Only letters and numbers allowed");
+            isValid = false;
+        }
+
+        // description
+        if (!TextUtils.isEmpty(description)) {
+            if (description.length() > 40) {
+                tilDescription.setError("Description must be at most 40 characters");
+                isValid = false;
+            } else if (!description.matches("[a-zA-Z0-9 .!?,]+")) {
+                tilDescription.setError("Only letters, numbers, spaces and . ! ? , allowed");
+                isValid = false;
+            }
+        }
+
+        if (TextUtils.isEmpty(time)) {
+            tilTime.setError("Please enter quest time");
+            isValid = false;
+        }
+
+        if (!isEditMode) {
+            if (TextUtils.isEmpty(difficultySelect.getText())) {
+                tilDifficulty.setError("Please select a difficulty");
+                isValid = false;
+            } else {
+                tilDifficulty.setError(null);
+            }
+
+            if (TextUtils.isEmpty(importanceSelect.getText())) {
+                tilImportance.setError("Please select importance");
+                isValid = false;
+            } else {
+                tilImportance.setError(null);
+            }
+
+            if (selectedCategoryId == -1) {
+                tilCategory.setError("Please select a category");
+                isValid = false;
+            } else {
+                tilCategory.setError(null);
+            }
+
+            if(!isRepeating){
+                String dueDate = etDueDate.getText() == null ? "" : etDueDate.getText().toString().trim();
+
+                if(dueDate.isEmpty()){
+                    tilDueDate.setError("Please enter a date");
+                    isValid = false;
+                }
+            }else{
+                String startDate = etStartDate.getText() == null ? "" : etStartDate.getText().toString().trim();
+                String endDate = etEndDate.getText() == null ? "" : etEndDate.getText().toString().trim();
+                String intervalStr = etInterval.getText().toString().trim();
+
+                if(startDate.isEmpty()){
+                    tilStartDate.setError("Please enter a date");
+                    isValid = false;
+                }
+
+                if(endDate.isEmpty()){
+                    tilEndDate.setError("Please enter a date");
+                    isValid = false;
+                }
+
+                if (TextUtils.isEmpty(intervalStr)) {
+                    tilInterval.setError("Interval is required");
+                    isValid = false;
+                } else if (!intervalStr.matches("\\d+")) {
+                    tilInterval.setError("Interval must be a number");
+                    isValid = false;
+                }
+            }
+        }
+
+        return isValid;
     }
 }

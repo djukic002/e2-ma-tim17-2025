@@ -129,6 +129,16 @@ public class AddCategoryFragment extends Fragment {
                 return;
             }
 
+            if (name.length() > 15) {
+                Toast.makeText(requireContext(), "Category name must be at most 15 characters", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            if (!name.matches("[a-zA-Z0-9]+")) {
+                Toast.makeText(requireContext(), "Category name can only contain letters and numbers", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
             if (TextUtils.isEmpty(selectedColor)) {
                 Toast.makeText(requireContext(), "Please enter a valid color hex", Toast.LENGTH_SHORT).show();
                 return;

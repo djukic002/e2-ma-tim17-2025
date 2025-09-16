@@ -87,9 +87,9 @@ public class QuestRepository {
                         QuestExecution execution = new QuestExecution(current, QuestStatus.ACTIVE, (int)questId);
                         questDao.insertExecution(execution);
 
-                        if (dto.unit == RepeatingUnit.DAILY) {
+                        if (dto.unit == RepeatingUnit.DAYS) {
                             current = current.plusDays(dto.repeatingInterval);
-                        } else if (dto.unit == RepeatingUnit.WEEKLY) {
+                        } else if (dto.unit == RepeatingUnit.WEEKS) {
                             current = current.plusWeeks(dto.repeatingInterval);
                         } else {
                             throw new IllegalArgumentException("Unknown repeating unit: " + dto.unit);

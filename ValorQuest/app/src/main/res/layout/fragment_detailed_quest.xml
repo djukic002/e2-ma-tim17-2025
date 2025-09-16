@@ -302,7 +302,7 @@
                     android:fontFamily="@font/main_font_family"
                     android:textColor="@android:color/black"
                     android:gravity="end"
-                    android:layout_marginEnd="20dp"/>
+                    android:layout_marginEnd="5dp"/>
             </LinearLayout>
         </LinearLayout>
 
@@ -313,7 +313,7 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:gravity="center"
-            android:layout_marginTop="32dp"
+            android:layout_marginTop="20dp"
             android:layout_marginBottom="16dp">
 
             <LinearLayout

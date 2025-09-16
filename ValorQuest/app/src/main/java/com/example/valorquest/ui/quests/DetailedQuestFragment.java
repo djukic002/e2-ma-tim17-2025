@@ -25,6 +25,9 @@ import com.example.valorquest.model.enums.QuestStatus;
 import com.example.valorquest.viewmodel.QuestsViewModel;
 import com.google.android.material.button.MaterialButton;
 
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
+
 import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
@@ -167,7 +170,8 @@ public class DetailedQuestFragment extends Fragment {
         tvStatus.setText(quest.status);
         tvDifficulty.setText(quest.difficulty);
         tvImportance.setText(quest.importance);
-        tvDate.setText(quest.date.toString());
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm", Locale.getDefault());
+        tvDate.setText(quest.date.format(formatter));
         tvRepeating.setText((quest.isRepeating ? "Yes" : "No"));
         tvCategoryName.setText(quest.categoryName);
 

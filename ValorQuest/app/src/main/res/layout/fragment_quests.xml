@@ -1,14 +1,92 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.quests.QuestsFragment">
+    android:background="@drawable/background"
+    android:padding="16dp">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+    <LinearLayout
+        android:id="@+id/topBar"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginTop="24dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
 
-</FrameLayout>
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnAddQuest"
+            android:layout_width="150dp"
+            android:layout_height="52dp"
+            android:text="New Quest"
+            android:textAllCaps="false"
+            android:textSize="18sp"
+            android:textColor="#C9A227"
+            android:fontFamily="@font/main_font_family"
+            android:textStyle="bold"
+            android:background="@drawable/bg_button_fantasy"
+            app:backgroundTint="@null"
+            app:rippleColor="#33C9A227"
+            app:cornerRadius="14dp"
+            android:layout_marginStart="25dp"
+            android:layout_marginEnd="50dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnCalendar"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:insetLeft="0dp"
+            android:insetRight="0dp"
+            android:padding="0dp"
+            app:icon="@drawable/baseline_event_24"
+            app:iconTint="#C9A227"
+            app:iconGravity="textStart"
+            android:contentDescription="Calendar view"
+            android:background="@drawable/bg_button_fantasy"
+            app:backgroundTint="@null"
+            app:rippleColor="#33C9A227"
+            app:cornerRadius="12dp" />
+
+        <TextView
+            android:id="@+id/slashDivider"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="/"
+            android:textSize="24sp"
+            android:textColor="#8B0000"
+            android:textStyle="bold"
+            android:fontFamily="@font/main_font_family"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnList"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:insetLeft="0dp"
+            android:insetRight="0dp"
+            android:padding="0dp"
+            app:icon="@drawable/baseline_view_list_24"
+            app:iconTint="#C9A227"
+            app:iconGravity="textStart"
+            android:contentDescription="List view"
+            android:background="@drawable/bg_button_fantasy"
+            app:backgroundTint="@null"
+            app:rippleColor="#33C9A227"
+            app:cornerRadius="12dp" />
+    </LinearLayout>
+
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/quests_content_container"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@id/topBar"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+</androidx.constraintlayout.widget.ConstraintLayout>

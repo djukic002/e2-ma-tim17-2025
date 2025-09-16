@@ -1,8 +1,17 @@
 package com.example.valorquest.ui.category;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.res.ColorStateList;
+import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.LayerDrawable;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
@@ -14,6 +23,7 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,6 +38,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import dagger.hilt.android.AndroidEntryPoint;
+import yuku.ambilwarna.AmbilWarnaDialog;
 
 @AndroidEntryPoint
 public class AddCategoryFragment extends Fragment {
@@ -107,12 +118,24 @@ public class AddCategoryFragment extends Fragment {
             @Override public void afterTextChanged(Editable s) { applyColor.run(); }
         });
 
+        colorPreview.setOnClickListener(v -> openColorPicker(etColor, colorPreview, applyColor));
+
         btnAdd.setOnClickListener(v -> {
             String name = etName.getText() == null ? "" : etName.getText().toString().trim();
             String selectedColor = viewModel.getSelectedColorHex();
 
             if (TextUtils.isEmpty(name)) {
                 Toast.makeText(requireContext(), "Please enter a category name", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            if (name.length() > 15) {
+                Toast.makeText(requireContext(), "Category name must be at most 15 characters", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            if (!name.matches("[a-zA-Z0-9]+")) {
+                Toast.makeText(requireContext(), "Category name can only contain letters and numbers", Toast.LENGTH_SHORT).show();
                 return;
             }
 
@@ -128,7 +151,6 @@ public class AddCategoryFragment extends Fragment {
             }
 
             if (isEdit) {
-
                 viewModel.changeCategoryColor(argCategoryId, user.getUid()).observe(
                         getViewLifecycleOwner(), result -> {
                             if (result.getStatus() == Result.Status.SUCCESS) {
@@ -153,4 +175,54 @@ public class AddCategoryFragment extends Fragment {
             }
         });
     }
+
+    private void openColorPicker(TextInputEditText etColor, MaterialCardView preview, Runnable applyColor) {
+        int initialColor;
+        try {
+            initialColor = Color.parseColor(etColor.getText().toString().trim());
+        } catch (Exception e) {
+            initialColor = Color.parseColor("#FF9800");
+        }
+
+        AmbilWarnaDialog colorPicker = new AmbilWarnaDialog(requireContext(), initialColor, new AmbilWarnaDialog.OnAmbilWarnaListener() {
+            @Override
+            public void onOk(AmbilWarnaDialog dialog, int color) {
+                preview.setCardBackgroundColor(color);
+                String hex = String.format("#%06X", (0xFFFFFF & color));
+                etColor.setText(hex);
+                applyColor.run();
+            }
+
+            @Override
+            public void onCancel(AmbilWarnaDialog dialog) {
+            }
+        });
+
+        colorPicker.show();
+
+        AlertDialog dialog = colorPicker.getDialog();
+        if (dialog != null && dialog.getWindow() != null) {
+
+            int width = (int) (300 * getResources().getDisplayMetrics().density);
+            int height = (int) (370 * getResources().getDisplayMetrics().density);
+            dialog.getWindow().setLayout(width, height);
+
+            Drawable imageBg = ContextCompat.getDrawable(requireContext(), R.drawable.card_background);
+
+            dialog.getWindow().setBackgroundDrawable(imageBg);
+
+            Button positiveButton = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
+            Button negativeButton = dialog.getButton(DialogInterface.BUTTON_NEGATIVE);
+
+            if (positiveButton != null) styleDialogButton(positiveButton);
+            if (negativeButton != null) styleDialogButton(negativeButton);
+        }
+    }
+
+        private void styleDialogButton(Button button) {
+            button.setTextSize(24);
+            button.setAllCaps(false);
+            button.setTextColor(Color.parseColor("#8B1E1E"));
+            button.setTypeface(ResourcesCompat.getFont(requireContext(), R.font.main_font_family), Typeface.BOLD);
+        }
 }

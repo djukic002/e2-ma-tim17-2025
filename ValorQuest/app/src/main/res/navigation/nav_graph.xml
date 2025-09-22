@@ -27,6 +27,10 @@
             android:id="@+id/action_mainMenuFragment_to_categoryFragment"
             app:destination="@id/categoryFragment" />
 
+        <action
+            android:id="@+id/action_mainMenuFragment_to_bossFragment"
+            app:destination="@id/bossFightFragment" />
+
     </fragment>
 
     <fragment
@@ -89,6 +93,32 @@
     <action
         android:id="@+id/action_detailedQuestFragment_to_addQuestsFragment"
         app:destination="@id/addQuestsFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/bossFightFragment"
+        android:name="com.example.valorquest.ui.boss.BossFightFragment"
+        android:label="Boss fight"
+        tools:layout="@layout/fragment_boss_fight">
+
+        <action
+            android:id="@+id/action_bossFightFragment_to_bossRewardFragment"
+            app:destination="@id/bossRewardFragment" />
+
+        <action
+            android:id="@+id/action_FightFragment_to_mainMenuFragment"
+            app:destination="@id/mainMenuFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/bossRewardFragment"
+        android:name="com.example.valorquest.ui.boss.BossRewardFragment"
+        android:label="Boss reward"
+        tools:layout="@layout/fragment_boss_reward">
+
+        <action
+            android:id="@+id/action_bossRewardFragment_to_mainMenuFragment"
+            app:destination="@id/mainMenuFragment" />
     </fragment>
 
 </navigation>

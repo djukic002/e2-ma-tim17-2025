@@ -18,6 +18,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.VideoView;
 
 import com.example.valorquest.R;
@@ -27,10 +28,8 @@ public class BossFightFragment extends Fragment {
     private int bossHp = 200;
     private int originalBossHp;
     private int pp = 50;
-    private double hitChance = 0.8;
+    private double hitChance = 0.7;
     private int attackCnt = 5;
-    private int goldReward = 200;
-    private double dropChance = 0.2;
     private String bossName = "Gorlock the Destroyer";
     private MediaPlayer bgMusicPlayer;
     private VideoView bossVideo;
@@ -73,8 +72,12 @@ public class BossFightFragment extends Fragment {
         bossVideo.setVideoURI(uri);
 
         bossVideo.setOnPreparedListener(mp -> {
-            mp.setLooping(true); // loop idle animation
+            mp.setLooping(true);
             bossVideo.start();
+
+            Sounds[] entrySounds = {Sounds.NOT_WELCOME, Sounds.BACKOFF};
+            int index = (int) (Math.random() * entrySounds.length);
+            playSound(entrySounds[index], 0);
         });
 
         tvHpValue = view.findViewById(R.id.tvHpValue);
@@ -84,6 +87,7 @@ public class BossFightFragment extends Fragment {
         btnBoss = view.findViewById(R.id.btnBoss);
 
         shakeEnabled = true;
+        originalBossHp = bossHp;
 
         updateUI();
 
@@ -128,12 +132,12 @@ public class BossFightFragment extends Fragment {
                 });
             });
 
-            playSound(Sounds.SWORD, 1500);
+            playSound(Sounds.SWORD, 2000);
 
             if (bossHp <= 0) {
-                playSound(Sounds.DEATH, 3000);
+                playSound(Sounds.DEATH, 3200);
             } else {
-                playSound(Sounds.GRUNT, 3000);
+                playSound(Sounds.GRUNT, 3200);
             }
 
         } else {
@@ -188,18 +192,36 @@ public class BossFightFragment extends Fragment {
         updateUI();
         playBossReaction(hit);
 
+        NavController navController = NavHostFragment.findNavController(this);
+
         if (bossHp == 0) {
             bossVideo.postDelayed(() -> {
-                NavController navController = NavHostFragment.findNavController(this);
-                navController.navigate(R.id.action_bossFightFragment_to_bossRewardFragment);
+                Bundle args = new Bundle();
+                args.putBoolean("bossDefeated", true);
+                Toast.makeText(requireContext(), "You got lucky!", Toast.LENGTH_SHORT).show();
+                navController.navigate(R.id.action_bossFightFragment_to_bossRewardFragment, args);
             }, 4000);
+        }
+        else if(attackCnt == 0 && bossHp <= originalBossHp / 2.0){
+            bossVideo.postDelayed(() -> {
+                Bundle args = new Bundle();
+                args.putBoolean("bossDefeated", false);
+                Toast.makeText(requireContext(), "You got away this time!", Toast.LENGTH_SHORT).show();
+                navController.navigate(R.id.action_bossFightFragment_to_bossRewardFragment, args);
+            }, 4000);
+        }
+        else if(attackCnt == 0 && bossHp > originalBossHp / 2.0){
+            playSound(Sounds.LAUGH, 1000);
+            bossVideo.postDelayed(() -> {
+                Toast.makeText(requireContext(), "You failed miserably!", Toast.LENGTH_SHORT).show();
+                navController.navigate(R.id.action_FightFragment_to_mainMenuFragment);
+            }, 6000);
         }
     }
 
     private void playSound(Sounds sound, long delayMillis) {
         new Thread(() -> {
             try {
-                // Delay if specified
                 if (delayMillis > 0) Thread.sleep(delayMillis);
 
                 int soundToPlay;
@@ -292,7 +314,6 @@ public class BossFightFragment extends Fragment {
 
             @Override
             public void onAccuracyChanged(Sensor sensor, int accuracy) {
-                // Not needed
             }
         };
     }

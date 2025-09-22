@@ -104,6 +104,10 @@
         <action
             android:id="@+id/action_bossFightFragment_to_bossRewardFragment"
             app:destination="@id/bossRewardFragment" />
+
+        <action
+            android:id="@+id/action_FightFragment_to_mainMenuFragment"
+            app:destination="@id/mainMenuFragment" />
     </fragment>
 
     <fragment

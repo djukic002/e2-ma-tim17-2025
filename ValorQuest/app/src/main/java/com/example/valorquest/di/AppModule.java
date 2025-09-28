@@ -29,7 +29,7 @@ public class AppModule {
     public AppDatabase provideDatabase(@ApplicationContext Context context) {
         return Room.databaseBuilder(context, AppDatabase.class, "valorquest.db")
                 .setQueryCallback((sqlQuery, bindArgs) -> {
-                    Log.d("RoomQuery", "SQL: " + sqlQuery + " | Args: " + bindArgs);
+                    // Log.d("RoomQuery", "SQL: " + sqlQuery + " | Args: " + bindArgs);
                 }, Executors.newSingleThreadExecutor()) // ispise query u log cat
                 .fallbackToDestructiveMigration() //nova migracija unisti bazu
                 .setJournalMode(RoomDatabase.JournalMode.TRUNCATE) // da se mogu pokretati upiti

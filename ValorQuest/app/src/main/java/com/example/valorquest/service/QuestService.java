@@ -1,4 +1,4 @@
-package com.example.valorquest.data.repositories;
+package com.example.valorquest.service;
 
 import android.util.Log;
 
@@ -16,7 +16,6 @@ import com.example.valorquest.model.dto.AddQuestDto;
 import com.example.valorquest.model.dto.DetailedQuestExecutionDto;
 import com.example.valorquest.model.enums.QuestStatus;
 import com.example.valorquest.model.enums.RepeatingUnit;
-import com.google.common.math.Stats;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -32,12 +31,14 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 @Singleton
-public class QuestRepository {
+public class QuestService {
     private final QuestDao questDao;
+    private final UserService userService;
 
     @Inject
-    public QuestRepository(QuestDao questDao) {
+    public QuestService(QuestDao questDao, UserService userService) {
         this.questDao = questDao;
+        this.userService = userService;
     }
 
     public LiveData<List<QuestWithExecutions>> getAllQuestsWithExecutions() {
@@ -257,9 +258,13 @@ public class QuestRepository {
                 if(status == QuestStatus.COMPLETED){
                     execution.setStatus(status);
                     questDao.updateExecution(execution);
+                    Quest quest = questExec.quest;
                     // dodati xp korisniku i procitati iz questa koliko dobija
-
+                    userService.completeQuest(quest, pair -> {
+                        System.out.println("User earned: " + pair.first + " - " + pair.second + " XP");
+                    });
                     result.postValue(Result.success("Quest completed successfully"));
+
                 }
                 else if(status == QuestStatus.CANCELLED){
                     execution.setStatus(status);
@@ -277,6 +282,7 @@ public class QuestRepository {
                     result.postValue(Result.success("Quests paused successfully"));
                 }
             } catch (Exception e) {
+                Log.d("ERRORCINA", e.toString());
                 result.postValue(Result.error("Error changing quest status: " + e.getMessage()));
             }
         });

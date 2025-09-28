@@ -2,6 +2,7 @@ package com.example.valorquest.data.remote;
 
 import androidx.lifecycle.MutableLiveData;
 
+import com.example.valorquest.utils.RepositoryCallback;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -28,17 +29,17 @@ public class FirebaseRepository<T> {
     }
 
     // READ single
-    public void getById(String id, MutableLiveData<T> liveData) {
+    public void getById(String id, RepositoryCallback<T> callback) {
         db.collection(collectionPath).document(id)
                 .get()
                 .addOnSuccessListener(doc -> {
                     if (doc.exists()) {
-                        liveData.postValue(doc.toObject(modelClass));
+                        callback.onComplete(doc.toObject(modelClass));
                     } else {
-                        liveData.postValue(null);
+                        callback.onComplete(null);
                     }
                 })
-                .addOnFailureListener(e -> liveData.postValue(null));
+                .addOnFailureListener(e -> callback.onComplete(null));
     }
 
     // READ all

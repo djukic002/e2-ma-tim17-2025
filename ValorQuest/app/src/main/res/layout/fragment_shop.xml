@@ -69,7 +69,8 @@
                     android:text="What can I get ya?"
                     android:gravity="center"
                     android:textColor="@color/black"
-                    android:textSize="18sp"
+                    android:textSize="22sp"
+                    android:textStyle="bold"
                     android:fontFamily="@font/main_font_family" />
 
                 <!-- Details state -->

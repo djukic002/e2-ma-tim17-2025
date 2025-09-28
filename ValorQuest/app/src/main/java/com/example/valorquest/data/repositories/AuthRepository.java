@@ -4,8 +4,11 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.example.valorquest.model.User;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+
+import java.time.LocalDateTime;
 
 public class AuthRepository {
     private FirebaseAuth auth;
@@ -29,7 +32,7 @@ public class AuthRepository {
                             firebaseUser.sendEmailVerification();
                             // Create User object
                             User user = new User(firebaseUser.getUid(), email, username, avatarId);
-
+                            user.setPreviousLeveledUpAt(Timestamp.now());
                             // Use BaseRepository save method
                             userRepository.save(firebaseUser.getUid(), user, (OnCompleteListener<Void>) firestoreTask -> {
                                 if (firestoreTask.isSuccessful()) {

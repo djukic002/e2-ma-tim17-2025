@@ -1,5 +1,6 @@
 package com.example.valorquest.ui;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import com.example.valorquest.R;
@@ -16,6 +17,7 @@ import androidx.navigation.ui.NavigationUI;
 
 import com.example.valorquest.databinding.ActivityMainBinding;
 import com.google.firebase.FirebaseApp;
+import com.google.firebase.auth.FirebaseAuth;
 
 import android.view.Menu;
 import android.view.MenuItem;
@@ -66,6 +68,8 @@ public class MainActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            FirebaseAuth.getInstance().signOut();
+            startActivity(new Intent(this, SplashActivity.class));
             return true;
         }
 

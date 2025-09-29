@@ -20,10 +20,13 @@ import android.widget.Toast;
 
 import com.example.valorquest.R;
 import com.example.valorquest.model.Result;
+import com.example.valorquest.model.User;
 import com.example.valorquest.model.dto.DetailedQuestExecutionDto;
 import com.example.valorquest.model.enums.QuestStatus;
 import com.example.valorquest.viewmodel.QuestsViewModel;
 import com.google.android.material.button.MaterialButton;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
@@ -39,6 +42,7 @@ public class DetailedQuestFragment extends Fragment {
     private View categoryColorView;
     private QuestsViewModel viewModel;
     private DetailedQuestExecutionDto quest;
+    private User user;
 
     @Nullable
     @Override
@@ -82,6 +86,14 @@ public class DetailedQuestFragment extends Fragment {
             }
         });
 
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+        viewModel.getUserById(user.getUid()).observe(getViewLifecycleOwner(), fullUser -> {
+            if (quest != null) {
+                this.user = fullUser;
+            }
+        });
+
         btnEdit.setOnClickListener(v -> {
             Bundle args = new Bundle();
             args.putInt("questExecutionId", quest.executionId);
@@ -116,7 +128,7 @@ public class DetailedQuestFragment extends Fragment {
 
         // actions:
         btnComplete.setOnClickListener(v -> {
-            viewModel.changeActiveQuestStatus(quest.questId, quest.executionId, QuestStatus.COMPLETED).observe(getViewLifecycleOwner(), result -> {
+            viewModel.changeActiveQuestStatus(quest.questId, quest.executionId, QuestStatus.COMPLETED, this.user).observe(getViewLifecycleOwner(), result -> {
                 if (result.getStatus() == Result.Status.SUCCESS) {
                     Toast.makeText(getContext(), result.getData(), Toast.LENGTH_SHORT).show();
                 } else if (result.getStatus() == Result.Status.ERROR) {
@@ -130,7 +142,7 @@ public class DetailedQuestFragment extends Fragment {
                     .setTitle("Cancel Quest")
                     .setMessage("Are you sure you want to cancel this quest? This action cannot be undone.")
                     .setPositiveButton("Yes", (dialog, which) -> {
-                        viewModel.changeActiveQuestStatus(quest.questId, quest.executionId, QuestStatus.CANCELLED).observe(getViewLifecycleOwner(), result -> {
+                        viewModel.changeActiveQuestStatus(quest.questId, quest.executionId, QuestStatus.CANCELLED, this.user).observe(getViewLifecycleOwner(), result -> {
                             if (result.getStatus() == Result.Status.SUCCESS) {
                                 Toast.makeText(getContext(), result.getData(), Toast.LENGTH_SHORT).show();
                             } else if (result.getStatus() == Result.Status.ERROR) {
@@ -144,7 +156,7 @@ public class DetailedQuestFragment extends Fragment {
         });
 
         btnPause.setOnClickListener(v -> {
-            viewModel.changeActiveQuestStatus(quest.questId, quest.executionId, QuestStatus.PAUSED).observe(getViewLifecycleOwner(), result -> {
+            viewModel.changeActiveQuestStatus(quest.questId, quest.executionId, QuestStatus.PAUSED, this.user).observe(getViewLifecycleOwner(), result -> {
                 if (result.getStatus() == Result.Status.SUCCESS) {
                     Toast.makeText(getContext(), result.getData(), Toast.LENGTH_SHORT).show();
                 } else if (result.getStatus() == Result.Status.ERROR) {

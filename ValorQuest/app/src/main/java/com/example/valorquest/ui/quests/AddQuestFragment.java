@@ -253,12 +253,28 @@ public class AddQuestFragment extends Fragment {
                     });
             }
             else{
-                viewModel.addQuest(dto).observe(getViewLifecycleOwner(), result -> {
-                    if (result.getStatus() == Result.Status.SUCCESS) {
-                        Toast.makeText(requireContext(), result.getData(), Toast.LENGTH_SHORT).show();
-                        Navigation.findNavController(v).popBackStack();
-                    } else if (result.getStatus() == Result.Status.ERROR) {
-                        Toast.makeText(requireContext(), result.getMessage(), Toast.LENGTH_SHORT).show();
+//                viewModel.addQuest(dto).observe(getViewLifecycleOwner(), result -> {
+//                    if (result.getStatus() == Result.Status.SUCCESS) {
+//                        Toast.makeText(requireContext(), result.getData(), Toast.LENGTH_SHORT).show();
+//                        Navigation.findNavController(v).popBackStack();
+//                    } else if (result.getStatus() == Result.Status.ERROR) {
+//                        Toast.makeText(requireContext(), result.getMessage(), Toast.LENGTH_SHORT).show();
+//                    }
+//                });
+                viewModel.getUserById(dto.userId).observe(getViewLifecycleOwner(), fullUser -> {
+                    if (fullUser != null) {
+                        dto.userLevel = fullUser.getLevel();
+
+                        viewModel.addQuest(dto).observe(getViewLifecycleOwner(), result -> {
+                            if (result.getStatus() == Result.Status.SUCCESS) {
+                                Toast.makeText(requireContext(), result.getData(), Toast.LENGTH_SHORT).show();
+                                Navigation.findNavController(v).popBackStack();
+                            } else if (result.getStatus() == Result.Status.ERROR) {
+                                Toast.makeText(requireContext(), result.getMessage(), Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    } else {
+                        Toast.makeText(requireContext(), "User not found", Toast.LENGTH_SHORT).show();
                     }
                 });
             }

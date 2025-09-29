@@ -25,8 +25,11 @@ public class QuestExecution {
     private QuestStatus status;
     private int xpEarned;
     private LocalDateTime questCompleted;
-
     private boolean quotaExceeded;
+
+    // za racunanje uspesnosti udarca
+    private int createdInLevel;
+    private int completedInLevel;
     public QuestExecution(LocalDateTime date, QuestStatus status, int questId) {
         this.date = date;
         this.status = status;
@@ -85,5 +88,21 @@ public class QuestExecution {
 
     public void setQuotaExceeded(boolean quotaExceeded) {
         this.quotaExceeded = quotaExceeded;
+    }
+
+    public int getCreatedInLevel() {
+        return createdInLevel;
+    }
+
+    public void setCreatedInLevel(int createdInLevel) {
+        this.createdInLevel = createdInLevel;
+    }
+
+    public int getCompletedInLevel() {
+        return completedInLevel;
+    }
+
+    public void setCompletedInLevel(int completedInLevel) {
+        this.completedInLevel = completedInLevel;
     }
 }

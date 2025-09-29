@@ -80,23 +80,50 @@ public interface QuestDao {
     @Query("SELECT COUNT(qe.id) FROM quest_executions qe " +
             "INNER JOIN quests q ON q.id = qe.questId " +
             "WHERE q.userId = :userId AND q.difficulty = :difficulty AND " +
-            "qe.date BETWEEN :startDateTime AND :endDateTime")
+            "qe.date BETWEEN :startDateTime AND :endDateTime" +
+            " AND qe.status = :completedStatus ")
     int countQuestExecutionsForUserByDifficulty(
             String userId,
             String difficulty,
             LocalDateTime startDateTime,
-            LocalDateTime endDateTime
+            LocalDateTime endDateTime,
+            QuestStatus completedStatus
     );
 
     @Query("SELECT COUNT(qe.id) FROM quest_executions qe " +
             "INNER JOIN quests q ON q.id = qe.questId " +
             "WHERE q.userId = :userId AND q.importance = :importance AND " +
-            "qe.date BETWEEN :startDateTime AND :endDateTime")
+            "qe.date BETWEEN :startDateTime AND :endDateTime " +
+            "AND qe.status = :completedStatus ")
     int countQuestExecutionsForUserByImportance(
             String userId,
             String importance,
             LocalDateTime startDateTime,
-            LocalDateTime endDateTime
+            LocalDateTime endDateTime,
+            QuestStatus completedStatus
     );
 
+    @Query("SELECT qe.* FROM quest_executions qe " +
+            "INNER JOIN quests q ON q.id = qe.questId " +
+            "WHERE q.userId = :userId " +
+            "AND qe.createdInLevel = :level " +
+            "AND qe.status not in ('PAUSED','CANCELLED')")
+    List<QuestExecution> getCreatedExecByLevelAndStatus(String userId, int level);
+
+    @Query("SELECT qe.* FROM quest_executions qe " +
+            "INNER JOIN quests q ON q.id = qe.questId " +
+            "WHERE q.userId = :userId " +
+            "AND qe.quotaExceeded = 0 " +
+            "AND qe.status = :completedStatus " +
+            "AND qe.completedInLevel = :level")
+    List<QuestExecution> getCompletedForLevelWithoutQuotaExceeding(String userId, int level,QuestStatus completedStatus);
+
+    @Query("SELECT qe.* FROM quest_executions qe " +
+            "INNER JOIN quests q ON q.id = qe.questId " +
+            "WHERE q.userId = :userId " +
+            "AND qe.quotaExceeded = 0 " +
+            "AND qe.status = :completedStatus " +
+            "AND qe.completedInLevel = :level " +
+            "AND qe.createdInLevel < :level")
+    List<QuestExecution> getOldCompletedForLevelWithoutQuotaExceeding(String userId, int level,QuestStatus completedStatus);
 }

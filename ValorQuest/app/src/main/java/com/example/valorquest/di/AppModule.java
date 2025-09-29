@@ -27,13 +27,18 @@ public class AppModule {
     @Provides
     @Singleton
     public AppDatabase provideDatabase(@ApplicationContext Context context) {
-        return Room.databaseBuilder(context, AppDatabase.class, "valorquest.db")
+        AppDatabase db = Room.databaseBuilder(context, AppDatabase.class, "valorquest.db")
                 .setQueryCallback((sqlQuery, bindArgs) -> {
                     // Log.d("RoomQuery", "SQL: " + sqlQuery + " | Args: " + bindArgs);
-                }, Executors.newSingleThreadExecutor()) // ispise query u log cat
-                .fallbackToDestructiveMigration() //nova migracija unisti bazu
-                .setJournalMode(RoomDatabase.JournalMode.TRUNCATE) // da se mogu pokretati upiti
+                }, Executors.newSingleThreadExecutor())
+                .fallbackToDestructiveMigration()
+                .setJournalMode(RoomDatabase.JournalMode.TRUNCATE)
                 .build();
+
+        // Clear all tables on startup (for testing/dev only)
+        AppDatabase.databaseWriteExecutor.execute(db::clearAllData);
+
+        return db;
     }
 
     @Provides

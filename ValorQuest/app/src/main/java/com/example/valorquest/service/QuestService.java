@@ -38,11 +38,12 @@ import javax.inject.Singleton;
 public class QuestService {
     private final QuestDao questDao;
     private final UserService userService;
-
+    private final BossService bossService;
     @Inject
-    public QuestService(QuestDao questDao, UserService userService) {
+    public QuestService(QuestDao questDao, UserService userService, BossService bossService) {
         this.questDao = questDao;
         this.userService = userService;
+        this.bossService = bossService;
     }
 
     public LiveData<List<QuestWithExecutions>> getAllQuestsWithExecutions() {
@@ -267,10 +268,12 @@ public class QuestService {
                     LocalDateTime earliestAllowed = scheduled.minusDays(3);
                     LocalDateTime latestAllowed = scheduled;
 
-                    if (now.isBefore(earliestAllowed) || !now.isBefore(latestAllowed)) {
-                        result.postValue(Result.error("Quest can be completed only 3 days before the scheduled date!"));
-                        return;
-                    }
+                    // ovaj if otkomentarsiati pre odbrane, za potrebe testiranja
+                    // zgodno da se mogu resavati taskovi u buducnost
+//                    if (now.isBefore(earliestAllowed) || !now.isBefore(latestAllowed)) {
+//                        result.postValue(Result.error("Quest can be completed only 3 days before the scheduled date!"));
+//                        return;
+//                    }
 
                     execution.setStatus(status);
                     execution.setQuestCompleted(LocalDateTime.now());
@@ -286,6 +289,10 @@ public class QuestService {
                     userService.completeQuest(quest, xpForDifficulty,xpForImportance, pair -> {
                         System.out.println("User earned: " + pair.first + " XP - " + pair.second);
                         execution.setXpEarned(pair.first);
+
+                        if (pair.second) {
+                            bossService.handleBossAfterLevelUp(quest.getUserId());
+                        }
                     });
 
                     questDao.updateExecution(execution);

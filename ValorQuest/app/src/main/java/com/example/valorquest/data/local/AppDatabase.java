@@ -15,7 +15,7 @@ import java.util.concurrent.Executors;
 @Database(entities = {Category.class,
         Quest.class,
         QuestExecution.class},
-        version = 3,
+        version = 4,
         exportSchema = false)
 @TypeConverters({Converters.class})
 public abstract class AppDatabase extends RoomDatabase {

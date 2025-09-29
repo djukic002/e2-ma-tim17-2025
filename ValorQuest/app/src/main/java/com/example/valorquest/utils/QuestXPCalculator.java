@@ -23,4 +23,12 @@ public class QuestXPCalculator {
     public static int getQuestXP(Difficulty difficulty, Importance importance, int level) {
         return getDifficultyXP(difficulty, level) + getImportanceXP(importance, level);
     }
+
+    public static int getQuestXPDifficulty(Difficulty difficulty, int level) {
+        return getDifficultyXP(difficulty, level);
+    }
+
+    public static int getQuestXPImportance(Importance importance, int level) {
+        return getImportanceXP(importance, level);
+    }
 }

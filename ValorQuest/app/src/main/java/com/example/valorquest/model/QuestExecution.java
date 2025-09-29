@@ -23,10 +23,16 @@ public class QuestExecution {
     private int questId;
     private LocalDateTime date;
     private QuestStatus status;
+    private int xpEarned;
+    private LocalDateTime questCompleted;
+
+    private boolean quotaExceeded;
     public QuestExecution(LocalDateTime date, QuestStatus status, int questId) {
         this.date = date;
         this.status = status;
         this.questId = questId;
+        this.xpEarned = 0;
+        this.quotaExceeded = false;
     }
 
     public int getId() {
@@ -55,5 +61,29 @@ public class QuestExecution {
     }
     public void setQuestId(int questId) {
         this.questId = questId;
+    }
+
+    public int getXpEarned() {
+        return xpEarned;
+    }
+
+    public void setXpEarned(int xpEarned) {
+        this.xpEarned = xpEarned;
+    }
+
+    public LocalDateTime getQuestCompleted() {
+        return questCompleted;
+    }
+
+    public void setQuestCompleted(LocalDateTime questCompleted) {
+        this.questCompleted = questCompleted;
+    }
+
+    public boolean isQuotaExceeded() {
+        return quotaExceeded;
+    }
+
+    public void setQuotaExceeded(boolean quotaExceeded) {
+        this.quotaExceeded = quotaExceeded;
     }
 }

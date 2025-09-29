@@ -24,13 +24,12 @@ import javax.inject.Singleton;
 @Singleton
 public class UserService {
     private UserRepository userRepository;
-
     @Inject
     public UserService() {
         this.userRepository = new UserRepository();
     }
 
-    public void completeQuest(Quest quest, QuestResultListener<Integer> onComplete) {
+    public void completeQuest(Quest quest, boolean xpForDifficulty, boolean xpForImportance, QuestResultListener<Integer> onComplete) {
         userRepository.getById(quest.getUserId(), user -> {
             if (user == null) {
                 onComplete.onResult(null);
@@ -39,11 +38,21 @@ public class UserService {
 
             Pair<Integer, Boolean> pair;
 
-            int earnedXP = QuestXPCalculator.getQuestXP(
-                    quest.getDifficulty(),
-                    quest.getImportance(),
-                    user.getLevel()
-            );
+            System.out.println("Diff: " + xpForDifficulty + " Imp: " + xpForImportance);
+
+            int diffXp = 0;
+            if(xpForDifficulty){
+                diffXp = QuestXPCalculator.getQuestXPDifficulty(quest.getDifficulty(), user.getLevel());
+            }
+
+            int impXp = 0;
+            if(xpForImportance){
+                impXp = QuestXPCalculator.getQuestXPImportance(quest.getImportance(), user.getLevel());
+            }
+
+            int earnedXP = diffXp + impXp;
+
+            System.out.println("Diff xp:  " + diffXp + " ImpXp" + impXp );
 
             pair = new Pair<>(earnedXP, addXP(user, earnedXP));
             userRepository.save(user.getId(), user, unused -> {

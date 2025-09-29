@@ -23,10 +23,10 @@ public class QuestExecution {
     private int questId;
     private LocalDateTime date;
     private QuestStatus status;
-    public int xpEarned;
-    public LocalDateTime questCompleted;
+    private int xpEarned;
+    private LocalDateTime questCompleted;
 
-    public boolean quotaExceeded;
+    private boolean quotaExceeded;
     public QuestExecution(LocalDateTime date, QuestStatus status, int questId) {
         this.date = date;
         this.status = status;

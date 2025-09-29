@@ -37,12 +37,7 @@ import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
 public class BossFightFragment extends Fragment {
-    private int bossHp = 200;
-    private int originalBossHp;
     private int pp = 50;
-    private double hitChance = 0.7;
-    private int attackCnt = 5;
-    private String bossName = "Gorlock the Destroyer";
     private BossFightViewmodel bossViewmodel;
     private Boss boss;
     private MediaPlayer bgMusicPlayer;
@@ -64,8 +59,8 @@ public class BossFightFragment extends Fragment {
     private void loadActiveBoss(String userId) {
         bossViewmodel.getActiveBossForUser(userId).observe(getViewLifecycleOwner(), result -> {
             if (result.getStatus() == Result.Status.SUCCESS) {
-                boss = result.getData(); // <-- fill your field
-               // updateUIWithBoss(boss);  // optional: update UI
+                boss = result.getData();
+                updateUI();
             } else {
                 Toast.makeText(requireContext(), result.getMessage(), Toast.LENGTH_SHORT).show();
             }
@@ -122,10 +117,6 @@ public class BossFightFragment extends Fragment {
         if(user != null)
             loadActiveBoss(user.getUid());
 
-        originalBossHp = bossHp;
-
-        updateUI();
-
         // button attack
         btnBoss.setOnClickListener(v -> performAttack());
 
@@ -165,7 +156,7 @@ public class BossFightFragment extends Fragment {
 
             playSound(Sounds.SWORD, 2000);
 
-            if (bossHp <= 0) {
+            if (boss.getCurrentHp() <= 0) {
                 playSound(Sounds.DEATH, 3200);
             } else {
                 playSound(Sounds.GRUNT, 3200);
@@ -201,31 +192,32 @@ public class BossFightFragment extends Fragment {
     }
 
     private void updateUI() {
-        tvHpValue.setText(String.valueOf(bossHp));
+        tvHpValue.setText(String.valueOf(boss.getCurrentHp()));
         tvPpValue.setText(String.valueOf(pp));
-        tvAttackCountValue.setText(String.valueOf(attackCnt));
-        tvHitChanceValue.setText(String.valueOf((int)(hitChance * 100)));
+        tvAttackCountValue.setText(String.valueOf(boss.getAttacksRemaining()));
+        tvHitChanceValue.setText(String.valueOf((int)(boss.getHitChance() * 100)));
     }
 
     private void performAttack() {
-        if (attackCnt <= 0){
+        if (boss.getAttacksRemaining() <= 0){
             btnBoss.setEnabled(false);
             return;
         }
 
-        attackCnt--;
-        boolean hit = Math.random() < hitChance;
-        if (hit) bossHp -= pp;
+        boss.setAttacksRemaining(boss.getAttacksRemaining() - 1);
+        boolean hit = Math.random() < boss.getHitChance();
 
-        if(bossHp < 0)
-            bossHp = 0;
+        if (hit) boss.setCurrentHp(boss.getCurrentHp() - pp);
+
+        if(boss.getCurrentHp() < 0)
+            boss.setCurrentHp(0);
 
         updateUI();
         playBossReaction(hit);
 
         NavController navController = NavHostFragment.findNavController(this);
 
-        if (bossHp == 0) {
+        if (boss.getCurrentHp() == 0) {
             bossVideo.postDelayed(() -> {
                 Bundle args = new Bundle();
                 args.putBoolean("bossDefeated", true);
@@ -233,7 +225,7 @@ public class BossFightFragment extends Fragment {
                 navController.navigate(R.id.action_bossFightFragment_to_bossRewardFragment, args);
             }, 4000);
         }
-        else if(attackCnt == 0 && bossHp <= originalBossHp / 2.0){
+        else if(boss.getAttacksRemaining() == 0 && boss.getCurrentHp() <= boss.getOriginalHp() / 2.0){
             bossVideo.postDelayed(() -> {
                 Bundle args = new Bundle();
                 args.putBoolean("bossDefeated", false);
@@ -241,7 +233,7 @@ public class BossFightFragment extends Fragment {
                 navController.navigate(R.id.action_bossFightFragment_to_bossRewardFragment, args);
             }, 4000);
         }
-        else if(attackCnt == 0 && bossHp > originalBossHp / 2.0){
+        else if(boss.getAttacksRemaining() == 0 && boss.getCurrentHp() > boss.getOriginalHp() / 2.0){
             playSound(Sounds.LAUGH, 1000);
             bossVideo.postDelayed(() -> {
                 Toast.makeText(requireContext(), "You failed miserably!", Toast.LENGTH_SHORT).show();

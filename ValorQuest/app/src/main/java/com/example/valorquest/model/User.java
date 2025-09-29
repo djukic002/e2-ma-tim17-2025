@@ -3,6 +3,9 @@ package com.example.valorquest.model;
 import com.google.firebase.Timestamp;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
 public class User {
     private String id;
     private String email;
@@ -13,6 +16,8 @@ public class User {
     private int basePP = 0;
     private Timestamp previousLeveledUpAt;
     private Timestamp leveledUpAt;
+    private List<String> friends = new ArrayList<>();
+    private String allianceId;
     public User() {} // Required for Firestore
 
     public User(String id, String email, String username, int avatarId) {
@@ -83,5 +88,21 @@ public class User {
 
     public void setPreviousLeveledUpAt(Timestamp previousLeveledUpAt) {
         this.previousLeveledUpAt = previousLeveledUpAt;
+    }
+
+    public String getAllianceId() {
+        return allianceId;
+    }
+
+    public void setAllianceId(String allianceId) {
+        this.allianceId = allianceId;
+    }
+
+    public List<String> getFriends() {
+        return friends;
+    }
+
+    public void setFriends(List<String> friends) {
+        this.friends = friends;
     }
 }

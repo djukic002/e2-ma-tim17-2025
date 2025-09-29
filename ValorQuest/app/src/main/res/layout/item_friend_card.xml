@@ -1,0 +1,70 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/friend_container"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="12dp"
+    android:background="@drawable/avatar_selection_background"
+    android:layout_marginBottom="8dp">
+
+    <!-- Avatar -->
+    <ImageView
+        android:id="@+id/friend_avatar"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:src="@drawable/avatar_1"
+        android:contentDescription="Friend Avatar"
+        android:scaleType="centerCrop" />
+
+    <!-- Info (username + email) -->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:layout_marginStart="16dp"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:id="@+id/friend_username"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Friend Username"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            android:fontFamily="@font/main_font_family"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/friend_email"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="friend@email.com"
+            android:textColor="@color/black"
+            android:textSize="14sp"
+            android:fontFamily="@font/main_font_family"/>
+    </LinearLayout>
+
+    <!-- Action Buttons -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_view_profile"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Profile"
+            android:textAllCaps="false"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:background="@drawable/bg_button_fantasy"
+            android:textColor="#C9A227"
+            app:backgroundTint="@null"
+            app:rippleColor="#33C9A227"/>
+
+    </LinearLayout>
+</LinearLayout>

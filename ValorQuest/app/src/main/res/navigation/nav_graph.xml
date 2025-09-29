@@ -31,6 +31,10 @@
             android:id="@+id/action_mainMenuFragment_to_bossFragment"
             app:destination="@id/bossFightFragment" />
 
+        <action
+            android:id="@+id/action_mainMenuFragment_to_socialFragment"
+            app:destination="@id/friendListFragment" />
+
     </fragment>
 
     <fragment
@@ -43,6 +47,12 @@
             app:destination="@id/addQuestsFragment" />
 
     </fragment>
+
+    <fragment
+        android:id="@+id/friendListFragment"
+        android:name="com.example.valorquest.ui.social.FriendListFragment"
+        android:label="Friends"
+        tools:layout="@layout/fragment_friend_list" />
 
     <fragment
         android:id="@+id/profileFragment"

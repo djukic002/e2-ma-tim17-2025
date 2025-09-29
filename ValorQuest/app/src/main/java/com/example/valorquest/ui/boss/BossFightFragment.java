@@ -17,6 +17,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,6 +28,7 @@ import android.widget.VideoView;
 import com.example.valorquest.R;
 import com.example.valorquest.model.Boss;
 import com.example.valorquest.model.Result;
+import com.example.valorquest.model.enums.BossStatus;
 import com.example.valorquest.viewmodel.BossFightViewmodel;
 import com.example.valorquest.viewmodel.QuestsViewModel;
 import com.google.android.material.button.MaterialButton;
@@ -53,19 +55,31 @@ public class BossFightFragment extends Fragment {
     private Sensor accelerometer;
     private SensorEventListener shakeListener;
     private boolean shakeEnabled;
+    private NavController navController;
 
     public BossFightFragment() {
     }
     private void loadActiveBoss(String userId) {
         bossViewmodel.getActiveBossForUser(userId).observe(getViewLifecycleOwner(), result -> {
+            if (!isAdded()) return; // fragment might be detached
+
             if (result.getStatus() == Result.Status.SUCCESS) {
                 boss = result.getData();
+
+                if (boss == null) {
+                    Toast.makeText(requireContext(), "No active boss. Returning to main menu.", Toast.LENGTH_SHORT).show();
+                    navController.popBackStack(); // safely go back
+                    return;
+                }
+
                 updateUI();
             } else {
-                Toast.makeText(requireContext(), result.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), "Failed to load boss: " + result.getMessage(), Toast.LENGTH_SHORT).show();
+                navController.popBackStack(); // safely go back
             }
         });
     }
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -88,8 +102,20 @@ public class BossFightFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         setupSoundEffects();
+        navController = NavHostFragment.findNavController(this);
 
         bossVideo = view.findViewById(R.id.bossVideo);
+        tvHpValue = view.findViewById(R.id.tvHpValue);
+        tvPpValue = view.findViewById(R.id.tvPpValue);
+        tvAttackCountValue = view.findViewById(R.id.tvAttackCountValue);
+        tvHitChanceValue = view.findViewById(R.id.tvHitChanceValue);
+        btnBoss = view.findViewById(R.id.btnBoss);
+
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+        bossViewmodel = new ViewModelProvider(this).get(BossFightViewmodel.class);
+        if(user != null)
+            loadActiveBoss(user.getUid());
 
         Uri uri = Uri.parse("android.resource://" + requireContext().getPackageName() + "/" + R.raw.boss1_idle_anim);
         bossVideo.setVideoURI(uri);
@@ -103,19 +129,7 @@ public class BossFightFragment extends Fragment {
             playSound(entrySounds[index], 0);
         });
 
-        tvHpValue = view.findViewById(R.id.tvHpValue);
-        tvPpValue = view.findViewById(R.id.tvPpValue);
-        tvAttackCountValue = view.findViewById(R.id.tvAttackCountValue);
-        tvHitChanceValue = view.findViewById(R.id.tvHitChanceValue);
-        btnBoss = view.findViewById(R.id.btnBoss);
-
         shakeEnabled = true;
-
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-
-        bossViewmodel = new ViewModelProvider(this).get(BossFightViewmodel.class);
-        if(user != null)
-            loadActiveBoss(user.getUid());
 
         // button attack
         btnBoss.setOnClickListener(v -> performAttack());
@@ -215,31 +229,48 @@ public class BossFightFragment extends Fragment {
         updateUI();
         playBossReaction(hit);
 
-        NavController navController = NavHostFragment.findNavController(this);
+        Bundle args = new Bundle();
+        boolean navigate;
 
         if (boss.getCurrentHp() == 0) {
-            bossVideo.postDelayed(() -> {
-                Bundle args = new Bundle();
-                args.putBoolean("bossDefeated", true);
-                Toast.makeText(requireContext(), "You got lucky!", Toast.LENGTH_SHORT).show();
-                navController.navigate(R.id.action_bossFightFragment_to_bossRewardFragment, args);
-            }, 4000);
-        }
-        else if(boss.getAttacksRemaining() == 0 && boss.getCurrentHp() <= boss.getOriginalHp() / 2.0){
-            bossVideo.postDelayed(() -> {
-                Bundle args = new Bundle();
-                args.putBoolean("bossDefeated", false);
-                Toast.makeText(requireContext(), "You got away this time!", Toast.LENGTH_SHORT).show();
-                navController.navigate(R.id.action_bossFightFragment_to_bossRewardFragment, args);
-            }, 4000);
-        }
-        else if(boss.getAttacksRemaining() == 0 && boss.getCurrentHp() > boss.getOriginalHp() / 2.0){
+            args.putBoolean("bossDefeated", true);
+            args.putInt("gold", boss.getGoldReward());
+            Toast.makeText(requireContext(), "You got lucky!", Toast.LENGTH_SHORT).show();
+            boss.setStatus(BossStatus.DEFEATED);
+            navigate = true;
+        } else if (boss.getAttacksRemaining() == 0 && boss.getCurrentHp() <= boss.getOriginalHp() / 2.0) {
+            args.putBoolean("bossDefeated", false);
+            args.putInt("gold", boss.getGoldReward());
+            Toast.makeText(requireContext(), "You got away this time!", Toast.LENGTH_SHORT).show();
+            boss.setStatus(BossStatus.FAILED);
+            navigate = true;
+        } else if (boss.getAttacksRemaining() == 0 && boss.getCurrentHp() > boss.getOriginalHp() / 2.0) {
             playSound(Sounds.LAUGH, 1000);
-            bossVideo.postDelayed(() -> {
-                Toast.makeText(requireContext(), "You failed miserably!", Toast.LENGTH_SHORT).show();
-                navController.navigate(R.id.action_FightFragment_to_mainMenuFragment);
-            }, 6000);
+            Toast.makeText(requireContext(), "You failed miserably!", Toast.LENGTH_SHORT).show();
+            boss.setStatus(BossStatus.FAILED);
+            navigate = true;
+        } else{
+            navigate = false;
         }
+
+        // Save boss state after all logic
+        bossViewmodel.saveBossLiveData(boss).observe(getViewLifecycleOwner(), result -> {
+            if (result.getStatus() == Result.Status.SUCCESS) {
+                Log.d("BossFight", "Boss state saved successfully");
+
+                if (navigate) {
+                    bossVideo.postDelayed(() -> {
+                        if (args.isEmpty()) {
+                            navController.navigate(R.id.action_FightFragment_to_mainMenuFragment);
+                        } else {
+                            navController.navigate(R.id.action_bossFightFragment_to_bossRewardFragment, args);
+                        }
+                    }, 4000);
+                }
+            } else {
+                Log.e("BossFight", "Failed to save boss: " + result.getMessage());
+            }
+        });
     }
 
     private void playSound(Sounds sound, long delayMillis) {
@@ -362,6 +393,11 @@ public class BossFightFragment extends Fragment {
             sensorManager.registerListener(shakeListener,
                     sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
                     SensorManager.SENSOR_DELAY_GAME);
+        }
+
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            loadActiveBoss(user.getUid());
         }
     }
 

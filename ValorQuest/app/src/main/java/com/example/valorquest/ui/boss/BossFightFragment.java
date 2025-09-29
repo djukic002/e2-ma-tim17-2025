@@ -10,7 +10,10 @@ import android.media.SoundPool;
 import android.net.Uri;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 
@@ -22,8 +25,17 @@ import android.widget.Toast;
 import android.widget.VideoView;
 
 import com.example.valorquest.R;
+import com.example.valorquest.model.Boss;
+import com.example.valorquest.model.Result;
+import com.example.valorquest.viewmodel.BossFightViewmodel;
+import com.example.valorquest.viewmodel.QuestsViewModel;
 import com.google.android.material.button.MaterialButton;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public class BossFightFragment extends Fragment {
     private int bossHp = 200;
     private int originalBossHp;
@@ -31,6 +43,8 @@ public class BossFightFragment extends Fragment {
     private double hitChance = 0.7;
     private int attackCnt = 5;
     private String bossName = "Gorlock the Destroyer";
+    private BossFightViewmodel bossViewmodel;
+    private Boss boss;
     private MediaPlayer bgMusicPlayer;
     private VideoView bossVideo;
     private TextView tvHpValue, tvPpValue, tvAttackCountValue, tvHitChanceValue;
@@ -47,6 +61,16 @@ public class BossFightFragment extends Fragment {
 
     public BossFightFragment() {
     }
+    private void loadActiveBoss(String userId) {
+        bossViewmodel.getActiveBossForUser(userId).observe(getViewLifecycleOwner(), result -> {
+            if (result.getStatus() == Result.Status.SUCCESS) {
+                boss = result.getData(); // <-- fill your field
+               // updateUIWithBoss(boss);  // optional: update UI
+            } else {
+                Toast.makeText(requireContext(), result.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -62,9 +86,13 @@ public class BossFightFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_boss_fight, container, false);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.fragment_boss_fight, container, false);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        setupSoundEffects();
 
         bossVideo = view.findViewById(R.id.bossVideo);
 
@@ -87,11 +115,16 @@ public class BossFightFragment extends Fragment {
         btnBoss = view.findViewById(R.id.btnBoss);
 
         shakeEnabled = true;
+
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+        bossViewmodel = new ViewModelProvider(this).get(BossFightViewmodel.class);
+        if(user != null)
+            loadActiveBoss(user.getUid());
+
         originalBossHp = bossHp;
 
         updateUI();
-
-        setupSoundEffects();
 
         // button attack
         btnBoss.setOnClickListener(v -> performAttack());
@@ -100,8 +133,6 @@ public class BossFightFragment extends Fragment {
         sensorManager = (SensorManager) requireContext().getSystemService(Context.SENSOR_SERVICE);
         accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         shakeListener = createShakeListener();
-
-        return view;
     }
 
     private void playBossReaction(boolean hit) {

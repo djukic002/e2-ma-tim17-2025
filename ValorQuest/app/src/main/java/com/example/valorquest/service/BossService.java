@@ -1,10 +1,14 @@
 package com.example.valorquest.service;
 
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
+
 import com.example.valorquest.data.local.AppDatabase;
 import com.example.valorquest.data.repositories.BossRepository;
 import com.example.valorquest.data.repositories.UserRepository;
 import com.example.valorquest.model.Boss;
 import com.example.valorquest.model.QuestExecution;
+import com.example.valorquest.model.Result;
 import com.example.valorquest.model.enums.BossStatus;
 import com.example.valorquest.utils.RepositoryCallback;
 import java.util.List;
@@ -22,6 +26,33 @@ public class BossService {
         this.bossRepository = new BossRepository();
         this.userRepository = new UserRepository();
         this.questService = questService;
+    }
+
+    public LiveData<Result<String>> saveBoss(Boss boss) {
+        MutableLiveData<Result<String>> resultLiveData = new MutableLiveData<>();
+
+        bossRepository.save(boss.getId(), boss, task -> {
+            if (task.isSuccessful()) {
+                resultLiveData.postValue(Result.success("Boss saved successfully"));
+            } else {
+                resultLiveData.postValue(Result.error("Failed to save boss: " + task.getException()));
+            }
+        });
+
+        return resultLiveData;
+    }
+    public LiveData<Result<Boss>> getActiveBossForUserLiveData(String userId) {
+        MutableLiveData<Result<Boss>> liveData = new MutableLiveData<>();
+
+        bossRepository.getActiveBossForUser(userId, boss -> {
+            if (boss != null) {
+                liveData.postValue(Result.success(boss));
+            } else {
+                liveData.postValue(Result.error("No active boss found for user"));
+            }
+        });
+
+        return liveData;
     }
 
     public void handleBossAfterLevelUp(String userId) {

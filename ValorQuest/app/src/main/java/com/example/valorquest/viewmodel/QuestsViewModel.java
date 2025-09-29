@@ -1,9 +1,12 @@
 package com.example.valorquest.viewmodel;
 
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.valorquest.data.repositories.CategoryRepository;
+import com.example.valorquest.data.repositories.UserRepository;
+import com.example.valorquest.model.User;
 import com.example.valorquest.service.QuestService;
 import com.example.valorquest.model.Category;
 import com.example.valorquest.model.QuestWithExecutions;
@@ -21,13 +24,14 @@ import dagger.hilt.android.lifecycle.HiltViewModel;
 @HiltViewModel
 public class QuestsViewModel extends ViewModel {
     private final QuestService questService;
-
     private final CategoryRepository categoryRepository;
 
+    private final UserRepository userRepository;
     @Inject
     public QuestsViewModel(QuestService questService, CategoryRepository categoryRepository) {
         this.questService = questService;
         this.categoryRepository = categoryRepository;
+        this.userRepository = new UserRepository();
     }
 
     public LiveData<List<QuestWithExecutions>> getAllQuestsWithExecutions() {
@@ -44,6 +48,14 @@ public class QuestsViewModel extends ViewModel {
         return questService.deleteQuestsWithExecutions(questId, executionId);
     }
 
+    public LiveData<User> getUserById(String userId) {
+        MutableLiveData<User> userLiveData = new MutableLiveData<>();
+        userRepository.getById(userId, user -> {
+            userLiveData.postValue(user);
+        });
+        return userLiveData;
+    }
+
     public LiveData<Result<String>> addQuest(AddQuestDto dto) {
         return questService.addQuest(dto);
     }
@@ -56,8 +68,8 @@ public class QuestsViewModel extends ViewModel {
         return categoryRepository.getCategoriesForUser(userId);
     }
 
-    public LiveData<Result<String>> changeActiveQuestStatus(int questId, int executionId, QuestStatus status){
-        return questService.changeActiveQuestStatus(questId,executionId,status);
+    public LiveData<Result<String>> changeActiveQuestStatus(int questId, int executionId, QuestStatus status, User user){
+        return questService.changeActiveQuestStatus(questId,executionId,status, user);
     }
 
     public LiveData<Result<String>> unpauseQuest(int questId){

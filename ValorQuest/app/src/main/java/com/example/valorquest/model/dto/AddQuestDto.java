@@ -23,6 +23,9 @@ public class AddQuestDto {
     public String endDate;
     public int repeatingInterval;
     public RepeatingUnit unit;
+
+    // new field added
+    public int userLevel;
     public AddQuestDto(){}
 
     @Override

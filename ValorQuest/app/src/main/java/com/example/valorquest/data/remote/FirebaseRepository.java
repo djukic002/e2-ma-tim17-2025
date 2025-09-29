@@ -11,9 +11,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FirebaseRepository<T> {
-    private final FirebaseFirestore db;
-    private final String collectionPath;
-    private final Class<T> modelClass;
+    protected final FirebaseFirestore db;
+    protected final String collectionPath;
+    protected final Class<T> modelClass;
 
     public FirebaseRepository(String collectionPath, Class<T> modelClass) {
         this.db = FirebaseFirestore.getInstance();

@@ -40,8 +40,7 @@ public class BossRewardFragment extends Fragment {
     private boolean bossDefeated = false;
     private double gearDropChance = 0.2;
     private String equipmentName = "Gauntlets of the Titan";
-    private int goldReward = 200;
-
+    private int goldReward = 0;
     private boolean hasGold = false;
     private boolean hasEquipment = false;
 
@@ -52,6 +51,7 @@ public class BossRewardFragment extends Fragment {
 
         if (getArguments() != null) {
             bossDefeated = getArguments().getBoolean("bossDefeated", false);
+            goldReward = getArguments().getInt("gold", 0);
         }
 
         if (!bossDefeated) {

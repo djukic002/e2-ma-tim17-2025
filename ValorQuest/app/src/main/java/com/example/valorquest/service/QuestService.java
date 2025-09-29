@@ -1,7 +1,6 @@
 package com.example.valorquest.service;
 
 import android.util.Log;
-import android.widget.Switch;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -13,6 +12,7 @@ import com.example.valorquest.model.Quest;
 import com.example.valorquest.model.QuestExecution;
 import com.example.valorquest.model.QuestWithExecutions;
 import com.example.valorquest.model.Result;
+import com.example.valorquest.model.User;
 import com.example.valorquest.model.dto.AddQuestDto;
 import com.example.valorquest.model.dto.DetailedQuestExecutionDto;
 import com.example.valorquest.model.enums.Difficulty;
@@ -32,17 +32,23 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 import javax.inject.Singleton;
 
 @Singleton
 public class QuestService {
     private final QuestDao questDao;
     private final UserService userService;
-
+    private final Provider<BossService> bossServiceProvider; // lazy injection
     @Inject
-    public QuestService(QuestDao questDao, UserService userService) {
+    public QuestService(QuestDao questDao, UserService userService, Provider<BossService> bossServiceProvider) {
         this.questDao = questDao;
         this.userService = userService;
+        this.bossServiceProvider = bossServiceProvider;
+    }
+
+    private BossService getBossService() {
+        return bossServiceProvider.get();
     }
 
     public LiveData<List<QuestWithExecutions>> getAllQuestsWithExecutions() {
@@ -77,6 +83,7 @@ public class QuestService {
                     LocalDateTime dateTime = LocalDateTime.of(date, time);
 
                     QuestExecution execution = new QuestExecution(dateTime, QuestStatus.ACTIVE, (int)questId);
+                    execution.setCreatedInLevel(dto.userLevel);
                     questDao.insertExecution(execution);
                 }
                 else if(dto.isRepeating && dto.startDate != null && dto.endDate != null){
@@ -90,6 +97,7 @@ public class QuestService {
 
                     while (!current.isAfter(endTime)) {
                         QuestExecution execution = new QuestExecution(current, QuestStatus.ACTIVE, (int)questId);
+                        execution.setCreatedInLevel(dto.userLevel);
                         questDao.insertExecution(execution);
 
                         if (dto.unit == RepeatingUnit.DAYS) {
@@ -247,7 +255,7 @@ public class QuestService {
     }
 
     // quest must be active
-    public LiveData<Result<String>> changeActiveQuestStatus(int questId, int executionId, QuestStatus status){
+    public LiveData<Result<String>> changeActiveQuestStatus(int questId, int executionId, QuestStatus status, User user){
         MutableLiveData<Result<String>> result = new MutableLiveData<>();
 
         AppDatabase.databaseWriteExecutor.execute(() -> {
@@ -267,6 +275,8 @@ public class QuestService {
                     LocalDateTime earliestAllowed = scheduled.minusDays(3);
                     LocalDateTime latestAllowed = scheduled;
 
+                    // ovaj if otkomentarsiati pre odbrane, za potrebe testiranja
+                    // zgodno da se mogu resavati taskovi u buducnost
                     if (now.isBefore(earliestAllowed) || !now.isBefore(latestAllowed)) {
                         result.postValue(Result.error("Quest can be completed only 3 days before the scheduled date!"));
                         return;
@@ -274,6 +284,8 @@ public class QuestService {
 
                     execution.setStatus(status);
                     execution.setQuestCompleted(LocalDateTime.now());
+                    execution.setCompletedInLevel(user.getLevel());
+                    System.out.println("Level created: " + execution.getCreatedInLevel() + " level completed: " + execution.getCompletedInLevel());
 
                     // upit koliko je u danu vec reseno tog diff/imp itd
                     boolean xpForDifficulty = canGetXpForDifficulty(quest.getDifficulty(), quest.getUserId());
@@ -284,12 +296,29 @@ public class QuestService {
 
                     // dodati xp korisniku i procitati iz questa koliko dobija
                     userService.completeQuest(quest, xpForDifficulty,xpForImportance, pair -> {
-                        System.out.println("User earned: " + pair.first + " XP - " + pair.second);
                         execution.setXpEarned(pair.first);
-                    });
+                        System.out.println("Diff: " + xpForDifficulty + " Imp:" + xpForImportance);
 
-                    questDao.updateExecution(execution);
-                    result.postValue(Result.success("Quest completed successfully"));
+                        if (pair.second) {
+                            getBossService().handleBossAfterLevelUp(quest.getUserId());
+
+                            AppDatabase.databaseWriteExecutor.execute(() -> {
+                                questDao.updateExecution(execution);
+                                result.postValue(Result.success("LEVELUP"));
+                            });
+
+                        } else {
+                            AppDatabase.databaseWriteExecutor.execute(() -> {
+                                questDao.updateExecution(execution);
+
+                                String res = execution.isQuotaExceeded()
+                                        ? "Quest completed, but limited xp gained"
+                                        : "Quest completed, full xp rewards!";
+
+                                result.postValue(Result.success(res));
+                            });
+                        }
+                    });
                 }
                 else if(status == QuestStatus.CANCELLED){
                     execution.setStatus(status);
@@ -328,13 +357,13 @@ public class QuestService {
                 endDate = startDate.plusDays(1).minusNanos(1);
 
                 importanceOccurrences = questDao.countQuestExecutionsForUserByImportance(
-                        userId, importance.toString(), startDate, endDate
+                        userId, importance.toString(), startDate, endDate, QuestStatus.COMPLETED
                 );
 
-                if ((importance == Importance.LOW || importance == Importance.MEDIUM) && importanceOccurrences > 5) {
+                if ((importance == Importance.LOW || importance == Importance.MEDIUM) && importanceOccurrences >= 5) {
                     return false;
                 }
-                if (importance == Importance.HIGH && importanceOccurrences > 2) {
+                if (importance == Importance.HIGH && importanceOccurrences >= 2) {
                     return false;
                 }
                 break;
@@ -345,10 +374,10 @@ public class QuestService {
                 endDate = today.withDayOfMonth(today.lengthOfMonth()).atTime(LocalTime.MAX);
 
                 importanceOccurrences = questDao.countQuestExecutionsForUserByImportance(
-                        userId, importance.toString(), startDate, endDate
+                        userId, importance.toString(), startDate, endDate, QuestStatus.COMPLETED
                 );
 
-                if (importanceOccurrences > 1) {
+                if (importanceOccurrences >= 1) {
                     return false;
                 }
                 break;
@@ -371,13 +400,13 @@ public class QuestService {
                 endDate = startDate.plusDays(1).minusNanos(1);
 
                 difficultyOccurrences = questDao.countQuestExecutionsForUserByDifficulty(
-                        userId, difficulty.toString(), startDate, endDate
+                        userId, difficulty.toString(), startDate, endDate, QuestStatus.COMPLETED
                 );
 
-                if ((difficulty == Difficulty.NOVICE || difficulty == Difficulty.ADVENTURER) && difficultyOccurrences > 5) {
+                if ((difficulty == Difficulty.NOVICE || difficulty == Difficulty.ADVENTURER) && difficultyOccurrences >= 5) {
                     return false;
                 }
-                if (difficulty == Difficulty.VETERAN && difficultyOccurrences > 2) {
+                if (difficulty == Difficulty.VETERAN && difficultyOccurrences >= 2) {
                     return false;
                 }
                 break;
@@ -385,21 +414,19 @@ public class QuestService {
             case LEGENDARY: {
                 LocalDate today = LocalDate.now();
 
-                // Start of week (Monday at 00:00)
                 LocalDate startOfWeek = today.with(DayOfWeek.MONDAY);
-                startDate = startOfWeek.atStartOfDay();  // ✅ LocalDateTime
+                startDate = startOfWeek.atStartOfDay();
 
-                // End of week (Sunday at 23:59:59.999...)
-                LocalDate endOfWeek = today.with(DayOfWeek.SUNDAY).plusDays(1);
-                endDate = endOfWeek.atTime(LocalTime.MAX);  // ✅ LocalDateTime
+                LocalDate endOfWeek = today.with(DayOfWeek.SUNDAY);
+                endDate = endOfWeek.atTime(LocalTime.MAX);
 
                 System.out.println("Start:  " + startDate.toString() + " End: " + endDate.toString() );
 
                 difficultyOccurrences = questDao.countQuestExecutionsForUserByDifficulty(
-                        userId, difficulty.toString(), startDate, endDate
+                        userId, difficulty.toString(), startDate, endDate, QuestStatus.COMPLETED
                 );
 
-                if (difficultyOccurrences > 1) {
+                if (difficultyOccurrences >= 1) {
                     return false;
                 }
                 break;
@@ -448,6 +475,21 @@ public class QuestService {
         };
 
         scheduler.scheduleWithFixedDelay(task, 0, 5, TimeUnit.MINUTES);
+    }
+
+    // vraca i kreriane stare i u ovom nivou
+    public List<QuestExecution> getCompletedForLevelWithoutQuotaExceeding(String userId, int level) {
+        return questDao.getCompletedForLevelWithoutQuotaExceeding(userId, level, QuestStatus.COMPLETED);
+    }
+
+    // vraca resene u ovom nivou, ali krerirane ranije
+    public List<QuestExecution> getOldCompletedForLevelWithoutQuotaExceeding(String userId, int level) {
+        return questDao.getOldCompletedForLevelWithoutQuotaExceeding(userId, level, QuestStatus.COMPLETED);
+    }
+
+    // sve kreirane u ovom nivou
+    public List<QuestExecution> getCreatedExecByLevelAndStatus(String userId, int level) {
+        return questDao.getCreatedExecByLevelAndStatusWithoutQuotaExceeding(userId, level);
     }
 
 }

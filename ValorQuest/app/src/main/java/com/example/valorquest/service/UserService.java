@@ -38,8 +38,6 @@ public class UserService {
 
             Pair<Integer, Boolean> pair;
 
-            System.out.println("Diff: " + xpForDifficulty + " Imp: " + xpForImportance);
-
             int diffXp = 0;
             if(xpForDifficulty){
                 diffXp = QuestXPCalculator.getQuestXPDifficulty(quest.getDifficulty(), user.getLevel());
@@ -51,8 +49,6 @@ public class UserService {
             }
 
             int earnedXP = diffXp + impXp;
-
-            System.out.println("Diff xp:  " + diffXp + " ImpXp" + impXp );
 
             pair = new Pair<>(earnedXP, addXP(user, earnedXP));
             userRepository.save(user.getId(), user, unused -> {

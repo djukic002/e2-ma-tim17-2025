@@ -80,7 +80,7 @@ public interface QuestDao {
     @Query("SELECT COUNT(qe.id) FROM quest_executions qe " +
             "INNER JOIN quests q ON q.id = qe.questId " +
             "WHERE q.userId = :userId AND q.difficulty = :difficulty AND " +
-            "qe.date BETWEEN :startDateTime AND :endDateTime" +
+            "qe.questCompleted BETWEEN :startDateTime AND :endDateTime" +
             " AND qe.status = :completedStatus ")
     int countQuestExecutionsForUserByDifficulty(
             String userId,
@@ -93,7 +93,7 @@ public interface QuestDao {
     @Query("SELECT COUNT(qe.id) FROM quest_executions qe " +
             "INNER JOIN quests q ON q.id = qe.questId " +
             "WHERE q.userId = :userId AND q.importance = :importance AND " +
-            "qe.date BETWEEN :startDateTime AND :endDateTime " +
+            "qe.questCompleted BETWEEN :startDateTime AND :endDateTime " +
             "AND qe.status = :completedStatus ")
     int countQuestExecutionsForUserByImportance(
             String userId,

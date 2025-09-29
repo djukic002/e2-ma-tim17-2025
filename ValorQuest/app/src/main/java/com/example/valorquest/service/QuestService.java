@@ -410,13 +410,11 @@ public class QuestService {
             case LEGENDARY: {
                 LocalDate today = LocalDate.now();
 
-                // Start of week (Monday at 00:00)
                 LocalDate startOfWeek = today.with(DayOfWeek.MONDAY);
-                startDate = startOfWeek.atStartOfDay();  // ✅ LocalDateTime
+                startDate = startOfWeek.atStartOfDay();
 
-                // End of week (Sunday at 23:59:59.999...)
-                LocalDate endOfWeek = today.with(DayOfWeek.SUNDAY).plusDays(1);
-                endDate = endOfWeek.atTime(LocalTime.MAX);  // ✅ LocalDateTime
+                LocalDate endOfWeek = today.with(DayOfWeek.SUNDAY);
+                endDate = endOfWeek.atTime(LocalTime.MAX);
 
                 System.out.println("Start:  " + startDate.toString() + " End: " + endDate.toString() );
 

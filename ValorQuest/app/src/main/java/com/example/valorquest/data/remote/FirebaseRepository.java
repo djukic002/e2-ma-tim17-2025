@@ -56,6 +56,20 @@ public class FirebaseRepository<T> {
                 .addOnFailureListener(e -> liveData.postValue(null));
     }
 
+    public void getAll(RepositoryCallback<List<T>> callback) {
+        db.collection(collectionPath)
+                .get()
+                .addOnSuccessListener(query -> {
+                    List<T> list = new ArrayList<>();
+                    for (DocumentSnapshot doc : query) {
+                        T obj = doc.toObject(modelClass);
+                        if (obj != null) list.add(obj);
+                    }
+                    callback.onComplete(list);
+                })
+                .addOnFailureListener(e -> callback.onComplete(null));
+    }
+
     // DELETE
     public void delete(String id, OnCompleteListener<Void> listener) {
         db.collection(collectionPath).document(id)

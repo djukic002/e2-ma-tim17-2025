@@ -17,17 +17,17 @@ import com.example.valorquest.model.User;
 
 import java.util.List;
 
-public class FriendListAdapter extends ArrayAdapter<User> {
+public class AddFriendAdapter extends ArrayAdapter<User> {
     private final Context context;
     private final FriendActionCallback callback;
 
-    // Callback interface for button actions
+    // Callback interface for "add friend" button
     public interface FriendActionCallback {
-        void onRemoveFriend(User user);
+        void onAddFriend(User user);
     }
 
-    public FriendListAdapter(@NonNull Context context, @NonNull List<User> friends, FriendActionCallback callback) {
-        super(context, 0, friends);
+    public AddFriendAdapter(@NonNull Context context, @NonNull List<User> users, FriendActionCallback callback) {
+        super(context, 0, users);
         this.context = context;
         this.callback = callback;
     }
@@ -39,37 +39,36 @@ public class FriendListAdapter extends ArrayAdapter<User> {
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.item_friend_card, parent, false);
         }
 
-        User friend = getItem(position);
+        User user = getItem(position);
 
         ImageView avatar = convertView.findViewById(R.id.friend_avatar);
         TextView username = convertView.findViewById(R.id.friend_username);
         TextView email = convertView.findViewById(R.id.friend_email);
         Button btnProfile = convertView.findViewById(R.id.btn_view_profile);
-        Button btnRemove = convertView.findViewById(R.id.btn_action); // Reusing your existing button
+        Button btnAdd = convertView.findViewById(R.id.btn_action);
 
-        if (friend != null) {
-            username.setText(friend.getUsername());
-            email.setText(friend.getEmail());
+        if (user != null) {
+            username.setText(user.getUsername());
+            email.setText(user.getEmail());
 
-            // Avatar by avatarId (example)
+            // Load avatar dynamically
             int avatarResId = context.getResources()
-                    .getIdentifier("avatar_" + friend.getAvatarId(), "drawable", getContext().getPackageName());
+                    .getIdentifier("avatar_" + user.getAvatarId(), "drawable", context.getPackageName());
             if (avatarResId != 0) {
                 avatar.setImageResource(avatarResId);
             }
 
             btnProfile.setOnClickListener(v ->
-                    Toast.makeText(getContext(), "Profile of " + friend.getUsername(), Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "Profile of " + user.getUsername(), Toast.LENGTH_SHORT).show()
             );
 
-            // Setup remove button
-            btnRemove.setText("X"); // Make sure the "X" is visible
-            btnRemove.setOnClickListener(v -> {
-                if (callback != null) callback.onRemoveFriend(friend);
+            // Add friend button
+            btnAdd.setText("+");
+            btnAdd.setOnClickListener(v -> {
+                if (callback != null) callback.onAddFriend(user);
             });
         }
 
         return convertView;
     }
 }
-

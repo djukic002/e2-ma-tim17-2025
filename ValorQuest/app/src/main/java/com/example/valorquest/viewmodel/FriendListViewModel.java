@@ -10,8 +10,6 @@ import com.example.valorquest.service.SocialService;
 
 import java.util.List;
 
-import javax.inject.Inject;
-
 public class FriendListViewModel extends ViewModel {
     private final SocialService socialService;
     private final MutableLiveData<List<User>> friendsLiveData = new MutableLiveData<>();
@@ -39,6 +37,23 @@ public class FriendListViewModel extends ViewModel {
             @Override
             public void onError(Exception e) {
                 errorLiveData.postValue(e);
+            }
+        });
+    }
+
+    // 🔹 New: remove friend
+    public void removeFriend(User friend, Runnable onSuccess, Runnable onFailure) {
+        socialService.removeFriend(friend, success -> {
+            if (success) {
+                // update list after removal
+                List<User> current = friendsLiveData.getValue();
+                if (current != null) {
+                    current.remove(friend);
+                    friendsLiveData.postValue(current);
+                }
+                onSuccess.run();
+            } else {
+                onFailure.run();
             }
         });
     }

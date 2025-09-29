@@ -6,7 +6,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,6 +44,10 @@ public class FriendListFragment extends Fragment {
         setupAdapter();
         setupViewModel();
         observeViewModel();
+        btnAddFriend.setOnClickListener(v -> {
+            NavController navController = Navigation.findNavController(requireView());
+            navController.navigate(R.id.action_friendListFragment_to_addNewFriendFragment);
+        });
 
         // Replace with your current user ID
         String currentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
@@ -49,12 +56,24 @@ public class FriendListFragment extends Fragment {
 
     private void initializeViews(View view) {
         listView = view.findViewById(R.id.friendsListView);
+        btnAddFriend = view.findViewById(R.id.btn_add_friend);
     }
 
     private void setupAdapter() {
-        adapter = new FriendListAdapter(requireContext(), new ArrayList<>());
+        adapter = new FriendListAdapter(requireContext(), new ArrayList<>(), friend -> {
+            viewModel.removeFriend(friend,
+                    () -> {
+                        Toast.makeText(requireContext(),
+                                friend.getUsername() + " has been removed.", Toast.LENGTH_SHORT).show();
+                    },
+                    () -> {
+                        Toast.makeText(requireContext(),
+                                "Failed to remove " + friend.getUsername(), Toast.LENGTH_SHORT).show();
+                    });
+        });
         listView.setAdapter(adapter);
     }
+
 
     private void setupViewModel() {
         viewModel = new ViewModelProvider(this).get(FriendListViewModel.class);

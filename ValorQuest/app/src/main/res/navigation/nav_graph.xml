@@ -52,7 +52,18 @@
         android:id="@+id/friendListFragment"
         android:name="com.example.valorquest.ui.social.FriendListFragment"
         android:label="Friends"
-        tools:layout="@layout/fragment_friend_list" />
+        tools:layout="@layout/fragment_friend_list">
+
+        <action
+            android:id="@+id/action_friendListFragment_to_addNewFriendFragment"
+            app:destination="@id/addNewFriendFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/addNewFriendFragment"
+        android:name="com.example.valorquest.ui.social.AddNewFriendFragment"
+        android:label="Add New Friend"
+        tools:layout="@layout/fragment_add_new_friend" />
 
     <fragment
         android:id="@+id/profileFragment"

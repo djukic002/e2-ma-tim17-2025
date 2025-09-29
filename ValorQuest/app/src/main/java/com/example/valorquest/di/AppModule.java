@@ -36,7 +36,7 @@ public class AppModule {
                 .build();
 
         // Clear all tables on startup (for testing/dev only)
-        AppDatabase.databaseWriteExecutor.execute(db::clearAllData);
+        // AppDatabase.databaseWriteExecutor.execute(db::clearAllData);
 
         return db;
     }

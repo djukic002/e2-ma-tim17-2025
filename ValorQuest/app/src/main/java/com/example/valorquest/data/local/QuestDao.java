@@ -107,8 +107,9 @@ public interface QuestDao {
             "INNER JOIN quests q ON q.id = qe.questId " +
             "WHERE q.userId = :userId " +
             "AND qe.createdInLevel = :level " +
+            "AND qe.quotaExceeded = 0 " +
             "AND qe.status not in ('PAUSED','CANCELLED')")
-    List<QuestExecution> getCreatedExecByLevelAndStatus(String userId, int level);
+    List<QuestExecution> getCreatedExecByLevelAndStatusWithoutQuotaExceeding(String userId, int level);
 
     @Query("SELECT qe.* FROM quest_executions qe " +
             "INNER JOIN quests q ON q.id = qe.questId " +

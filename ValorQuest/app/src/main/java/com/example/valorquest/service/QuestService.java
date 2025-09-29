@@ -1,7 +1,6 @@
 package com.example.valorquest.service;
 
 import android.util.Log;
-import android.widget.Switch;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -356,10 +355,10 @@ public class QuestService {
                         userId, importance.toString(), startDate, endDate, QuestStatus.COMPLETED
                 );
 
-                if ((importance == Importance.LOW || importance == Importance.MEDIUM) && importanceOccurrences > 5) {
+                if ((importance == Importance.LOW || importance == Importance.MEDIUM) && importanceOccurrences >= 5) {
                     return false;
                 }
-                if (importance == Importance.HIGH && importanceOccurrences > 2) {
+                if (importance == Importance.HIGH && importanceOccurrences >= 2) {
                     return false;
                 }
                 break;
@@ -373,7 +372,7 @@ public class QuestService {
                         userId, importance.toString(), startDate, endDate, QuestStatus.COMPLETED
                 );
 
-                if (importanceOccurrences > 1) {
+                if (importanceOccurrences >= 1) {
                     return false;
                 }
                 break;
@@ -399,10 +398,10 @@ public class QuestService {
                         userId, difficulty.toString(), startDate, endDate, QuestStatus.COMPLETED
                 );
 
-                if ((difficulty == Difficulty.NOVICE || difficulty == Difficulty.ADVENTURER) && difficultyOccurrences > 5) {
+                if ((difficulty == Difficulty.NOVICE || difficulty == Difficulty.ADVENTURER) && difficultyOccurrences >= 5) {
                     return false;
                 }
-                if (difficulty == Difficulty.VETERAN && difficultyOccurrences > 2) {
+                if (difficulty == Difficulty.VETERAN && difficultyOccurrences >= 2) {
                     return false;
                 }
                 break;
@@ -422,7 +421,7 @@ public class QuestService {
                         userId, difficulty.toString(), startDate, endDate, QuestStatus.COMPLETED
                 );
 
-                if (difficultyOccurrences > 1) {
+                if (difficultyOccurrences >= 1) {
                     return false;
                 }
                 break;
@@ -485,7 +484,7 @@ public class QuestService {
 
     // sve kreirane u ovom nivou
     public List<QuestExecution> getCreatedExecByLevelAndStatus(String userId, int level) {
-        return questDao.getCreatedExecByLevelAndStatus(userId, level);
+        return questDao.getCreatedExecByLevelAndStatusWithoutQuotaExceeding(userId, level);
     }
 
 }

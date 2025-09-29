@@ -25,6 +25,7 @@ import com.example.valorquest.model.dto.DetailedQuestExecutionDto;
 import com.example.valorquest.model.enums.QuestStatus;
 import com.example.valorquest.viewmodel.QuestsViewModel;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -130,7 +131,19 @@ public class DetailedQuestFragment extends Fragment {
         btnComplete.setOnClickListener(v -> {
             viewModel.changeActiveQuestStatus(quest.questId, quest.executionId, QuestStatus.COMPLETED, this.user).observe(getViewLifecycleOwner(), result -> {
                 if (result.getStatus() == Result.Status.SUCCESS) {
-                    Toast.makeText(getContext(), result.getData(), Toast.LENGTH_SHORT).show();
+                    String data = result.getData();
+
+                    if ("LEVELUP".equals(data)) {
+                        new MaterialAlertDialogBuilder(requireContext())
+                                .setTitle("Congratulations!")
+                                .setMessage("Boss Gorlock is waiting for you, whenever you are ready!")
+                                .setPositiveButton("I'll crush him!", (dialog, which) -> dialog.dismiss())
+                                .setNegativeButton("Im scared...", (dialog, which) -> dialog.dismiss())
+                                .show();
+                    } else {
+                        Toast.makeText(getContext(), data, Toast.LENGTH_SHORT).show();
+                    }
+
                 } else if (result.getStatus() == Result.Status.ERROR) {
                     Toast.makeText(getContext(), result.getMessage(), Toast.LENGTH_SHORT).show();
                 }

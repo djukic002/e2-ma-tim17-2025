@@ -301,18 +301,23 @@ public class QuestService {
 
                         if (pair.second) {
                             getBossService().handleBossAfterLevelUp(quest.getUserId());
+
+                            AppDatabase.databaseWriteExecutor.execute(() -> {
+                                questDao.updateExecution(execution);
+                                result.postValue(Result.success("LEVELUP"));
+                            });
+
+                        } else {
+                            AppDatabase.databaseWriteExecutor.execute(() -> {
+                                questDao.updateExecution(execution);
+
+                                String res = execution.isQuotaExceeded()
+                                        ? "Quest completed, but limited xp gained"
+                                        : "Quest completed, full xp rewards!";
+
+                                result.postValue(Result.success(res));
+                            });
                         }
-
-                        AppDatabase.databaseWriteExecutor.execute(() -> {
-                            questDao.updateExecution(execution);
-
-                            String res = execution.isQuotaExceeded()
-                                    ? "Quest completed, but limited xp gained"
-                                    : "Quest completed, full xp rewards!";
-
-                            // Post result back to LiveData on main thread
-                            result.postValue(Result.success(res));
-                        });
                     });
                 }
                 else if(status == QuestStatus.CANCELLED){

@@ -27,7 +27,9 @@ import android.widget.VideoView;
 
 import com.example.valorquest.R;
 import com.example.valorquest.model.Boss;
+import com.example.valorquest.model.Quest;
 import com.example.valorquest.model.Result;
+import com.example.valorquest.model.User;
 import com.example.valorquest.model.enums.BossStatus;
 import com.example.valorquest.viewmodel.BossFightViewmodel;
 import com.example.valorquest.viewmodel.QuestsViewModel;
@@ -39,7 +41,7 @@ import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
 public class BossFightFragment extends Fragment {
-    private int pp = 50;
+    private int pp;
     private BossFightViewmodel bossViewmodel;
     private Boss boss;
     private MediaPlayer bgMusicPlayer;
@@ -68,18 +70,29 @@ public class BossFightFragment extends Fragment {
 
                 if (boss == null) {
                     Toast.makeText(requireContext(), "No active boss. Returning to main menu.", Toast.LENGTH_SHORT).show();
-                    navController.popBackStack(); // safely go back
-                    return;
+                    navController.popBackStack(R.id.mainMenuFragment, false);
+                } else {
+                    updateUI();
                 }
-
-                updateUI();
             } else {
                 Toast.makeText(requireContext(), "Failed to load boss: " + result.getMessage(), Toast.LENGTH_SHORT).show();
-                navController.popBackStack(); // safely go back
+                navController.popBackStack(R.id.mainMenuFragment, false);
             }
         });
     }
 
+    private void loadCurrentUser(String userId) {
+        bossViewmodel.getUserById(userId).observe(getViewLifecycleOwner(), user -> {
+            if (!isAdded()) return;
+
+            if (user != null) {
+                this.pp = user.getBasePP();
+            } else {
+                Toast.makeText(requireContext(), "Failed to load user.", Toast.LENGTH_SHORT).show();
+                navController.popBackStack(R.id.mainMenuFragment, false);
+            }
+        });
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -111,11 +124,16 @@ public class BossFightFragment extends Fragment {
         tvHitChanceValue = view.findViewById(R.id.tvHitChanceValue);
         btnBoss = view.findViewById(R.id.btnBoss);
 
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-
         bossViewmodel = new ViewModelProvider(this).get(BossFightViewmodel.class);
-        if(user != null)
-            loadActiveBoss(user.getUid());
+
+        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+
+        if (firebaseUser != null) {
+            loadCurrentUser(firebaseUser.getUid());
+            loadActiveBoss(firebaseUser.getUid());
+        } else {
+            navController.popBackStack(R.id.mainMenuFragment, false);
+        }
 
         Uri uri = Uri.parse("android.resource://" + requireContext().getPackageName() + "/" + R.raw.boss1_idle_anim);
         bossVideo.setVideoURI(uri);
@@ -395,9 +413,12 @@ public class BossFightFragment extends Fragment {
                     SensorManager.SENSOR_DELAY_GAME);
         }
 
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user != null) {
-            loadActiveBoss(user.getUid());
+        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (firebaseUser != null) {
+            loadCurrentUser(firebaseUser.getUid());
+            loadActiveBoss(firebaseUser.getUid());
+        } else {
+            navController.popBackStack(R.id.mainMenuFragment, false);
         }
     }
 

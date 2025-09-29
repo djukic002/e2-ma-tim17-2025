@@ -1,7 +1,6 @@
 package com.example.valorquest.di;
 
 import android.content.Context;
-import android.util.Log;
 
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
@@ -36,7 +35,7 @@ public class AppModule {
                 .build();
 
         // Clear all tables on startup (for testing/dev only)
-        //AppDatabase.databaseWriteExecutor.execute(db::clearAllData);
+        // AppDatabase.databaseWriteExecutor.execute(db::clearAllData);
 
         return db;
     }

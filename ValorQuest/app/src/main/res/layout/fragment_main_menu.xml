@@ -124,7 +124,7 @@
         android:id="@+id/btnBoss"
         android:layout_width="0dp"
         android:layout_height="64dp"
-        android:text="Boss test"
+        android:text="Boss fight"
         android:textAllCaps="false"
         android:textSize="20sp"
         android:textColor="#C9A227"
@@ -138,6 +138,7 @@
         app:layout_constraintWidth_percent="0.5"
         app:layout_constraintTop_toBottomOf="@id/btnCategories"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        android:visibility="gone"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

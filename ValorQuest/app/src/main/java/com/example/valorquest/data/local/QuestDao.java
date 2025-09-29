@@ -13,6 +13,7 @@ import com.example.valorquest.model.QuestExecution;
 import com.example.valorquest.model.QuestWithExecutions;
 import com.example.valorquest.model.enums.QuestStatus;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Dao
@@ -75,4 +76,27 @@ public interface QuestDao {
 
     @Query("SELECT * FROM quest_executions WHERE status = :status AND date < :now")
     List<QuestExecution> getActiveExecutionsBefore(long now, QuestStatus status);
+
+    @Query("SELECT COUNT(qe.id) FROM quest_executions qe " +
+            "INNER JOIN quests q ON q.id = qe.questId " +
+            "WHERE q.userId = :userId AND q.difficulty = :difficulty AND " +
+            "qe.date BETWEEN :startDateTime AND :endDateTime")
+    int countQuestExecutionsForUserByDifficulty(
+            String userId,
+            String difficulty,
+            LocalDateTime startDateTime,
+            LocalDateTime endDateTime
+    );
+
+    @Query("SELECT COUNT(qe.id) FROM quest_executions qe " +
+            "INNER JOIN quests q ON q.id = qe.questId " +
+            "WHERE q.userId = :userId AND q.importance = :importance AND " +
+            "qe.date BETWEEN :startDateTime AND :endDateTime")
+    int countQuestExecutionsForUserByImportance(
+            String userId,
+            String importance,
+            LocalDateTime startDateTime,
+            LocalDateTime endDateTime
+    );
+
 }

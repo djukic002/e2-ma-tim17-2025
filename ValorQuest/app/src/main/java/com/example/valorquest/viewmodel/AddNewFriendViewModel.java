@@ -6,7 +6,7 @@ import androidx.lifecycle.ViewModel;
 
 import com.example.valorquest.data.repositories.UserRepository;
 import com.example.valorquest.model.User;
-import com.example.valorquest.service.SocialService;
+import com.example.valorquest.service.FriendService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 
 public class AddNewFriendViewModel extends ViewModel {
-    private final SocialService socialService;
+    private final FriendService friendService;
 
     private final MutableLiveData<List<User>> _allUsers = new MutableLiveData<>(new ArrayList<>());
     private final MutableLiveData<List<User>> _filteredUsers = new MutableLiveData<>(new ArrayList<>());
@@ -29,12 +29,12 @@ public class AddNewFriendViewModel extends ViewModel {
 
     @Inject
     public AddNewFriendViewModel() {
-        this.socialService = new SocialService(new UserRepository());
+        this.friendService = new FriendService(new UserRepository());
     }
 
     // 🔹 Load all potential new friends
     public void loadUsers() {
-        socialService.getAllNonFriends(new SocialService.UsersCallback() {
+        friendService.getAllNonFriends(new FriendService.UsersCallback() {
             @Override
             public void onUsersLoaded(List<User> users) {
                 cachedUsers = users;
@@ -65,7 +65,7 @@ public class AddNewFriendViewModel extends ViewModel {
     }
 
     public void addFriend(User friend, Runnable onSuccess, Runnable onFailure) {
-        socialService.addFriend(friend, success -> {
+        friendService.addFriend(friend, success -> {
             if (success) {
                 // Remove from cache so they don’t show up again
                 cachedUsers.removeIf(u -> u.getId().equals(friend.getId()));

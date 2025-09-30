@@ -7,6 +7,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.time.LocalDateTime;
 
@@ -58,10 +59,34 @@ public class AuthRepository {
                         FirebaseUser firebaseUser = auth.getCurrentUser();
                         if (firebaseUser != null) {
                             if (firebaseUser.isEmailVerified()) {
-                                // Login successful and email verified
+                                // Login successful
                                 userLiveData.postValue(firebaseUser);
+
+                                // --- FCM token handling ---
+                                FirebaseMessaging.getInstance().getToken()
+                                        .addOnCompleteListener(tokenTask -> {
+                                            if (tokenTask.isSuccessful() && tokenTask.getResult() != null) {
+                                                String token = tokenTask.getResult();
+
+                                                // Step 1: Remove this token from *all other users*
+                                                userRepository.removeTokenFromOtherUsers(firebaseUser.getUid(), token,
+                                                        removeTask -> {
+                                                            // Step 2: Add token to this user (if not already present)
+                                                            userRepository.getById(firebaseUser.getUid(), user -> {
+                                                                if (user != null) {
+                                                                    if (!user.getFcmTokens().contains(token)) {
+                                                                        user.getFcmTokens().add(token);
+                                                                        userRepository.save(user.getId(), user, saveTask -> {
+                                                                            // Optional: log success/failure
+                                                                        });
+                                                                    }
+                                                                }
+                                                            });
+                                                        });
+                                            }
+                                        });
+
                             } else {
-                                // Email not verified
                                 errorLiveData.postValue("Please verify your email before logging in.");
                             }
                         } else {
@@ -72,6 +97,8 @@ public class AuthRepository {
                     }
                 });
     }
+
+
 }
 
 

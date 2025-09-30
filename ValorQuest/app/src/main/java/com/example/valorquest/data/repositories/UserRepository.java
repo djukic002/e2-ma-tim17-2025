@@ -10,4 +10,5 @@ public class UserRepository extends FirebaseRepository<User> {
     }
 
     // You can add custom methods specific to users here
+
 }

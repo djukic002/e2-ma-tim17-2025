@@ -6,17 +6,17 @@ import androidx.lifecycle.ViewModel;
 
 import com.example.valorquest.data.repositories.UserRepository;
 import com.example.valorquest.model.User;
-import com.example.valorquest.service.SocialService;
+import com.example.valorquest.service.FriendService;
 
 import java.util.List;
 
 public class FriendListViewModel extends ViewModel {
-    private final SocialService socialService;
+    private final FriendService friendService;
     private final MutableLiveData<List<User>> friendsLiveData = new MutableLiveData<>();
     private final MutableLiveData<Exception> errorLiveData = new MutableLiveData<>();
 
     public FriendListViewModel() {
-        this.socialService = new SocialService(new UserRepository());
+        this.friendService = new FriendService(new UserRepository());
     }
 
     public LiveData<List<User>> getFriendsLiveData() {
@@ -28,7 +28,7 @@ public class FriendListViewModel extends ViewModel {
     }
 
     public void loadFriends(String currentUserId) {
-        socialService.getUserFriends(currentUserId, new SocialService.FriendsCallback() {
+        friendService.getUserFriends(currentUserId, new FriendService.FriendsCallback() {
             @Override
             public void onFriendsLoaded(List<User> friends) {
                 friendsLiveData.postValue(friends);
@@ -43,7 +43,7 @@ public class FriendListViewModel extends ViewModel {
 
     // 🔹 New: remove friend
     public void removeFriend(User friend, Runnable onSuccess, Runnable onFailure) {
-        socialService.removeFriend(friend, success -> {
+        friendService.removeFriend(friend, success -> {
             if (success) {
                 // update list after removal
                 List<User> current = friendsLiveData.getValue();

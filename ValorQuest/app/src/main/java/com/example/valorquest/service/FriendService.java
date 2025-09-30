@@ -14,11 +14,11 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 @Singleton
-public class SocialService {
+public class FriendService {
     private final UserRepository userRepository;
 
     @Inject
-    public SocialService(UserRepository userRepository) {
+    public FriendService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 

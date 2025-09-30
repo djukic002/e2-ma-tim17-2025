@@ -2,10 +2,12 @@ package com.example.valorquest.data.remote;
 
 import androidx.lifecycle.MutableLiveData;
 
+import com.example.valorquest.model.User;
 import com.example.valorquest.utils.RepositoryCallback;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.WriteBatch;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -75,5 +77,29 @@ public class FirebaseRepository<T> {
         db.collection(collectionPath).document(id)
                 .delete()
                 .addOnCompleteListener(listener);
+    }
+
+    public void removeTokenFromOtherUsers(String currentUserId, String token, OnCompleteListener<Void> listener) {
+        db.collection("users")
+                .whereArrayContains("fcmTokens", token)
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful() && task.getResult() != null) {
+                        WriteBatch batch = db.batch();
+                        for (DocumentSnapshot doc : task.getResult()) {
+                            if (!doc.getId().equals(currentUserId)) {
+                                User otherUser = doc.toObject(User.class);
+                                if (otherUser != null && otherUser.getFcmTokens().contains(token)) {
+                                    otherUser.getFcmTokens().remove(token);
+                                    batch.set(doc.getReference(), otherUser);
+                                }
+                            }
+                        }
+                        batch.commit().addOnCompleteListener(listener);
+                    } else {
+                        // Still call listener so login flow continues
+                        listener.onComplete(null);
+                    }
+                });
     }
 }

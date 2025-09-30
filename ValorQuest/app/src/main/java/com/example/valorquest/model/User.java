@@ -18,6 +18,9 @@ public class User {
     private Timestamp leveledUpAt;
     private List<String> friends = new ArrayList<>();
     private String allianceId;
+
+    private List<String> fcmTokens = new ArrayList<>();
+
     public User() {} // Required for Firestore
 
     public User(String id, String email, String username, int avatarId) {
@@ -104,5 +107,13 @@ public class User {
 
     public void setFriends(List<String> friends) {
         this.friends = friends;
+    }
+
+    public List<String> getFcmTokens() {
+        return fcmTokens;
+    }
+
+    public void setFcmTokens(List<String> fcmTokens) {
+        this.fcmTokens = fcmTokens;
     }
 }

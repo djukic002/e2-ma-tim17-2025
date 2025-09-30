@@ -17,6 +17,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.example.valorquest.R;
+import com.example.valorquest.model.User;
 import com.example.valorquest.viewmodel.FriendListViewModel;
 import com.google.android.material.button.MaterialButton;
 import com.google.firebase.auth.FirebaseAuth;
@@ -28,7 +29,7 @@ public class FriendListFragment extends Fragment {
     private ListView listView;
     private MaterialButton btnCreateAlliance;
     private MaterialButton btnAddFriend;
-    private FriendListAdapter adapter;
+    private SocialUserAdapter adapter;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -60,17 +61,29 @@ public class FriendListFragment extends Fragment {
     }
 
     private void setupAdapter() {
-        adapter = new FriendListAdapter(requireContext(), new ArrayList<>(), friend -> {
-            viewModel.removeFriend(friend,
-                    () -> {
-                        Toast.makeText(requireContext(),
-                                friend.getUsername() + " has been removed.", Toast.LENGTH_SHORT).show();
-                    },
-                    () -> {
-                        Toast.makeText(requireContext(),
-                                "Failed to remove " + friend.getUsername(), Toast.LENGTH_SHORT).show();
-                    });
-        });
+        adapter = new SocialUserAdapter(
+                requireContext(),
+                new ArrayList<>(),
+                SocialUserAdapter.Mode.FRIEND_LIST,
+                new SocialUserAdapter.ActionCallback() {
+                    @Override
+                    public void onViewProfile(User user) {
+                        Toast.makeText(requireContext(), "Profile: " + user.getUsername(), Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onRemoveFriend(User friend) {
+                        viewModel.removeFriend(friend,
+                                () -> Toast.makeText(requireContext(),
+                                        friend.getUsername() + " has been removed.", Toast.LENGTH_SHORT).show(),
+                                () -> Toast.makeText(requireContext(),
+                                        "Failed to remove " + friend.getUsername(), Toast.LENGTH_SHORT).show());
+                    }
+
+                    @Override public void onAddFriend(User user) {} // not used here
+                    @Override public void onSelectForAlliance(User user) {} // not used here
+                }
+        );
         listView.setAdapter(adapter);
     }
 

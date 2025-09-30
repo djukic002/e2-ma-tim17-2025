@@ -26,7 +26,7 @@ import java.util.ArrayList;
 public class AddNewFriendFragment extends Fragment {
     private AddNewFriendViewModel viewModel;
     private ListView listView;
-    private AddFriendAdapter adapter;
+    private SocialUserAdapter adapter;
     private TextInputEditText searchBar;
     private TextView emptyStateText;
 
@@ -53,21 +53,33 @@ public class AddNewFriendFragment extends Fragment {
     }
 
     private void setupAdapter() {
-        adapter = new AddFriendAdapter(requireContext(), new ArrayList<>(), new AddFriendAdapter.FriendActionCallback() {
-            @Override
-            public void onAddFriend(User user) {
-                viewModel.addFriend(user,
-                        () -> {
-                            adapter.remove(user);
-                            adapter.notifyDataSetChanged();
-                            Toast.makeText(requireContext(),
-                                    user.getUsername() + " added!", Toast.LENGTH_SHORT).show();
-                        },
-                        () -> Toast.makeText(requireContext(),
-                                "Failed to add " + user.getUsername(),
-                                Toast.LENGTH_SHORT).show());
-            }
-        });
+        adapter = new SocialUserAdapter(
+                requireContext(),
+                new ArrayList<>(),
+                SocialUserAdapter.Mode.ADD_FRIEND,
+                new SocialUserAdapter.ActionCallback() {
+                    @Override
+                    public void onViewProfile(User user) {
+                        Toast.makeText(requireContext(), "Profile: " + user.getUsername(), Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override public void onRemoveFriend(User user) {} // not used here
+                    @Override
+                    public void onAddFriend(User user) {
+                        viewModel.addFriend(user,
+                                () -> {
+                                    adapter.remove(user);
+                                    adapter.notifyDataSetChanged();
+                                    Toast.makeText(requireContext(),
+                                            user.getUsername() + " added!", Toast.LENGTH_SHORT).show();
+                                },
+                                () -> Toast.makeText(requireContext(),
+                                        "Failed to add " + user.getUsername(), Toast.LENGTH_SHORT).show());
+                    }
+
+                    @Override public void onSelectForAlliance(User user) {} // not used here
+                }
+        );
         listView.setAdapter(adapter);
     }
 

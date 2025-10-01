@@ -21,6 +21,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
@@ -30,12 +31,15 @@ import com.example.valorquest.model.Boss;
 import com.example.valorquest.model.Quest;
 import com.example.valorquest.model.Result;
 import com.example.valorquest.model.User;
+import com.example.valorquest.model.UserItem;
 import com.example.valorquest.model.enums.BossStatus;
 import com.example.valorquest.viewmodel.BossFightViewmodel;
 import com.example.valorquest.viewmodel.QuestsViewModel;
 import com.google.android.material.button.MaterialButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+
+import java.util.List;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
@@ -93,6 +97,29 @@ public class BossFightFragment extends Fragment {
             }
         });
     }
+    private void loadUserItems(String userId) {
+        bossViewmodel.getUserItems(userId).observe(getViewLifecycleOwner(), userItems -> {
+            if (!isAdded()) return;
+
+            if (userItems != null && !userItems.isEmpty()) {
+                showUserItems(userItems); // populates equipmentContainer
+            } else {
+                System.out.println("No items found for user: " + userId);
+            }
+        });
+    }
+
+    private void showUserItems(List<UserItem> userItems) {
+        LinearLayout container = requireView().findViewById(R.id.equipmentContainer);
+        container.removeAllViews(); // clear previous items
+
+        UserItemArrayAdapter adapter = new UserItemArrayAdapter(requireContext(), userItems);
+
+        for (int i = 0; i < adapter.getCount(); i++) {
+            View itemView = adapter.getView(i, null, container);
+            container.addView(itemView);
+        }
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -131,6 +158,8 @@ public class BossFightFragment extends Fragment {
         if (firebaseUser != null) {
             loadCurrentUser(firebaseUser.getUid());
             loadActiveBoss(firebaseUser.getUid());
+            loadUserItems(firebaseUser.getUid());
+            bossViewmodel.seedUserItems(firebaseUser.getUid()); // izbrisati kad bude postojali itemi, ovo i u onResume isto
         } else {
             navController.popBackStack(R.id.mainMenuFragment, false);
         }
@@ -413,13 +442,15 @@ public class BossFightFragment extends Fragment {
                     SensorManager.SENSOR_DELAY_GAME);
         }
 
-        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        if (firebaseUser != null) {
-            loadCurrentUser(firebaseUser.getUid());
-            loadActiveBoss(firebaseUser.getUid());
-        } else {
-            navController.popBackStack(R.id.mainMenuFragment, false);
-        }
+        // mislim da ipak nema potrebe za ovim
+//        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+//        if (firebaseUser != null) {
+//            loadCurrentUser(firebaseUser.getUid());
+//            loadActiveBoss(firebaseUser.getUid());
+//            loadUserItems(firebaseUser.getUid());
+//        } else {
+//            navController.popBackStack(R.id.mainMenuFragment, false);
+//        }
     }
 
     @Override

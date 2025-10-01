@@ -197,29 +197,13 @@
         android:background="@drawable/bg_equipment_bar">
 
         <LinearLayout
+            android:id="@+id/equipmentContainer"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:orientation="horizontal">
-
-            <!-- Example items -->
-            <ImageView
-                android:layout_width="64dp"
-                android:layout_height="64dp"
-                android:src="@drawable/a1"
-                android:layout_marginHorizontal="5dp"/>
-
-            <ImageView
-                android:layout_width="64dp"
-                android:layout_height="64dp"
-                android:src="@drawable/a2"
-                android:layout_marginHorizontal="5dp"/>
-
-            <ImageView
-                android:layout_width="64dp"
-                android:layout_height="64dp"
-                android:src="@drawable/a3"
-                android:layout_marginHorizontal="5dp"/>
+            <!-- No ImageViews here, they will be added by UserItemArrayAdapter -->
         </LinearLayout>
+
     </HorizontalScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

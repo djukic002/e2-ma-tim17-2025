@@ -6,7 +6,7 @@ public class UserItem {
     private int remainingBattles;
     private int reforgeLevel;
     private int upgradeLevel;
-
+    public UserItem(){}
     public UserItem(String id, String equipmentId, int remainingBattles, int reforgeLevel, int upgradeLevel) {
         this.id = id;
         this.equipmentId = equipmentId;

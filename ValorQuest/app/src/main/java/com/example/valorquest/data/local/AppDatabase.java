@@ -15,7 +15,7 @@ import java.util.concurrent.Executors;
 @Database(entities = {Category.class,
         Quest.class,
         QuestExecution.class},
-        version = 3,
+        version = 5,
         exportSchema = false)
 @TypeConverters({Converters.class})
 public abstract class AppDatabase extends RoomDatabase {
@@ -24,4 +24,7 @@ public abstract class AppDatabase extends RoomDatabase {
     private static final int NUMBER_OF_THREADS = 4;
     public static final ExecutorService databaseWriteExecutor =
             Executors.newFixedThreadPool(NUMBER_OF_THREADS);
+    public void clearAllData() {
+        clearAllTables();
+    }
 }

@@ -5,6 +5,7 @@ import androidx.room.TypeConverter;
 import com.example.valorquest.model.enums.Difficulty;
 import com.example.valorquest.model.enums.Importance;
 import com.example.valorquest.model.enums.QuestStatus;
+import com.google.firebase.Timestamp;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -53,5 +54,11 @@ public class Converters {
     @TypeConverter
     public static QuestStatus toQuestStatus(String value) {
         return value == null ? null : QuestStatus.valueOf(value);
+    }
+
+    public static LocalDateTime fromFirebaseTimestamp(Timestamp timestamp) {
+        if (timestamp == null) return null;
+        Instant instant = timestamp.toDate().toInstant();
+        return LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
     }
 }

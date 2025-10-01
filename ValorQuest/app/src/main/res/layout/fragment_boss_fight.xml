@@ -27,74 +27,44 @@
         app:layout_constraintEnd_toEndOf="@id/bossVideo"
         android:elevation="10dp">
 
-        <!-- Top HUD: HP left, PP right -->
-        <LinearLayout
-            android:id="@+id/topHud"
+        <!-- ************ HP BAR (TOP OVERLAY - Bar remains) ************ -->
+        <RelativeLayout
+            android:id="@+id/hpBarContainer"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center"
+            android:layout_marginHorizontal="12dp"
+            android:layout_marginTop="8dp"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            android:layout_margin="8dp">
+            android:elevation="1dp">
 
-            <!-- HP -->
-            <LinearLayout
-                android:orientation="horizontal"
+            <!-- HP Progress Bar (Red) -->
+            <ProgressBar
+                android:id="@+id/pbHpBar"
+                style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="18dp"
+                android:max="100"
+                android:progress="100"
+                android:progressTint="#CC3333"
+                android:backgroundTint="#600000"
+                android:scaleY="2.5" />
+
+            <!-- HP Label and Value centered over the bar -->
+            <TextView
+                android:id="@+id/tvHpValue"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="10dp">
+                android:text="HP: 200/200"
+                android:textColor="#FFFFFF"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:fontFamily="@font/main_font_family"
+                android:layout_centerInParent="true" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="HP:"
-                    android:textColor="#8B1E1E"
-                    android:textSize="24sp"
-                    android:fontFamily="@font/main_font_family"
-                    android:textStyle="bold"
-                    android:layout_marginEnd="4dp"/>
-
-                <TextView
-                    android:id="@+id/tvHpValue"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="200"
-                    android:textColor="#8B1E1E"
-                    android:textSize="24sp"
-                    android:fontFamily="@font/main_font_family"
-                    android:textStyle="bold"/>
-            </LinearLayout>
-
-            <!-- PP -->
-            <LinearLayout
-                android:orientation="horizontal"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="10dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="PP:"
-                    android:textColor="#1E3A8A"
-                    android:textSize="24sp"
-                    android:fontFamily="@font/main_font_family"
-                    android:textStyle="bold"
-                    android:layout_marginEnd="4dp"/>
-
-                <TextView
-                    android:id="@+id/tvPpValue"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="50"
-                    android:textColor="#1E3A8A"
-                    android:textSize="24sp"
-                    android:fontFamily="@font/main_font_family"
-                    android:textStyle="bold"/>
-            </LinearLayout>
-        </LinearLayout>
+        </RelativeLayout>
+        <!-- ************ END HP BAR ************ -->
 
         <!-- Row at the bottom of video: Attack counter | Button | Hit chance -->
         <LinearLayout
@@ -181,6 +151,43 @@
             </LinearLayout>
 
         </LinearLayout>
+        <!-- ************ END bottomHud ************ -->
+
+
+        <!-- ************ PP TEXT/LABEL (ABOVE bottomHud - Reverted to text) ************ -->
+        <LinearLayout
+            android:id="@+id/ppTextViewContainer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            app:layout_constraintBottom_toTopOf="@id/bottomHud"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginBottom="8dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="PP:"
+                android:textColor="#66B2FF"
+                android:textSize="24sp"
+                android:fontFamily="@font/main_font_family"
+                android:textStyle="bold"
+                android:layout_marginEnd="4dp"/>
+
+            <TextView
+                android:id="@+id/tvPpValue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="50"
+                android:textColor="#66B2FF"
+                android:textSize="28sp"
+                android:fontFamily="@font/main_font_family"
+                android:textStyle="bold"/>
+        </LinearLayout>
+        <!-- ************ END PP TEXT/LABEL ************ -->
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <!-- Equipment bar -->

@@ -22,6 +22,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
@@ -54,6 +55,7 @@ public class BossFightFragment extends Fragment {
     private MediaPlayer bgMusicPlayer;
     private VideoView bossVideo;
     private TextView tvHpValue, tvPpValue, tvAttackCountValue, tvHitChanceValue;
+    private ProgressBar pbHpBar;
     private MaterialButton btnBoss;
     private SoundPool soundPool;
     private int backoffSound, deathSound, notWelcomeSound, smashSound, swordSound, laughSound ,grunt1Sound, grunt2Sound, grunt3Sound, pathethicSound;
@@ -172,6 +174,7 @@ public class BossFightFragment extends Fragment {
         tvPpValue = view.findViewById(R.id.tvPpValue);
         tvAttackCountValue = view.findViewById(R.id.tvAttackCountValue);
         tvHitChanceValue = view.findViewById(R.id.tvHitChanceValue);
+        pbHpBar = view.findViewById(R.id.pbHpBar);
         btnBoss = view.findViewById(R.id.btnBoss);
 
         bossViewmodel = new ViewModelProvider(this).get(BossFightViewmodel.class);
@@ -272,11 +275,17 @@ public class BossFightFragment extends Fragment {
     }
 
     private void updateUI() {
-        tvHpValue.setText(String.valueOf(boss.getCurrentHp()));
+        int currentHp = boss.getCurrentHp();
+        int originalHp = boss.getOriginalHp();
+
+        pbHpBar.setMax(originalHp);
+        pbHpBar.setProgress(currentHp);
+        tvHpValue.setText(currentHp + "/" + originalHp);
         tvPpValue.setText(String.valueOf(pp));
         tvAttackCountValue.setText(String.valueOf(boss.getAttacksRemaining()));
         tvHitChanceValue.setText(String.valueOf((int)(this.hitChance * 100)));
     }
+
 
     private void performAttack() {
         if (boss.getAttacksRemaining() <= 0){

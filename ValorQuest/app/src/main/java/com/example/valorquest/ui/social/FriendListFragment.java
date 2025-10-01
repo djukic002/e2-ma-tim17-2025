@@ -45,10 +45,7 @@ public class FriendListFragment extends Fragment {
         setupAdapter();
         setupViewModel();
         observeViewModel();
-        btnAddFriend.setOnClickListener(v -> {
-            NavController navController = Navigation.findNavController(requireView());
-            navController.navigate(R.id.action_friendListFragment_to_addNewFriendFragment);
-        });
+        setupListeners();
 
         // Replace with your current user ID
         String currentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
@@ -58,6 +55,21 @@ public class FriendListFragment extends Fragment {
     private void initializeViews(View view) {
         listView = view.findViewById(R.id.friendsListView);
         btnAddFriend = view.findViewById(R.id.btn_add_friend);
+        btnCreateAlliance = view.findViewById(R.id.btn_create_alliance);
+    }
+
+    private void setupListeners(){
+        btnAddFriend.setOnClickListener(v -> {
+            Log.d("KLIK DUGMETA", "KLIK");
+            NavController navController = Navigation.findNavController(requireView());
+            navController.navigate(R.id.action_friendListFragment_to_addNewFriendFragment);
+        });
+
+        btnCreateAlliance.setOnClickListener(v -> {
+            Log.d("KLIK DUGMETA", "KLIK");
+            NavController navController = Navigation.findNavController(requireView());
+            navController.navigate(R.id.action_friendListFragment_to_allianceCreationFragment);
+        });
     }
 
     private void setupAdapter() {

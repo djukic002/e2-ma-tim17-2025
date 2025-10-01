@@ -57,7 +57,16 @@
         <action
             android:id="@+id/action_friendListFragment_to_addNewFriendFragment"
             app:destination="@id/addNewFriendFragment" />
+        <action
+            android:id="@+id/action_friendListFragment_to_allianceCreationFragment"
+            app:destination="@id/allianceCreationFragment" />
     </fragment>
+
+    <fragment
+        android:id="@+id/allianceCreationFragment"
+        android:name="com.example.valorquest.ui.social.AllianceCreationFragment"
+        android:label="Create Alliance"
+        tools:layout="@layout/fragment_alliance_creation" />
 
     <fragment
         android:id="@+id/addNewFriendFragment"

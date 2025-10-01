@@ -32,6 +32,7 @@ import com.example.valorquest.model.Quest;
 import com.example.valorquest.model.Result;
 import com.example.valorquest.model.User;
 import com.example.valorquest.model.UserItem;
+import com.example.valorquest.model.dto.UserItemWithEquipmentDto;
 import com.example.valorquest.model.enums.BossStatus;
 import com.example.valorquest.viewmodel.BossFightViewmodel;
 import com.example.valorquest.viewmodel.QuestsViewModel;
@@ -45,9 +46,11 @@ import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
 public class BossFightFragment extends Fragment {
-    private int pp;
     private BossFightViewmodel bossViewmodel;
     private Boss boss;
+    private int pp;
+    private double hitChance;
+    private int goldReward;
     private MediaPlayer bgMusicPlayer;
     private VideoView bossVideo;
     private TextView tvHpValue, tvPpValue, tvAttackCountValue, tvHitChanceValue;
@@ -55,8 +58,6 @@ public class BossFightFragment extends Fragment {
     private SoundPool soundPool;
     private int backoffSound, deathSound, notWelcomeSound, smashSound, swordSound, laughSound ,grunt1Sound, grunt2Sound, grunt3Sound, pathethicSound;
     private enum Sounds{BACKOFF, DEATH, NOT_WELCOME, SMASH, SWORD, GRUNT, LAUGH, PATHETHIC};
-
-    // Add these fields in your fragment
     private SensorManager sensorManager;
     private Sensor accelerometer;
     private SensorEventListener shakeListener;
@@ -76,7 +77,10 @@ public class BossFightFragment extends Fragment {
                     Toast.makeText(requireContext(), "No active boss. Returning to main menu.", Toast.LENGTH_SHORT).show();
                     navController.popBackStack(R.id.mainMenuFragment, false);
                 } else {
-                    updateUI();
+                    this.hitChance = boss.getHitChance();
+                    this.goldReward = boss.getGoldReward();
+
+                    loadUserItems(userId);
                 }
             } else {
                 Toast.makeText(requireContext(), "Failed to load boss: " + result.getMessage(), Toast.LENGTH_SHORT).show();
@@ -98,20 +102,39 @@ public class BossFightFragment extends Fragment {
         });
     }
     private void loadUserItems(String userId) {
-        bossViewmodel.getUserItems(userId).observe(getViewLifecycleOwner(), userItems -> {
-            if (!isAdded()) return;
+        bossViewmodel.getUserItemsWithEquipmentLiveData(userId)
+                .observe(getViewLifecycleOwner(), userItems -> {
+                    if (!isAdded()) return;
 
-            if (userItems != null && !userItems.isEmpty()) {
-                showUserItems(userItems); // populates equipmentContainer
-            } else {
-                System.out.println("No items found for user: " + userId);
+                    if (userItems != null && !userItems.isEmpty()) {
+                        showUserItems(userItems);
+                        activateBuffs(userItems);
+                    } else {
+                        System.out.println("No items found for user: " + userId);
+                    }
+
+                    updateUI();
+                    Toast.makeText(requireContext(), "All item buffs applied!", Toast.LENGTH_SHORT).show();
+                });
+    }
+    private void activateBuffs(List<UserItemWithEquipmentDto> userItems) {
+        for(UserItemWithEquipmentDto equipment:userItems){
+            if(equipment.getAttribute().equals("money")){
+                this.goldReward += (int)equipment.getBonus() * this.goldReward;
             }
-        });
+            else if(equipment.getAttribute().equals("power")){
+                this.pp += (int)(this.pp * equipment.getBonus());
+            }
+            else if(equipment.getAttribute().equals("attackChance")){
+                double newHitChance = this.hitChance + equipment.getBonus() * this.hitChance;
+                this.hitChance = Math.min(newHitChance, 1.0);
+            }
+        }
     }
 
-    private void showUserItems(List<UserItem> userItems) {
+    private void showUserItems(List<UserItemWithEquipmentDto> userItems) {
         LinearLayout container = requireView().findViewById(R.id.equipmentContainer);
-        container.removeAllViews(); // clear previous items
+        container.removeAllViews();
 
         UserItemArrayAdapter adapter = new UserItemArrayAdapter(requireContext(), userItems);
 
@@ -158,8 +181,7 @@ public class BossFightFragment extends Fragment {
         if (firebaseUser != null) {
             loadCurrentUser(firebaseUser.getUid());
             loadActiveBoss(firebaseUser.getUid());
-            loadUserItems(firebaseUser.getUid());
-            bossViewmodel.seedUserItems(firebaseUser.getUid()); // izbrisati kad bude postojali itemi, ovo i u onResume isto
+            bossViewmodel.seedUserItems(firebaseUser.getUid()); // izbrisati kad bude postojali itemi
         } else {
             navController.popBackStack(R.id.mainMenuFragment, false);
         }
@@ -173,15 +195,13 @@ public class BossFightFragment extends Fragment {
 
             Sounds[] entrySounds = {Sounds.NOT_WELCOME, Sounds.BACKOFF};
             int index = (int) (Math.random() * entrySounds.length);
-            playSound(entrySounds[index], 0);
+            playSound(entrySounds[index], 300);
         });
+
+        btnBoss.setOnClickListener(v -> performAttack());
 
         shakeEnabled = true;
 
-        // button attack
-        btnBoss.setOnClickListener(v -> performAttack());
-
-        // shake attack
         sensorManager = (SensorManager) requireContext().getSystemService(Context.SENSOR_SERVICE);
         accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         shakeListener = createShakeListener();
@@ -203,7 +223,6 @@ public class BossFightFragment extends Fragment {
             });
 
             bossVideo.setOnCompletionListener(mp -> {
-                // Switch back to idle animation
                 Uri idleUri = Uri.parse("android.resource://" + requireContext().getPackageName() + "/" + R.raw.boss1_idle_anim);
                 bossVideo.setVideoURI(idleUri);
 
@@ -256,7 +275,7 @@ public class BossFightFragment extends Fragment {
         tvHpValue.setText(String.valueOf(boss.getCurrentHp()));
         tvPpValue.setText(String.valueOf(pp));
         tvAttackCountValue.setText(String.valueOf(boss.getAttacksRemaining()));
-        tvHitChanceValue.setText(String.valueOf((int)(boss.getHitChance() * 100)));
+        tvHitChanceValue.setText(String.valueOf((int)(this.hitChance * 100)));
     }
 
     private void performAttack() {
@@ -266,7 +285,7 @@ public class BossFightFragment extends Fragment {
         }
 
         boss.setAttacksRemaining(boss.getAttacksRemaining() - 1);
-        boolean hit = Math.random() < boss.getHitChance();
+        boolean hit = Math.random() < this.hitChance;
 
         if (hit) boss.setCurrentHp(boss.getCurrentHp() - pp);
 
@@ -281,19 +300,22 @@ public class BossFightFragment extends Fragment {
 
         if (boss.getCurrentHp() == 0) {
             args.putBoolean("bossDefeated", true);
-            args.putInt("gold", boss.getGoldReward());
+            args.putInt("gold", this.goldReward);
+
             Toast.makeText(requireContext(), "You got lucky!", Toast.LENGTH_SHORT).show();
             boss.setStatus(BossStatus.DEFEATED);
             navigate = true;
         } else if (boss.getAttacksRemaining() == 0 && boss.getCurrentHp() <= boss.getOriginalHp() / 2.0) {
             args.putBoolean("bossDefeated", false);
-            args.putInt("gold", boss.getGoldReward());
+            args.putInt("gold", this.goldReward);
+
             Toast.makeText(requireContext(), "You got away this time!", Toast.LENGTH_SHORT).show();
             boss.setStatus(BossStatus.FAILED);
             navigate = true;
         } else if (boss.getAttacksRemaining() == 0 && boss.getCurrentHp() > boss.getOriginalHp() / 2.0) {
             playSound(Sounds.LAUGH, 1000);
             Toast.makeText(requireContext(), "You failed miserably!", Toast.LENGTH_SHORT).show();
+
             boss.setStatus(BossStatus.FAILED);
             navigate = true;
         } else{

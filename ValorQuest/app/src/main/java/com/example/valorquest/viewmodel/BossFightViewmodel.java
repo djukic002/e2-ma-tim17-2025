@@ -13,6 +13,7 @@ import com.example.valorquest.model.User;
 import com.example.valorquest.model.UserItem;
 import com.example.valorquest.model.dto.UserItemWithEquipmentDto;
 import com.example.valorquest.service.BossService;
+import com.example.valorquest.utils.RepositoryCallback;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,6 +49,39 @@ public class BossFightViewmodel extends ViewModel {
     public LiveData<List<UserItem>> getUserItems(String userId) {
         UserItemRepository userItemRepository = new UserItemRepository(userId);
         return userItemRepository.getUserItems();
+    }
+
+    public void getUserItemsWithEquipment(String userId, RepositoryCallback<List<UserItemWithEquipmentDto>> callback) {
+        UserItemRepository userItemRepo = new UserItemRepository(userId);
+        EquipmentRepository equipmentRepo = new EquipmentRepository();
+
+        userItemRepo.getAllItems(userItems -> {
+            if (userItems == null) {
+                callback.onComplete(null);
+                return;
+            }
+
+            List<UserItemWithEquipmentDto> dtoList = new ArrayList<>();
+            for (UserItem item : userItems) {
+                equipmentRepo.getById(item.getEquipmentId(), equipment -> {
+                    if (equipment != null) {
+                        dtoList.add(new UserItemWithEquipmentDto(item, equipment));
+                    }
+
+                    if (dtoList.size() == userItems.size()) {
+                        callback.onComplete(dtoList);
+                    }
+                });
+            }
+        });
+    }
+    public LiveData<List<UserItemWithEquipmentDto>> getUserItemsWithEquipmentLiveData(String userId) {
+        MutableLiveData<List<UserItemWithEquipmentDto>> liveData = new MutableLiveData<>();
+
+        // Call your callback-based method
+        getUserItemsWithEquipment(userId, dtoList -> liveData.postValue(dtoList));
+
+        return liveData;
     }
 
     public void seedUserItems(String userId) {

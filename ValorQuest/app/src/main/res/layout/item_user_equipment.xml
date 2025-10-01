@@ -1,6 +1,23 @@
-<ImageView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/ivEquipment"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="64dp"
     android:layout_height="64dp"
-    android:layout_marginHorizontal="5dp"
-    android:scaleType="fitCenter"/>
+    android:layout_marginHorizontal="5dp">
+
+    <ImageView
+        android:id="@+id/ivEquipment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        android:contentDescription="Equipment Image" />
+
+    <TextView
+        android:id="@+id/tvOverlay"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="#88000000"
+        android:textColor="#FFFFFF"
+        android:textSize="10sp"
+        android:padding="2dp"
+        android:layout_gravity="bottom|end"
+        android:text="Battles: 0\nLvl: 0" />
+</FrameLayout>

@@ -4,11 +4,19 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.example.valorquest.data.repositories.EquipmentRepository;
+import com.example.valorquest.data.repositories.UserItemRepository;
 import com.example.valorquest.data.repositories.UserRepository;
 import com.example.valorquest.model.Boss;
 import com.example.valorquest.model.Result;
 import com.example.valorquest.model.User;
+import com.example.valorquest.model.UserItem;
+import com.example.valorquest.model.dto.UserItemWithEquipmentDto;
 import com.example.valorquest.service.BossService;
+import com.example.valorquest.utils.RepositoryCallback;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -17,12 +25,13 @@ import dagger.hilt.android.lifecycle.HiltViewModel;
 @HiltViewModel
 public class BossFightViewmodel extends ViewModel {
     private final BossService bossService;
-
     private final UserRepository userRepository;
+    private final EquipmentRepository equipmentRepository;
     @Inject
     public BossFightViewmodel(BossService bossService) {
         this.bossService = bossService;
         this.userRepository = new UserRepository();
+        this.equipmentRepository = new EquipmentRepository();
     }
     public LiveData<Result<String>> saveBossLiveData(Boss boss) {
         return bossService.saveBoss(boss);
@@ -36,5 +45,83 @@ public class BossFightViewmodel extends ViewModel {
             userLiveData.postValue(user);
         });
         return userLiveData;
+    }
+    public LiveData<List<UserItem>> getUserItems(String userId) {
+        UserItemRepository userItemRepository = new UserItemRepository(userId);
+        return userItemRepository.getUserItems();
+    }
+
+    public void getUserItemsWithEquipment(String userId, RepositoryCallback<List<UserItemWithEquipmentDto>> callback) {
+        UserItemRepository userItemRepo = new UserItemRepository(userId);
+        EquipmentRepository equipmentRepo = new EquipmentRepository();
+
+        userItemRepo.getAllItems(userItems -> {
+            if (userItems == null) {
+                callback.onComplete(null);
+                return;
+            }
+
+            List<UserItemWithEquipmentDto> dtoList = new ArrayList<>();
+            for (UserItem item : userItems) {
+                equipmentRepo.getById(item.getEquipmentId(), equipment -> {
+                    if (equipment != null) {
+                        dtoList.add(new UserItemWithEquipmentDto(item, equipment));
+                    }
+
+                    if (dtoList.size() == userItems.size()) {
+                        callback.onComplete(dtoList);
+                    }
+                });
+            }
+        });
+    }
+    public LiveData<List<UserItemWithEquipmentDto>> getUserItemsWithEquipmentLiveData(String userId) {
+        MutableLiveData<List<UserItemWithEquipmentDto>> liveData = new MutableLiveData<>();
+
+        // Call your callback-based method
+        getUserItemsWithEquipment(userId, dtoList -> liveData.postValue(dtoList));
+
+        return liveData;
+    }
+
+    public void seedUserItems(String userId) {
+        UserItemRepository repo = new UserItemRepository(userId);
+
+        // List of items to seed
+        List<UserItem> itemsToSeed = new ArrayList<>();
+
+        UserItem gauntlets = new UserItem();
+        gauntlets.setId("a1");
+        gauntlets.setEquipmentId("a1");
+        gauntlets.setRemainingBattles(2);
+        gauntlets.setReforgeLevel(0);
+        gauntlets.setUpgradeLevel(0);
+        itemsToSeed.add(gauntlets);
+
+        UserItem sword = new UserItem();
+        sword.setId("a2");
+        sword.setEquipmentId("a2");
+        sword.setRemainingBattles(3);
+        sword.setReforgeLevel(0);
+        sword.setUpgradeLevel(0);
+        itemsToSeed.add(sword);
+
+        // Loop through each item
+        for (UserItem item : itemsToSeed) {
+            repo.getById(item.getId(), existingItem -> {
+                if (existingItem == null) {
+                    // Item does not exist, save it
+                    repo.save(item.getId(), item, task -> {
+                        if (task.isSuccessful()) {
+                            System.out.println("✅ Added UserItem: " + item.getEquipmentId());
+                        } else {
+                            System.out.println("❌ Failed to add UserItem: " + task.getException());
+                        }
+                    });
+                } else {
+                    System.out.println("ℹ️ UserItem already exists: " + item.getEquipmentId());
+                }
+            });
+        }
     }
 }

@@ -17,7 +17,7 @@ public class AllianceInviteReceiver extends BroadcastReceiver {
         String allianceId = intent.getStringExtra("allianceId");
         String senderId = intent.getStringExtra("senderId");
         String notificationId = intent.getStringExtra("notificationId");
-
+        Log.d("CAO", "CAO");
         if ("ACTION_ACCEPT_INVITE".equals(action)) {
             AllianceActionHandler.handleAccept(context, allianceId, senderId, notificationId);
         } else if ("ACTION_DECLINE_INVITE".equals(action)) {

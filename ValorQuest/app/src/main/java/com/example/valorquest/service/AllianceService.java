@@ -22,6 +22,7 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -96,6 +97,79 @@ public class AllianceService {
         });
     }
 
+    public void acceptInvite(String allianceId, String notificationId, String senderId) {
+        String currentUserId = getCurrentUserId();
+
+        // 1️⃣ Update the notification status
+        notificationRepository.getById(notificationId, notification -> {
+            if (notification != null) {
+                notification.setStatus(AllianceNotificationStatus.ACCEPTED);
+                notificationRepository.save(notificationId, notification, task -> Log.d("", "Notification marked as ACCEPTED"));
+            }
+        });
+
+        // 2️⃣ Add user to alliance members
+        allianceRepository.getById(allianceId, alliance -> {
+            if (alliance != null) {
+                List<String> members = alliance.getMembers();
+                if (!members.contains(currentUserId)) {
+                    members.add(currentUserId);
+                    allianceRepository.save(allianceId, alliance, t -> Log.d("AllianceInviteAccept", "User added to alliance members"));
+                }
+            }
+        });
+
+        // 3️⃣ Update user’s allianceId
+        userRepository.getById(currentUserId, user -> {
+            if (user != null) {
+                user.setAllianceId(allianceId);
+                userRepository.save(currentUserId, user, t -> Log.d("AllianceInviteAccept", "User's allianceId updated"));
+            }
+        });
+
+        userRepository.getById(currentUserId, acceptedUser -> {
+            if (acceptedUser != null) {
+                String acceptedUsername = acceptedUser.getUsername();
+
+                userRepository.getById(senderId, leader -> {
+                    if (leader != null && leader.getFcmTokens() != null && !leader.getFcmTokens().isEmpty()) {
+                        List<String> tokens = leader.getFcmTokens();
+                        // Send notification via Node server with username
+                        com.example.valorquest.utils.NotificationSender.sendAllianceLeaderNotification(
+                                tokens,
+                                acceptedUser.getId(),
+                                acceptedUsername
+                        );
+                    }
+                });
+            }
+        });
+    }
+
+    public void isCurrentUserInAlliance(BooleanCheckCallback callback) {
+        String currentUserId = getCurrentUserId();
+        userRepository.getById(currentUserId, user -> {
+            boolean result = user.getAllianceId() != null;
+            Log.d("DEBUG", "U ALIJANSI SERVIS " + result + " " + user.getUsername());
+            callback.onResult(result);
+        });
+    }
+
+    public void isUserLeader(String userId, BooleanCheckCallback callback) {
+        userRepository.getById(userId, user -> {
+            allianceRepository.getById(user.getAllianceId(), alliance -> {
+                Log.d("KURCINELA", alliance.getLeaderId() + " - " + userId);
+                boolean result = Objects.equals(alliance.getLeaderId(), userId);
+                callback.onResult(result);
+            });
+        });
+
+    }
+
+    public interface BooleanCheckCallback {
+        void onResult(boolean result);
+    }
+
     private void sendAllianceInvites(User sender, Alliance alliance, List<String> friendIdsToInvite, RepositoryCallback<Boolean> callback) {
         friendService.getUserFriends(sender.getId(), new FriendService.FriendsCallback() {
             @Override
@@ -165,7 +239,7 @@ public class AllianceService {
                     tokensArray.put(token);
                 }
                 json.put("tokens", tokensArray);
-                json.put("title", notification.getMessage());
+                json.put("title", "A new fellowship awaits!");
                 json.put("body", notification.getMessage());
 
                 JSONObject data = new JSONObject();

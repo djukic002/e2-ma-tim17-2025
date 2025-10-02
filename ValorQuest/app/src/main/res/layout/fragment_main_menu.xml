@@ -136,7 +136,7 @@
         app:iconGravity="textStart"
         android:layout_marginTop="32dp"
         app:layout_constraintWidth_percent="0.5"
-        app:layout_constraintTop_toBottomOf="@id/btnCategories"
+        app:layout_constraintTop_toBottomOf="@id/btnMission"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:visibility="gone"/>

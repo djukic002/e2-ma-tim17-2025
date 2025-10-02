@@ -17,6 +17,7 @@ import com.example.valorquest.model.dto.AddQuestDto;
 import com.example.valorquest.model.dto.DetailedQuestExecutionDto;
 import com.example.valorquest.model.enums.Difficulty;
 import com.example.valorquest.model.enums.Importance;
+import com.example.valorquest.model.enums.MissionContributionType;
 import com.example.valorquest.model.enums.QuestStatus;
 import com.example.valorquest.model.enums.RepeatingUnit;
 
@@ -40,11 +41,13 @@ public class QuestService {
     private final QuestDao questDao;
     private final UserService userService;
     private final Provider<BossService> bossServiceProvider; // lazy injection
+    private final AllianceMissionService missionService;
     @Inject
-    public QuestService(QuestDao questDao, UserService userService, Provider<BossService> bossServiceProvider) {
+    public QuestService(QuestDao questDao, UserService userService, Provider<BossService> bossServiceProvider, AllianceMissionService missionService) {
         this.questDao = questDao;
         this.userService = userService;
         this.bossServiceProvider = bossServiceProvider;
+        this.missionService = missionService;
     }
 
     private BossService getBossService() {
@@ -291,6 +294,8 @@ public class QuestService {
                     boolean xpForDifficulty = canGetXpForDifficulty(quest.getDifficulty(), quest.getUserId());
                     boolean xpForImportance = canGetXpForImportance(quest.getImportance(), quest.getUserId());
 
+                    contributeQuestToMission(quest.getDifficulty(), quest.getImportance());
+
                     if (!xpForDifficulty || !xpForImportance)
                         execution.setQuotaExceeded(true);
 
@@ -492,4 +497,27 @@ public class QuestService {
         return questDao.getCreatedExecByLevelAndStatusWithoutQuotaExceeding(userId, level);
     }
 
+    public void contributeQuestToMission(Difficulty difficulty, Importance importance) {
+        MissionContributionType difficultyAction;
+        if (difficulty == Difficulty.NOVICE || difficulty == Difficulty.ADVENTURER) {
+            difficultyAction = MissionContributionType.EASY_QUEST;
+        } else { // VETERAN or LEGENDARY
+            difficultyAction = MissionContributionType.HARD_QUEST;
+        }
+
+        MissionContributionType importanceAction;
+        if (importance == Importance.LOW || importance == Importance.MEDIUM) {
+            importanceAction = MissionContributionType.EASY_QUEST;
+        } else { // HIGH or SPECIAL
+            importanceAction = MissionContributionType.HARD_QUEST;
+        }
+
+        missionService.contribute(difficultyAction, ignored -> {
+            Log.d("QuestService", "Difficulty contribution attempted: " + difficultyAction);
+
+            missionService.contribute(importanceAction, ignored2 -> {
+                Log.d("QuestService", "Importance contribution attempted: " + importanceAction);
+            });
+        });
+    }
 }

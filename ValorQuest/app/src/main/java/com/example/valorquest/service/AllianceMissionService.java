@@ -6,16 +6,23 @@ import com.example.valorquest.data.repositories.AllianceMissionRepository;
 import com.example.valorquest.data.repositories.AllianceRepository;
 import com.example.valorquest.data.repositories.MissionContributionRepository;
 import com.example.valorquest.data.repositories.UserRepository;
-import com.example.valorquest.model.Alliance;
 import com.example.valorquest.model.AllianceMission;
 import com.example.valorquest.model.MissionContribution;
-import com.example.valorquest.model.User;
+import com.example.valorquest.model.dto.MissionSummaryDto;
+import com.example.valorquest.model.dto.UserContributionDto;
 import com.example.valorquest.model.enums.AllianceMissionStatus;
 import com.example.valorquest.model.enums.MissionContributionType;
 import com.example.valorquest.utils.RepositoryCallback;
 import com.google.firebase.auth.FirebaseAuth;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
 import javax.inject.Inject;
@@ -23,15 +30,23 @@ import javax.inject.Singleton;
 
 @Singleton
 public class AllianceMissionService {
-    private final AllianceService allianceService;
     private final UserRepository userRepository;
-
     private final AllianceRepository allianceRepository;
     @Inject
-    public AllianceMissionService(AllianceService allianceService, UserRepository userRepository, AllianceRepository allianceRepository) {
-        this.allianceService = allianceService;
-        this.userRepository = userRepository;
-        this.allianceRepository = allianceRepository;
+    public AllianceMissionService() {
+        this.userRepository = new UserRepository();
+        this.allianceRepository = new AllianceRepository();
+    }
+
+    public void isUserLeader(String userId, AllianceService.BooleanCheckCallback callback) {
+        userRepository.getById(userId, user -> {
+            allianceRepository.getById(user.getAllianceId(), alliance -> {
+                Log.d("KURCINELA", alliance.getLeaderId() + " - " + userId);
+                boolean result = Objects.equals(alliance.getLeaderId(), userId);
+                callback.onResult(result);
+            });
+        });
+
     }
 
     /**
@@ -53,7 +68,7 @@ public class AllianceMissionService {
         });
     }
 
-    private String getCurrentUserId() {
+    public String getCurrentUserId() {
         return FirebaseAuth.getInstance().getCurrentUser().getUid();
     }
 
@@ -78,7 +93,6 @@ public class AllianceMissionService {
                 return;
             }
 
-            // Step 2: Fetch the alliance
             allianceRepository.getById(allianceId, alliance -> {
                 if (alliance == null) {
                     Log.w("AllianceMissionService", "Alliance not found for allianceId = " + allianceId);
@@ -92,7 +106,6 @@ public class AllianceMissionService {
                     return;
                 }
 
-                // Step 3: Check if an active mission exists
                 AllianceMissionRepository missionRepository = new AllianceMissionRepository(allianceId);
                 Log.d("AllianceMissionService", "Checking if active mission exists for allianceId = " + allianceId);
 
@@ -104,12 +117,7 @@ public class AllianceMissionService {
                         Log.d("AllianceMissionService", "No active mission found. Creating a new one...");
 
                         String missionId = UUID.randomUUID().toString();
-                        AllianceMission newMission = new AllianceMission();
-                        newMission.setId(missionId);
-                        newMission.setAllianceId(allianceId);
-                        newMission.setStatus(AllianceMissionStatus.ACTIVE);
-                        newMission.setStartDate(new Date());
-                        newMission.setCurrentBossHp(100 * alliance.getMembers().size());
+                        AllianceMission newMission = new AllianceMission(missionId, allianceId, AllianceMissionStatus.ACTIVE, 100 * alliance.getMembers().size());
 
                         Log.d("AllianceMissionService", "Saving new mission: id=" + missionId);
 
@@ -192,10 +200,108 @@ public class AllianceMissionService {
                               String userId,
                               MissionContributionType actionType,
                               AllianceService.BooleanCheckCallback callback) {
-        int limit = MissionContribution.getMaxPerAction(actionType);
 
+        if (actionType == MissionContributionType.ALL_QUEST) {
+            callback.onResult(true);
+            return;
+        }
+
+        if (actionType == MissionContributionType.MESSAGE) {
+            contributionRepo.hasUserContributedToday(userId, actionType, allowed -> {
+                // allowed = false means user already contributed today
+                callback.onResult(!allowed);
+            });
+            return;
+        }
+
+        int limit = MissionContribution.getMaxPerAction(actionType);
         contributionRepo.countUserContributions(userId, actionType, limit, allowed -> {
             callback.onResult(allowed);
         });
+    }
+
+    public void getActiveMissionSummary(RepositoryCallback<MissionSummaryDto> callback) {
+        String currentUserId = getCurrentUserId();
+
+        userRepository.getById(currentUserId, user -> {
+            if (user == null || user.getAllianceId() == null) {
+                Log.w("AllianceMissionService", "getActiveMissionSummary: User has no alliance.");
+                callback.onComplete(null);
+                return;
+            }
+
+            String allianceId = user.getAllianceId();
+
+            getActiveMission(allianceId, mission -> {
+                if (mission == null) {
+                    Log.w("AllianceMissionService", "getActiveMissionSummary: No active mission found for allianceId=" + allianceId);
+                    callback.onComplete(null);
+                    return;
+                }
+
+                String missionId = mission.getId();
+                MissionContributionRepository contributionRepository =
+                        new MissionContributionRepository(allianceId, missionId);
+
+                contributionRepository.getAll(contributions -> {
+                    if (contributions == null) {
+                        callback.onComplete(null);
+                        return;
+                    }
+
+                    Map<String, Integer> hpByUser = new HashMap<>();
+                    for (MissionContribution c : contributions) {
+                        hpByUser.merge(c.getUserId(), c.getHpDealt(), Integer::sum);
+                    }
+
+                    List<UserContributionDto> userDtos = new ArrayList<>();
+
+                    if (!hpByUser.isEmpty()) {
+                        for (Map.Entry<String, Integer> entry : hpByUser.entrySet()) {
+                            String userId = entry.getKey();
+                            int totalHp = entry.getValue();
+
+                            userRepository.getById(userId, contribUser -> {
+                                if (contribUser != null) {
+                                    userDtos.add(new UserContributionDto(
+                                            contribUser.getId(),
+                                            contribUser.getUsername(),
+                                            totalHp
+                                    ));
+                                }
+
+                                // When all users are processed -> build summary
+                                if (userDtos.size() == hpByUser.size()) {
+                                    MissionSummaryDto summary = buildMissionSummary(mission, userDtos);
+                                    callback.onComplete(summary);
+                                }
+                            });
+                        }
+                    } else {
+                        MissionSummaryDto summary = buildMissionSummary(mission, new ArrayList<>());
+                        callback.onComplete(summary);
+                    }
+                });
+            });
+        });
+    }
+
+    private MissionSummaryDto buildMissionSummary(AllianceMission mission, List<UserContributionDto> contributions) {
+        MissionSummaryDto summary = new MissionSummaryDto();
+        summary.missionId = mission.getId();
+        summary.currentBossHp = mission.getCurrentBossHp();
+        summary.originalBossHp = mission.getOriginalBossHp();
+        summary.startDate = mission.getStartDate();
+
+        LocalDateTime start = mission.getStartDate().toInstant()
+                .atZone(ZoneId.systemDefault())
+                .toLocalDateTime();
+
+        LocalDateTime end = start.plusWeeks(2);
+
+        summary.endDate = Date.from(end.atZone(ZoneId.systemDefault()).toInstant());
+
+        summary.contributions = contributions;
+        return summary;
     }
 }

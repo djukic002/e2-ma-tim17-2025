@@ -13,10 +13,10 @@ public class AllianceMission {
     private int currentBossHp;
     public AllianceMission() {}
 
-    public AllianceMission(String id, String allianceId, Date startDate, AllianceMissionStatus status, int originalBossHp) {
+    public AllianceMission(String id, String allianceId, AllianceMissionStatus status, int originalBossHp) {
         this.id = id;
         this.allianceId = allianceId;
-        this.startDate = startDate;
+        this.startDate = new Date();
         this.status = status;
         this.originalBossHp = originalBossHp;
         this.currentBossHp = originalBossHp;

@@ -47,7 +47,7 @@ public class AllianceService {
         this.friendService = friendService;
     }
 
-    private String getCurrentUserId() {
+    public String getCurrentUserId() {
         return FirebaseAuth.getInstance().getCurrentUser().getUid();
     }
 

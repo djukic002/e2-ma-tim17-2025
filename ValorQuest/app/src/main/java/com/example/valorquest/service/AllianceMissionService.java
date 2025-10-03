@@ -24,6 +24,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -303,5 +306,67 @@ public class AllianceMissionService {
 
         summary.contributions = contributions;
         return summary;
+    }
+
+
+    private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+    public void startAutoFailTask() {
+        Runnable task = () -> {
+            try {
+                Log.d("AllianceMissionService", "Running scheduled mission check...");
+                checkAndUpdateMissionsStatus();
+            } catch (Exception e) {
+                Log.e("AllianceMissionService", "Error during scheduled mission check: " + e.getMessage(), e);
+            }
+        };
+
+        scheduler.scheduleWithFixedDelay(task, 0, 5, TimeUnit.MINUTES);
+    }
+
+    public void checkAndUpdateMissionsStatus() {
+        allianceRepository.getAll(alliances -> {
+            if (alliances == null) return;
+
+            for (var alliance : alliances) {
+                String allianceId = alliance.getId();
+                AllianceMissionRepository missionRepo = new AllianceMissionRepository(allianceId);
+
+                missionRepo.getAll(missions -> {
+                    if (missions == null) return;
+
+                    for (AllianceMission mission : missions) {
+                        boolean updated = false;
+
+                        LocalDateTime start = mission.getStartDate().toInstant()
+                                .atZone(ZoneId.systemDefault())
+                                .toLocalDateTime();
+                        LocalDateTime end = start.plusWeeks(2);
+                        Date now = new Date();
+
+                        if (mission.getStatus() == AllianceMissionStatus.ACTIVE) {
+                            if (mission.getCurrentBossHp() <= 0) {
+                                mission.setStatus(AllianceMissionStatus.COMPLETED);
+                                // dodavanje nagrade korisnicima misija
+                                updated = true;
+                            } else if (now.after(Date.from(end.atZone(ZoneId.systemDefault()).toInstant()))) {
+                                mission.setStatus(AllianceMissionStatus.FAILED);
+                                updated = true;
+                            }
+
+                            if (updated) {
+                                missionRepo.save(mission.getId(), mission, task -> {
+                                    if (task.isSuccessful()) {
+                                        Log.i("AllianceMissionService", "Mission " + mission.getId() +
+                                                " status updated to " + mission.getStatus());
+                                    } else {
+                                        Log.e("AllianceMissionService", "Failed to update mission " + mission.getId(), task.getException());
+                                    }
+                                });
+                            }
+                        }
+                    }
+                });
+            }
+        });
     }
 }

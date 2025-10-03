@@ -467,6 +467,7 @@ public class QuestService {
     private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
     public void startAutoFailTask() {
         Runnable task = () -> {
+            Log.d("QuestService", "Running scheduled quests check...");
             long nowMillis = System.currentTimeMillis();
             try {
                 List<QuestExecution> overdueExecutions = questDao.getActiveExecutionsBefore(nowMillis, QuestStatus.ACTIVE);

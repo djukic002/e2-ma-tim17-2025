@@ -43,13 +43,11 @@ public class AddFriendAdapter extends ArrayAdapter<User> {
 
         ImageView avatar = convertView.findViewById(R.id.friend_avatar);
         TextView username = convertView.findViewById(R.id.friend_username);
-        TextView email = convertView.findViewById(R.id.friend_email);
         Button btnProfile = convertView.findViewById(R.id.btn_view_profile);
         Button btnAdd = convertView.findViewById(R.id.btn_action);
 
         if (user != null) {
             username.setText(user.getUsername());
-            email.setText(user.getEmail());
 
             // Load avatar dynamically
             int avatarResId = context.getResources()

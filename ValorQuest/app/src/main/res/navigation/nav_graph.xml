@@ -60,6 +60,9 @@
         <action
             android:id="@+id/action_friendListFragment_to_allianceCreationFragment"
             app:destination="@id/allianceCreationFragment" />
+        <action
+            android:id="@+id/action_friendListFragment_to_allianceMembersFragment"
+            app:destination="@id/allianceMembersFragment" />
     </fragment>
 
     <fragment
@@ -67,6 +70,11 @@
         android:name="com.example.valorquest.ui.social.AllianceCreationFragment"
         android:label="Create Alliance"
         tools:layout="@layout/fragment_alliance_creation" />
+
+    <fragment
+        android:id="@+id/allianceMembersFragment"
+        android:name="com.example.valorquest.ui.social.AllianceMembersFragment"
+        tools:layout="@layout/fragment_alliance_members" />
 
     <fragment
         android:id="@+id/addNewFriendFragment"

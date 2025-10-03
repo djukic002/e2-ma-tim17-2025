@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:gravity="center"
+    android:background="@drawable/bg_parchment_panel">
+
+    <TextView
+        android:id="@+id/txt_alliance_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Alliance Name"
+        android:textSize="20sp"
+        android:textColor="@color/black"
+        android:fontFamily="@font/main_font_family"
+        android:textStyle="bold"
+        android:gravity="center"/>
+
+    <TextView
+        android:id="@+id/txt_alliance_leader"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Leader: username"
+        android:textSize="16sp"
+        android:textColor="@color/black"
+        android:gravity="center"
+        android:paddingBottom="12dp"/>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center">
+
+        <ImageButton
+            android:id="@+id/btn_alliance_leave"
+            style="@style/AllianceIconButton"
+            android:src="@drawable/ic_leave"/>
+
+        <ImageButton
+            android:id="@+id/btn_alliance_chat"
+            style="@style/AllianceIconButton"
+            android:src="@drawable/ic_chat"/>
+
+        <ImageButton
+            android:id="@+id/btn_alliance_members"
+            style="@style/AllianceIconButton"
+            android:src="@drawable/ic_members"/>
+
+        <ImageButton
+            android:id="@+id/btn_alliance_mission"
+            style="@style/AllianceIconButton"
+            android:src="@drawable/ic_mission"/>
+    </LinearLayout>
+</LinearLayout>

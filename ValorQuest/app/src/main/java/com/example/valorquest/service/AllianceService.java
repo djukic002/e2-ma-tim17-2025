@@ -10,6 +10,9 @@ import com.example.valorquest.model.AllianceNotification;
 import com.example.valorquest.model.User;
 import com.example.valorquest.model.enums.AllianceNotificationStatus;
 import com.example.valorquest.utils.RepositoryCallback;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 
@@ -47,7 +50,7 @@ public class AllianceService {
         this.friendService = friendService;
     }
 
-    private String getCurrentUserId() {
+    public String getCurrentUserId() {
         return FirebaseAuth.getInstance().getCurrentUser().getUid();
     }
 
@@ -82,14 +85,11 @@ public class AllianceService {
                         return;
                     }
 
-                    sendAllianceInvites(leader, alliance, friendIdsToInvite, new RepositoryCallback<Boolean>() {
-                        @Override
-                        public void onComplete(Boolean result) {
-                            if (result) {
-                                callback.onSuccess(alliance);
-                            } else {
-                                callback.onError(new Exception("Failed to send some invites"));
-                            }
+                    sendAllianceInvites(leader, alliance, friendIdsToInvite, result -> {
+                        if (result) {
+                            callback.onSuccess(alliance);
+                        } else {
+                            callback.onError(new Exception("Failed to send some invites"));
                         }
                     });
                 });
@@ -166,11 +166,113 @@ public class AllianceService {
 
     }
 
+    public interface AllianceUsersCallback {
+        void onUsersLoaded(List<User> users);
+        void onError(Exception e);
+    }
+
+    public void leaveAlliance(OnCompleteListener<Void> onComplete) {
+        String currentUserId = getCurrentUserId();
+        userRepository.getById(currentUserId, user -> {
+            String allianceId = user.getAllianceId();
+            if (allianceId == null) {
+                Log.w("Alliance", "User is not in any alliance.");
+                if (onComplete != null) onComplete.onComplete(Tasks.forResult(null));
+                return;
+            }
+
+            allianceRepository.getById(allianceId, alliance -> {
+                if (alliance == null) {
+                    Log.e("Alliance", "Alliance not found.");
+                    if (onComplete != null) onComplete.onComplete(Tasks.forResult(null));
+                    return;
+                }
+
+                alliance.getMembers().remove(user.getId());
+                user.setAllianceId(null);
+
+                userRepository.save(currentUserId, user, userTask -> {
+                    if (!userTask.isSuccessful()) {
+                        if (onComplete != null) onComplete.onComplete(userTask);
+                        return;
+                    }
+
+                    allianceRepository.save(alliance.getId(), alliance, allianceTask -> {
+                        if (onComplete != null) onComplete.onComplete(allianceTask);
+                    });
+                });
+            });
+        });
+    }
+
+
+    public void disbandAlliance(OnCompleteListener<Void> onComplete) {
+        String currentUserId = getCurrentUserId();
+        userRepository.getById(currentUserId, user -> {
+            String allianceId = user.getAllianceId();
+            if (allianceId == null) {
+                Log.w("Alliance", "User is not in any alliance.");
+                if (onComplete != null) onComplete.onComplete(Tasks.forResult(null));
+                return;
+            }
+
+            allianceRepository.getById(allianceId, alliance -> {
+                if (alliance == null) {
+                    Log.e("Alliance", "Alliance not found.");
+                    if (onComplete != null) onComplete.onComplete(Tasks.forResult(null));
+                    return;
+                }
+
+                List<String> memberIds = new ArrayList<>(alliance.getMembers());
+                AtomicInteger counter = new AtomicInteger(0);
+                int totalMembers = memberIds.size();
+
+                if (totalMembers == 0) {
+                    // No members to update, just delete alliance
+                    allianceRepository.delete(allianceId, deleteTask -> {
+                        if (onComplete != null) onComplete.onComplete(deleteTask);
+                    });
+                    return;
+                }
+
+                // Set allianceId to null for each member
+                for (String memberId : memberIds) {
+                    userRepository.getById(memberId, member -> {
+                        if (member != null) {
+                            member.setAllianceId(null);
+                            userRepository.save(memberId, member, saveTask -> {
+                                // After updating all members, delete alliance
+                                if (counter.incrementAndGet() == totalMembers) {
+                                    allianceRepository.delete(allianceId, deleteTask -> {
+                                        if (deleteTask.isSuccessful())
+                                            Log.d("Alliance", "Alliance disbanded and all members cleared.");
+                                        if (onComplete != null) onComplete.onComplete(deleteTask);
+                                    });
+                                }
+                            });
+                        } else {
+                            // Member not found, still count
+                            if (counter.incrementAndGet() == totalMembers) {
+                                allianceRepository.delete(allianceId, deleteTask -> {
+                                    if (deleteTask.isSuccessful())
+                                        Log.d("Alliance", "Alliance disbanded and all members cleared.");
+                                    if (onComplete != null) onComplete.onComplete(deleteTask);
+                                });
+                            }
+                        }
+                    });
+                }
+            });
+        });
+    }
+
+
+
     public interface BooleanCheckCallback {
         void onResult(boolean result);
     }
 
-    private void sendAllianceInvites(User sender, Alliance alliance, List<String> friendIdsToInvite, RepositoryCallback<Boolean> callback) {
+    public void sendAllianceInvites(User sender, Alliance alliance, List<String> friendIdsToInvite, RepositoryCallback<Boolean> callback) {
         friendService.getUserFriends(sender.getId(), new FriendService.FriendsCallback() {
             @Override
             public void onFriendsLoaded(List<User> friends) {
@@ -218,6 +320,65 @@ public class AllianceService {
             @Override
             public void onError(Exception e) {
                 callback.onComplete(false);
+            }
+        });
+    }
+
+    public void getPotentialMembers(AllianceUsersCallback callback) {
+        String currentUserId = getCurrentUserId();
+        userRepository.getById(currentUserId, user -> {
+            if (user == null) {
+                callback.onError(new Exception("Not logged in!"));
+                return;
+            }
+
+            friendService.getUserFriends(currentUserId, new FriendService.FriendsCallback() {
+                @Override
+                public void onFriendsLoaded(List<User> friends) {
+                    if (friends == null || friends.isEmpty()) {
+                        callback.onUsersLoaded(new ArrayList<>());
+                        return;
+                    }
+
+                    List<User> potentialMembers = new ArrayList<>();
+                    for (User f : friends) {
+                        if (f.getAllianceId() == null || !f.getAllianceId().equals(user.getAllianceId()))
+                            potentialMembers.add(f);
+                    }
+                    callback.onUsersLoaded(potentialMembers);
+                }
+
+                @Override
+                public void onError(Exception e) {
+                    callback.onError(e);
+                }
+            });
+        });
+    }
+
+    public void getAllianceMembers(String allianceId, AllianceUsersCallback callback) {
+        allianceRepository.getById(allianceId, alliance -> {
+            if (alliance == null) {
+                callback.onError(new Exception("Alliance not found"));
+                return;
+            }
+
+            List<String> memberIds = alliance.getMembers();
+            if (memberIds == null || memberIds.isEmpty()) {
+                callback.onUsersLoaded(new ArrayList<>());
+                return;
+            }
+
+            List<User> members = new ArrayList<>();
+            AtomicInteger counter = new AtomicInteger(0);
+
+            for (String mid : memberIds) {
+                userRepository.getById(mid, member -> {
+                    if (member != null)
+                        members.add(member);
+                    if (counter.incrementAndGet() == memberIds.size())
+                        callback.onUsersLoaded(members);
+                });
             }
         });
     }

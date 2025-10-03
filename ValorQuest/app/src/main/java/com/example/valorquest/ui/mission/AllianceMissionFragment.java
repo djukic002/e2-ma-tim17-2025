@@ -23,20 +23,21 @@ import com.example.valorquest.model.dto.UserContributionDto;
 import com.example.valorquest.viewmodel.AllianceMissionViewModel;
 import com.google.android.material.button.MaterialButton;
 
+import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Locale;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
 public class AllianceMissionFragment extends Fragment {
     private AllianceMissionViewModel viewModel;
-    private TextView missionTitle, tvBossHpText;
+    private TextView missionTitle, tvBossHpText, tvMissionDates;
     private MaterialButton btnMission;
     private MissionSummaryDto missionSummary;
-
     private ConstraintLayout missionContainer;
-    private TextView tvNoMission;
-
+    private TextView tvNoMission, tvGoldReward;
     private ProgressBar progressBossHp;
 
     @Nullable
@@ -50,6 +51,8 @@ public class AllianceMissionFragment extends Fragment {
         tvBossHpText = view.findViewById(R.id.tvBossHpText);
         missionContainer = view.findViewById(R.id.missionContainer);
         tvNoMission = view.findViewById(R.id.tvNoMission);
+        tvMissionDates = view.findViewById(R.id.tvMissionDates);
+        tvGoldReward = view.findViewById(R.id.goldReward);
 
         return view;
     }
@@ -69,6 +72,13 @@ public class AllianceMissionFragment extends Fragment {
                 Toast.makeText(requireContext(), "Failed to create mission", Toast.LENGTH_SHORT).show();
             }
         }));
+
+        viewModel.getCurrentUser().observe(getViewLifecycleOwner(), user -> {
+            if (user != null) {
+                int goldReward = calculateGoldReward(user.getLevel());
+                tvGoldReward.setText(goldReward + " gold");
+            }
+        });
     }
 
     private void loadActiveMission() {
@@ -86,6 +96,13 @@ public class AllianceMissionFragment extends Fragment {
                 progressBossHp.setProgress(progress);
 
                 tvBossHpText.setText(currentHp + " / " + originalHp);
+
+                SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy", Locale.getDefault());
+
+                String start = sdf.format(summary.startDate);
+                String end = sdf.format(summary.endDate);
+
+                tvMissionDates.setText(start + " - " + end);
 
                 displayUserContributions();
             }
@@ -141,5 +158,15 @@ public class AllianceMissionFragment extends Fragment {
 
             container.addView(itemView);
         }
+    }
+
+    private int calculateGoldReward(int level) {
+        double reward = 200;
+
+        for (int i = 1; i <= level; i++) {
+            reward *= 1.2;
+        }
+
+        return (int) (reward / 2.0);
     }
 }

@@ -1,0 +1,40 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="12dp">
+
+    <TextView
+        android:id="@+id/tvUsername"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Username"
+        android:textColor="#8B1E1E"
+        android:textSize="24sp"
+        android:fontFamily="@font/main_font_family"
+        android:textStyle="bold" />
+
+    <ProgressBar
+        android:id="@+id/pbUserContribution"
+        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="24dp"
+        android:layout_below="@id/tvUsername"
+        android:layout_marginTop="4dp"
+        android:max="100"
+        android:progress="50"
+        android:progressTint="#33CC33"
+        android:backgroundTint="#003300"
+        android:scaleY="2" />
+
+    <TextView
+        android:id="@+id/tvContributionValue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="50 / 100"
+        android:textColor="#FFFFFF"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:fontFamily="@font/main_font_family"
+        android:layout_centerInParent="true" />
+
+</RelativeLayout>

@@ -4,6 +4,7 @@
     android:layout_height="match_parent"
     android:padding="20dp">
 
+    <!-- Mission Title -->
     <TextView
         android:id="@+id/missionTitle"
         android:layout_width="wrap_content"
@@ -22,6 +23,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
+    <!-- Create Mission Button -->
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnMission"
         android:layout_width="0dp"
@@ -42,5 +44,107 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="16dp"
         app:layout_constraintWidth_percent="0.5" />
+
+    <!-- Container for active mission -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/missionContainer"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/btnMission"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <!-- Boss Name -->
+        <TextView
+            android:id="@+id/tvBossName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Warchief Orgrim Doomhammer"
+            android:textColor="#8B1E1E"
+            android:textSize="24sp"
+            android:fontFamily="@font/main_font_family"
+            android:textStyle="bold"
+            android:layout_marginTop="16dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <!-- Boss HP Bar -->
+        <RelativeLayout
+            android:id="@+id/hpBarContainer"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginTop="12dp"
+            app:layout_constraintTop_toBottomOf="@id/tvBossName"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <ProgressBar
+                android:id="@+id/progressBossHp"
+                style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="24dp"
+                android:max="100"
+                android:progress="100"
+                android:progressTint="#CC3333"
+                android:backgroundTint="#600000"
+                android:scaleY="2.5" />
+
+            <TextView
+                android:id="@+id/tvBossHpText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="500 / 1000"
+                android:textColor="#FFFFFF"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:fontFamily="@font/main_font_family"
+                android:layout_centerInParent="true" />
+
+        </RelativeLayout>
+
+        <!-- Scrollable content below boss -->
+        <ScrollView
+            android:id="@+id/scrollMissionContent"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginTop="16dp"
+            app:layout_constraintTop_toBottomOf="@id/hpBarContainer"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent">
+
+            <LinearLayout
+                android:id="@+id/missionDetailsContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="20dp">
+
+                <!-- Add dynamic mission details here -->
+
+            </LinearLayout>
+        </ScrollView>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- No mission active message -->
+    <TextView
+        android:id="@+id/tvNoMission"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="No mission is active"
+        android:textColor="#8B1E1E"
+        android:textSize="24sp"
+        android:fontFamily="@font/main_font_family"
+        android:textStyle="bold"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/btnMission"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

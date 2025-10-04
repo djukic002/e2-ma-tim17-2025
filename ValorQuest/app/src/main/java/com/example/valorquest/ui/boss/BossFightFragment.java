@@ -35,6 +35,7 @@ import com.example.valorquest.model.User;
 import com.example.valorquest.model.UserItem;
 import com.example.valorquest.model.dto.UserItemWithEquipmentDto;
 import com.example.valorquest.model.enums.BossStatus;
+import com.example.valorquest.model.enums.MissionContributionType;
 import com.example.valorquest.viewmodel.BossFightViewmodel;
 import com.example.valorquest.viewmodel.QuestsViewModel;
 import com.google.android.material.button.MaterialButton;
@@ -209,6 +210,79 @@ public class BossFightFragment extends Fragment {
         accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         shakeListener = createShakeListener();
     }
+    private void performAttack() {
+        if (boss.getAttacksRemaining() <= 0){
+            btnBoss.setEnabled(false);
+            return;
+        }
+
+        boss.setAttacksRemaining(boss.getAttacksRemaining() - 1);
+        boolean hit = Math.random() < this.hitChance;
+
+        if (hit) {
+            boss.setCurrentHp(boss.getCurrentHp() - pp);
+
+            bossViewmodel.contributeToMission(MissionContributionType.BOSS_HIT, success -> {
+                if (success) {
+                    Log.d("BossFight", "Boss hit contributed to alliance mission");
+                } else {
+                    Log.w("BossFight", "Failed to contribute boss hit to mission");
+                }
+            });
+        }
+
+        if(boss.getCurrentHp() < 0)
+            boss.setCurrentHp(0);
+
+        updateUI();
+        playBossReaction(hit);
+
+        Bundle args = new Bundle();
+        boolean navigate;
+
+        if (boss.getCurrentHp() == 0) {
+            args.putBoolean("bossDefeated", true);
+            args.putInt("gold", this.goldReward);
+
+            Toast.makeText(requireContext(), "You got lucky!", Toast.LENGTH_SHORT).show();
+            boss.setStatus(BossStatus.DEFEATED);
+            navigate = true;
+        } else if (boss.getAttacksRemaining() == 0 && boss.getCurrentHp() <= boss.getOriginalHp() / 2.0) {
+            args.putBoolean("bossDefeated", false);
+            args.putInt("gold", this.goldReward);
+
+            Toast.makeText(requireContext(), "You got away this time!", Toast.LENGTH_SHORT).show();
+            boss.setStatus(BossStatus.FAILED);
+            navigate = true;
+        } else if (boss.getAttacksRemaining() == 0 && boss.getCurrentHp() > boss.getOriginalHp() / 2.0) {
+            playSound(Sounds.LAUGH, 1000);
+            Toast.makeText(requireContext(), "You failed miserably!", Toast.LENGTH_SHORT).show();
+
+            boss.setStatus(BossStatus.FAILED);
+            navigate = true;
+        } else{
+            navigate = false;
+        }
+
+        // Save boss state after all logic
+        bossViewmodel.saveBossLiveData(boss).observe(getViewLifecycleOwner(), result -> {
+            if (result.getStatus() == Result.Status.SUCCESS) {
+                Log.d("BossFight", "Boss state saved successfully");
+
+                if (navigate) {
+                    bossVideo.postDelayed(() -> {
+                        if (args.isEmpty()) {
+                            navController.navigate(R.id.action_FightFragment_to_mainMenuFragment);
+                        } else {
+                            navController.navigate(R.id.action_bossFightFragment_to_bossRewardFragment, args);
+                        }
+                    }, 4000);
+                }
+            } else {
+                Log.e("BossFight", "Failed to save boss: " + result.getMessage());
+            }
+        });
+    }
 
     private void playBossReaction(boolean hit) {
         btnBoss.setEnabled(false);
@@ -284,71 +358,6 @@ public class BossFightFragment extends Fragment {
         tvPpValue.setText(String.valueOf(pp));
         tvAttackCountValue.setText(String.valueOf(boss.getAttacksRemaining()));
         tvHitChanceValue.setText(String.valueOf((int)(this.hitChance * 100)));
-    }
-
-
-    private void performAttack() {
-        if (boss.getAttacksRemaining() <= 0){
-            btnBoss.setEnabled(false);
-            return;
-        }
-
-        boss.setAttacksRemaining(boss.getAttacksRemaining() - 1);
-        boolean hit = Math.random() < this.hitChance;
-
-        if (hit) boss.setCurrentHp(boss.getCurrentHp() - pp);
-
-        if(boss.getCurrentHp() < 0)
-            boss.setCurrentHp(0);
-
-        updateUI();
-        playBossReaction(hit);
-
-        Bundle args = new Bundle();
-        boolean navigate;
-
-        if (boss.getCurrentHp() == 0) {
-            args.putBoolean("bossDefeated", true);
-            args.putInt("gold", this.goldReward);
-
-            Toast.makeText(requireContext(), "You got lucky!", Toast.LENGTH_SHORT).show();
-            boss.setStatus(BossStatus.DEFEATED);
-            navigate = true;
-        } else if (boss.getAttacksRemaining() == 0 && boss.getCurrentHp() <= boss.getOriginalHp() / 2.0) {
-            args.putBoolean("bossDefeated", false);
-            args.putInt("gold", this.goldReward);
-
-            Toast.makeText(requireContext(), "You got away this time!", Toast.LENGTH_SHORT).show();
-            boss.setStatus(BossStatus.FAILED);
-            navigate = true;
-        } else if (boss.getAttacksRemaining() == 0 && boss.getCurrentHp() > boss.getOriginalHp() / 2.0) {
-            playSound(Sounds.LAUGH, 1000);
-            Toast.makeText(requireContext(), "You failed miserably!", Toast.LENGTH_SHORT).show();
-
-            boss.setStatus(BossStatus.FAILED);
-            navigate = true;
-        } else{
-            navigate = false;
-        }
-
-        // Save boss state after all logic
-        bossViewmodel.saveBossLiveData(boss).observe(getViewLifecycleOwner(), result -> {
-            if (result.getStatus() == Result.Status.SUCCESS) {
-                Log.d("BossFight", "Boss state saved successfully");
-
-                if (navigate) {
-                    bossVideo.postDelayed(() -> {
-                        if (args.isEmpty()) {
-                            navController.navigate(R.id.action_FightFragment_to_mainMenuFragment);
-                        } else {
-                            navController.navigate(R.id.action_bossFightFragment_to_bossRewardFragment, args);
-                        }
-                    }, 4000);
-                }
-            } else {
-                Log.e("BossFight", "Failed to save boss: " + result.getMessage());
-            }
-        });
     }
 
     private void playSound(Sounds sound, long delayMillis) {

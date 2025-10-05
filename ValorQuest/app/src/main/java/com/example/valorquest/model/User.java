@@ -14,6 +14,7 @@ public class User {
     private int XP = 0;
     private int level = 0;
     private int basePP = 0;
+    private int coins = 0;
     private Timestamp previousLeveledUpAt;
     private Timestamp leveledUpAt;
     private List<String> friends = new ArrayList<>();
@@ -115,5 +116,13 @@ public class User {
 
     public void setFcmTokens(List<String> fcmTokens) {
         this.fcmTokens = fcmTokens;
+    }
+
+    public int getCoins() {
+        return coins;
+    }
+
+    public void setCoins(int coins) {
+        this.coins = coins;
     }
 }

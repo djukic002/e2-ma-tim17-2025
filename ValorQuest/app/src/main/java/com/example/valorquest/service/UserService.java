@@ -77,4 +77,34 @@ public class UserService {
     private void rewardUser(User user) {
         user.setBasePP(user.getBasePP() + LevelSystem.getPPForLevel(user.getLevel()));
     }
+
+    public void getUserProfile() {
+
+    }
+
+    public void getUserProfile(String userId, com.example.valorquest.utils.RepositoryCallback<com.example.valorquest.model.dto.UserProfileDto> callback) {
+        userRepository.getById(userId, user -> {
+            if (user == null) {
+                callback.onComplete(null);
+                return;
+            }
+
+            int requiredXPForNextLevel = com.example.valorquest.utils.LevelSystem.getXPForLevel(user.getLevel() + 1);
+            String title = com.example.valorquest.utils.LevelSystem.getTitle(user.getLevel());
+
+            com.example.valorquest.model.dto.UserProfileDto dto = new com.example.valorquest.model.dto.UserProfileDto(
+                    user.getId(),
+                    user.getUsername(),
+                    user.getAvatarId(),
+                    user.getXP(),
+                    user.getLevel(),
+                    user.getBasePP(),
+                    user.getCoins(),
+                    requiredXPForNextLevel,
+                    title
+            );
+
+            callback.onComplete(dto);
+        });
+    }
 }

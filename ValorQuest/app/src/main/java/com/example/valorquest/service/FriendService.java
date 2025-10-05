@@ -117,6 +117,26 @@ public class FriendService {
         });
     }
 
+    // 🔹 Add friend by userId convenience (for QR flow)
+    public void addFriendByUserId(String friendUserId, RepositoryCallback<Boolean> callback) {
+        if (friendUserId == null || friendUserId.isEmpty()) {
+            callback.onComplete(false);
+            return;
+        }
+        String currentUserId = getCurrentUserId();
+        if (friendUserId.equals(currentUserId)) {
+            callback.onComplete(false);
+            return;
+        }
+        userRepository.getById(friendUserId, user -> {
+            if (user == null) {
+                callback.onComplete(false);
+                return;
+            }
+            addFriend(user, callback);
+        });
+    }
+
     // 🔹 Remove friend
     public void removeFriend(User friend, RepositoryCallback<Boolean> callback) {
         String currentUserId = getCurrentUserId();

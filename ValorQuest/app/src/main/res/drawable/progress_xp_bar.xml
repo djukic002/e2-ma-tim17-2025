@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Metallic border background -->
+    <item android:id="@android:id/background">
+        <shape android:shape="rectangle">
+            <corners android:radius="12dp" />
+            <gradient
+                android:startColor="#8B8B8B"
+                android:centerColor="#A0A0A0"
+                android:endColor="#6B6B6B"
+                android:angle="90" />
+            <stroke android:width="3dp" android:color="#4A4A4A" />
+        </shape>
+    </item>
+    
+    <!-- Inner dark background -->
+    <item android:top="3dp" android:bottom="3dp" android:left="3dp" android:right="3dp">
+        <shape android:shape="rectangle">
+            <corners android:radius="8dp" />
+            <solid android:color="#2A1A1A" />
+        </shape>
+    </item>
+    
+    <!-- Crimson progress fill -->
+    <item android:id="@android:id/progress" android:top="3dp" android:bottom="3dp" android:left="3dp" android:right="3dp">
+        <clip>
+            <shape android:shape="rectangle">
+                <corners android:radius="8dp" />
+                <gradient
+                    android:startColor="#3A0505"
+                    android:centerColor="#5A0A0A"
+                    android:endColor="#7A0F0F"
+                    android:angle="0" />
+            </shape>
+        </clip>
+    </item>
+</layer-list>
+
+

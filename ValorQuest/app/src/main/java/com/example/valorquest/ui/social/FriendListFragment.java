@@ -80,7 +80,10 @@ public class FriendListFragment extends Fragment {
                 new SocialUserAdapter.ActionCallback() {
                     @Override
                     public void onViewProfile(User user) {
-                        Toast.makeText(requireContext(), "Profile: " + user.getUsername(), Toast.LENGTH_SHORT).show();
+                        Bundle args = new Bundle();
+                        args.putString("userId", user.getId());
+                        NavController navController = Navigation.findNavController(requireView());
+                        navController.navigate(R.id.profileFragment, args);
                     }
 
                     @Override

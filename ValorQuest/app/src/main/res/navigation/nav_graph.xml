@@ -82,7 +82,9 @@
         android:id="@+id/profileFragment"
         android:name="com.example.valorquest.ui.profile.ProfileFragment"
         android:label="Profile"
-        tools:layout="@layout/fragment_profile" />
+        tools:layout="@layout/fragment_profile">
+        <argument android:name="userId" android:defaultValue="" app:argType="string" />
+    </fragment>
 
     <fragment
         android:id="@+id/shopFragment"
@@ -160,5 +162,11 @@
         android:name="com.example.valorquest.ui.mission.AllianceMissionFragment"
         android:label="Alliance mission"
         tools:layout="@layout/fragment_alliance_mission" />
+
+    <fragment
+        android:id="@+id/qrScanFragment"
+        android:name="com.example.valorquest.ui.social.QrScanFragment"
+        android:label="Scan QR Code"
+        tools:layout="@layout/fragment_qr_scan" />
 
 </navigation>

@@ -25,16 +25,16 @@ public class LevelSystem {
 
     public static String getTitle(int level) {
         switch(level) {
-            case 1: return "Apprentice";
-            case 2: return "Acolyte";
-            case 3: return "Adventurer";
-            case 4: return "Champion";
-            case 5: return "Warlord";
-            case 6: return "Conqueror";
-            case 7: return "Legend";
-            case 8: return "Mythic";
-            case 9: return "Elder";
-            case 10: return "Immortal";
+            case 0: return "Apprentice";
+            case 1: return "Acolyte";
+            case 2: return "Adventurer";
+            case 3: return "Champion";
+            case 4: return "Warlord";
+            case 5: return "Conqueror";
+            case 6: return "Legend";
+            case 7: return "Mythic";
+            case 8: return "Elder";
+            case 9: return "Immortal";
             default: return "Eternal";
         }
     }

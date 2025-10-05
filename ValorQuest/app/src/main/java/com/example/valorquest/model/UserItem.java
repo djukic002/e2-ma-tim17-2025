@@ -3,16 +3,18 @@ package com.example.valorquest.model;
 public class UserItem {
     private String id;
     private String equipmentId;
+    private boolean activated;
     private int remainingBattles;
     private int reforgeLevel;
     private int upgradeLevel;
     public UserItem(){}
-    public UserItem(String id, String equipmentId, int remainingBattles, int reforgeLevel, int upgradeLevel) {
+    public UserItem(String id, String equipmentId, int remainingBattles, int reforgeLevel, int upgradeLevel, boolean activated) {
         this.id = id;
         this.equipmentId = equipmentId;
         this.remainingBattles = remainingBattles;
         this.reforgeLevel = reforgeLevel;
         this.upgradeLevel = upgradeLevel;
+        this.activated = activated;
     }
 
     public String getId() {
@@ -53,5 +55,13 @@ public class UserItem {
 
     public void setUpgradeLevel(int upgradeLevel) {
         this.upgradeLevel = upgradeLevel;
+    }
+
+    public boolean isActivated() {
+        return activated;
+    }
+
+    public void setActivated(boolean activated) {
+        this.activated = activated;
     }
 }

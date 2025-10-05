@@ -60,7 +60,10 @@ public class AddNewFriendFragment extends Fragment {
                 new SocialUserAdapter.ActionCallback() {
                     @Override
                     public void onViewProfile(User user) {
-                        Toast.makeText(requireContext(), "Profile: " + user.getUsername(), Toast.LENGTH_SHORT).show();
+                        Bundle args = new Bundle();
+                        args.putString("userId", user.getId());
+                        androidx.navigation.NavController navController = androidx.navigation.Navigation.findNavController(requireView());
+                        navController.navigate(R.id.profileFragment, args);
                     }
 
                     @Override public void onRemoveFriend(User user) {} // not used here
@@ -126,6 +129,13 @@ public class AddNewFriendFragment extends Fragment {
                 viewModel.filterUsers(s.toString());
             }
             @Override public void afterTextChanged(Editable s) {}
+        });
+        
+        // Add QR scan button listener
+        View btnScanQr = requireView().findViewById(R.id.btn_scan_qr);
+        btnScanQr.setOnClickListener(v -> {
+            androidx.navigation.NavController navController = androidx.navigation.Navigation.findNavController(requireView());
+            navController.navigate(R.id.qrScanFragment);
         });
     }
 }

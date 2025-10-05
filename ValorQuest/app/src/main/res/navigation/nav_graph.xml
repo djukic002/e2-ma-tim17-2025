@@ -35,6 +35,10 @@
             android:id="@+id/action_mainMenuFragment_to_socialFragment"
             app:destination="@id/friendListFragment" />
 
+        <action
+            android:id="@+id/action_mainMenuFragment_to_allianceMissionFragment"
+            app:destination="@id/allianceMissionFragment" />
+
     </fragment>
 
     <fragment
@@ -158,5 +162,11 @@
             android:id="@+id/action_bossRewardFragment_to_mainMenuFragment"
             app:destination="@id/mainMenuFragment" />
     </fragment>
+
+    <fragment
+        android:id="@+id/allianceMissionFragment"
+        android:name="com.example.valorquest.ui.mission.AllianceMissionFragment"
+        android:label="Alliance mission"
+        tools:layout="@layout/fragment_alliance_mission" />
 
 </navigation>

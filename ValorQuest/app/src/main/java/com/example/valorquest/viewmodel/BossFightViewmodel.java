@@ -12,6 +12,8 @@ import com.example.valorquest.model.Result;
 import com.example.valorquest.model.User;
 import com.example.valorquest.model.UserItem;
 import com.example.valorquest.model.dto.UserItemWithEquipmentDto;
+import com.example.valorquest.model.enums.MissionContributionType;
+import com.example.valorquest.service.AllianceMissionService;
 import com.example.valorquest.service.BossService;
 import com.example.valorquest.utils.RepositoryCallback;
 
@@ -27,11 +29,18 @@ public class BossFightViewmodel extends ViewModel {
     private final BossService bossService;
     private final UserRepository userRepository;
     private final EquipmentRepository equipmentRepository;
+
+    private final AllianceMissionService missionService;
     @Inject
-    public BossFightViewmodel(BossService bossService) {
+    public BossFightViewmodel(BossService bossService, AllianceMissionService missionService) {
         this.bossService = bossService;
         this.userRepository = new UserRepository();
         this.equipmentRepository = new EquipmentRepository();
+        this.missionService = missionService;
+    }
+
+    public void contributeToMission(MissionContributionType type, RepositoryCallback<Boolean> callback) {
+        missionService.contribute(type, callback);
     }
     public LiveData<Result<String>> saveBossLiveData(Boss boss) {
         return bossService.saveBoss(boss);

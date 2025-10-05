@@ -23,7 +23,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="56dp" />
+        android:layout_marginTop="20dp" />
 
     <!-- Subtitle -->
     <TextView
@@ -136,7 +136,7 @@
         app:iconGravity="textStart"
         android:layout_marginTop="32dp"
         app:layout_constraintWidth_percent="0.5"
-        app:layout_constraintTop_toBottomOf="@id/btnCategories"
+        app:layout_constraintTop_toBottomOf="@id/btnMission"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:visibility="gone"/>
@@ -158,6 +158,26 @@
         android:layout_marginTop="32dp"
         app:layout_constraintWidth_percent="0.5"
         app:layout_constraintTop_toBottomOf="@id/btnCategories"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnMission"
+        android:layout_width="0dp"
+        android:layout_height="64dp"
+        android:text="Special mission"
+        android:textAllCaps="false"
+        android:textSize="20sp"
+        android:textColor="#C9A227"
+        android:fontFamily="@font/main_font_family"
+        android:textStyle="bold"
+        android:background="@drawable/bg_button_fantasy"
+        app:backgroundTint="@null"
+        app:cornerRadius="14dp"
+        app:iconGravity="textStart"
+        android:layout_marginTop="32dp"
+        app:layout_constraintWidth_percent="0.5"
+        app:layout_constraintTop_toBottomOf="@id/btnSocial"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 

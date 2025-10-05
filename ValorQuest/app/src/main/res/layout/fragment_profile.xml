@@ -181,12 +181,4 @@
             android:layout_height="0dp"
             android:layout_weight="1" />
     </LinearLayout>
-
-    <ImageView
-        android:layout_width="300px"
-        android:layout_height="300px"
-        android:layout_gravity="bottom|end"
-        android:src="@drawable/shopkeeper"
-        android:contentDescription="Decoration" />
-
 </FrameLayout>

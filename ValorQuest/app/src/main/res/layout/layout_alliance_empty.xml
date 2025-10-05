@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:gravity="center"
+    android:background="@drawable/bg_parchment_panel">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="You are not part of any alliance. Seek out a brotherhood or forge your own fellowship."
+        android:textSize="18sp"
+        android:textColor="@color/black"
+        android:fontFamily="@font/main_font_family"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:paddingBottom="12dp"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_create_alliance"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Create Alliance"
+        android:textAllCaps="false"
+        android:textStyle="bold"
+        android:textColor="#C9A227"
+        android:background="@drawable/bg_button_fantasy"
+        app:backgroundTint="@null"
+        app:rippleColor="#33C9A227"
+        android:layout_gravity="center"/>
+</LinearLayout>

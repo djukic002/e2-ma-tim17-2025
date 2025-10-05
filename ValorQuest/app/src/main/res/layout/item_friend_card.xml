@@ -38,14 +38,30 @@
             android:fontFamily="@font/main_font_family"
             android:textStyle="bold" />
 
-        <TextView
-            android:id="@+id/friend_email"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="friend@email.com"
-            android:textColor="@color/black"
-            android:textSize="14sp"
-            android:fontFamily="@font/main_font_family" />
+<!--        <TextView-->
+<!--            android:id="@+id/friend_email"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="friend@email.com"-->
+<!--            android:textColor="@color/black"-->
+<!--            android:textSize="14sp"-->
+<!--            android:fontFamily="@font/main_font_family" />-->
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/leader_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:padding="8dp">
+        <ImageView
+            android:id="@+id/crownIcon"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/ic_crown"
+            app:tint="#8B1E1E"/>
+
     </LinearLayout>
 
     <!-- Action Buttons -->
@@ -53,21 +69,12 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:orientation="horizontal"
-        android:gravity="center"
-        android:paddingEnd="8dp">
+        android:gravity="center">
 
-        <com.google.android.material.button.MaterialButton
+        <ImageButton
             android:id="@+id/btn_view_profile"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Profile"
-            android:textAllCaps="false"
-            android:textSize="12sp"
-            android:textStyle="bold"
-            android:background="@drawable/bg_button_fantasy"
-            android:textColor="#C9A227"
-            app:backgroundTint="@null"
-            app:rippleColor="#33C9A227" />
+            style="@style/AllianceIconButton"
+            android:src="@drawable/ic_user"/>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_action"

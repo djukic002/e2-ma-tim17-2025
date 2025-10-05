@@ -6,7 +6,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -19,11 +21,18 @@ import java.util.List;
 import java.util.Set;
 
 public class SocialUserAdapter extends ArrayAdapter<User> {
-    public enum Mode { FRIEND_LIST, ADD_FRIEND, ALLIANCE_SELECT }
+    public enum Mode { FRIEND_LIST, ADD_FRIEND, ALLIANCE_SELECT, ALLIANCE_MEMBERS }
 
     private final Context context;
     private final Mode mode;
     private final ActionCallback callback;
+
+    private String leaderId;
+
+    public void setLeaderId(String leaderId) {
+        this.leaderId = leaderId;
+        notifyDataSetChanged();
+    }
 
     // Render-only selection set (fragment owns selection logic)
     private Set<String> selectedIds = new HashSet<>();
@@ -64,15 +73,14 @@ public class SocialUserAdapter extends ArrayAdapter<User> {
 
         ImageView avatar = convertView.findViewById(R.id.friend_avatar);
         TextView username = convertView.findViewById(R.id.friend_username);
-        TextView email = convertView.findViewById(R.id.friend_email);
-        Button btnProfile = convertView.findViewById(R.id.btn_view_profile);
+        ImageButton btnProfile = convertView.findViewById(R.id.btn_view_profile);
         Button btnAction = convertView.findViewById(R.id.btn_action);
         ImageView check = convertView.findViewById(R.id.friend_check);
         View container = convertView.findViewById(R.id.friend_container);
+        LinearLayout crown = convertView.findViewById(R.id.leader_icon);
 
         if (user != null) {
             username.setText(user.getUsername());
-            email.setText(user.getEmail());
 
             int avatarResId = context.getResources()
                     .getIdentifier("avatar_" + user.getAvatarId(), "drawable", context.getPackageName());
@@ -90,6 +98,7 @@ public class SocialUserAdapter extends ArrayAdapter<User> {
                     btnAction.setText("X");
                     btnAction.setVisibility(View.VISIBLE);
                     btnProfile.setVisibility(View.VISIBLE);
+                    crown.setVisibility(View.GONE);
                     btnAction.setOnClickListener(v -> {
                         if (callback != null) callback.onRemoveFriend(user);
                     });
@@ -98,6 +107,7 @@ public class SocialUserAdapter extends ArrayAdapter<User> {
                 case ADD_FRIEND:
                     btnAction.setText("+");
                     btnAction.setVisibility(View.VISIBLE);
+                    crown.setVisibility(View.GONE);
                     btnProfile.setVisibility(View.VISIBLE);
                     btnAction.setOnClickListener(v -> {
                         if (callback != null) callback.onAddFriend(user);
@@ -107,6 +117,7 @@ public class SocialUserAdapter extends ArrayAdapter<User> {
                 case ALLIANCE_SELECT:
                     // Hide both buttons for alliance selection (fragment handles selection)
                     btnAction.setVisibility(View.GONE);
+                    crown.setVisibility(View.GONE);
                     btnProfile.setVisibility(View.GONE);
                     boolean selected = selectedIds.contains(user.getId());
                     container.setSelected(selected);
@@ -117,6 +128,12 @@ public class SocialUserAdapter extends ArrayAdapter<User> {
                         else selectedIds.add(user.getId());
                         notifyDataSetChanged();
                     });
+                    break;
+                case ALLIANCE_MEMBERS:
+                    btnAction.setVisibility(View.GONE);
+                    btnProfile.setVisibility(View.GONE);
+                    if (leaderId == null || !leaderId.equals(user.getId()))
+                        crown.setVisibility(View.GONE);
                     break;
             }
         }

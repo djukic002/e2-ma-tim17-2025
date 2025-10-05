@@ -127,25 +127,41 @@ public class MainActivity extends AppCompatActivity {
                 builder.setTitle("Disband Current Alliance?")
                         .setMessage("You are the leader of your current alliance. To join the new one, you must disband it. Continue?")
                         .setPositiveButton("Disband & Join", (dialog, which) -> {
-//                            disbandAlliance(currentAllianceId);
-                            allianceService.acceptInvite(allianceId, notificationId, senderId);
-                            NotificationManagerCompat.from(this).cancel(notificationId.hashCode());
-                            Toast.makeText(this, "Welcome to the new alliance!", Toast.LENGTH_SHORT).show();
+                            // Call disbandAlliance
+                            allianceService.disbandAlliance(task -> {
+                                if (task.isSuccessful()) {
+                                    // Only after disbanding, accept the new invite
+                                    allianceService.acceptInvite(allianceId, notificationId, senderId);
+                                    NotificationManagerCompat.from(this).cancel(notificationId.hashCode());
+                                    Toast.makeText(this, "Welcome to the new alliance!", Toast.LENGTH_SHORT).show();
+                                } else {
+                                    Toast.makeText(this, "Failed to disband your alliance.", Toast.LENGTH_SHORT).show();
+                                }
+                            });
                         })
                         .setNegativeButton("Cancel", (dialog, which) -> {});
             } else {
                 builder.setTitle("Leave Current Alliance?")
                         .setMessage("You are already in an alliance. Do you want to leave it and join the new one?")
                         .setPositiveButton("Leave & Join", (dialog, which) -> {
-//                            leaveAlliance(currentAllianceId);
-                            allianceService.acceptInvite(allianceId, notificationId, senderId);
-                            NotificationManagerCompat.from(this).cancel(notificationId.hashCode());
-                            Toast.makeText(this, "Welcome to the new alliance!", Toast.LENGTH_SHORT).show();
+                            // Call leaveAlliance
+                            allianceService.leaveAlliance(task -> {
+                                if (task.isSuccessful()) {
+                                    // Only after leaving, accept the new invite
+                                    allianceService.acceptInvite(allianceId, notificationId, senderId);
+                                    NotificationManagerCompat.from(this).cancel(notificationId.hashCode());
+                                    Toast.makeText(this, "Welcome to the new alliance!", Toast.LENGTH_SHORT).show();
+                                } else {
+                                    Toast.makeText(this, "Failed to leave your alliance.", Toast.LENGTH_SHORT).show();
+                                }
+                            });
                         })
                         .setNegativeButton("Cancel", (dialog, which) -> {});
             }
+
             builder.setCancelable(false);
             builder.show();
         });
     }
+
 }

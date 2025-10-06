@@ -35,8 +35,6 @@
             android:id="@+id/action_mainMenuFragment_to_socialFragment"
             app:destination="@id/friendListFragment" />
 
-
-
     </fragment>
 
     <fragment
@@ -163,7 +161,9 @@
 
         <action
             android:id="@+id/action_bossRewardFragment_to_mainMenuFragment"
-            app:destination="@id/mainMenuFragment" />
+            app:destination="@id/mainMenuFragment"
+            app:popUpTo="@id/bossRewardFragment"
+            app:popUpToInclusive="true" />
     </fragment>
 
     <fragment

@@ -17,6 +17,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
 public class EquipmentService {
     private final EquipmentRepository equipmentRepository;
     private final UserRepository userRepository;

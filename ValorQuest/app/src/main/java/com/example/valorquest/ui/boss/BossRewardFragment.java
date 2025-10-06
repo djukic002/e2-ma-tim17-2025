@@ -11,9 +11,11 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,7 +24,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.valorquest.R;
+import com.example.valorquest.viewmodel.BossFightViewmodel;
+import com.example.valorquest.viewmodel.BossRewardViewModel;
 import com.google.android.material.button.MaterialButton;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.util.Random;
 
@@ -36,13 +42,11 @@ public class BossRewardFragment extends Fragment {
     private SensorManager sensorManager;
     private Sensor accelerometer;
     private SensorEventListener shakeListener;
-
+    private View goldColumn, equipmentColumn;
     private boolean bossDefeated = false;
     private double gearDropChance = 0.2;
-    private String equipmentName = "Gauntlets of the Titan";
     private int goldReward = 0;
-    private boolean hasGold = false;
-    private boolean hasEquipment = false;
+    private BossRewardViewModel bossRewardViewModel;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -59,7 +63,8 @@ public class BossRewardFragment extends Fragment {
             goldReward = goldReward / 2;
         }
 
-        // setovati ovde kad se povuce reward iz baze
+        bossRewardViewModel = new ViewModelProvider(this).get(BossRewardViewModel.class);
+
         ivGold = view.findViewById(R.id.ivGold);
         ivEquipment = view.findViewById(R.id.ivEquipment);
 
@@ -76,6 +81,9 @@ public class BossRewardFragment extends Fragment {
         btnOpenChest.setOnClickListener(v -> openChest());
         btnClaimChest.setOnClickListener(v -> claimChest());
 
+        goldColumn = view.findViewById(R.id.goldColumn);
+        equipmentColumn = view.findViewById(R.id.equipmentColumn);
+
         sensorManager = (SensorManager) requireActivity().getSystemService(Context.SENSOR_SERVICE);
         if (sensorManager != null) {
             accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
@@ -89,27 +97,39 @@ public class BossRewardFragment extends Fragment {
         if (isOpened) return;
         isOpened = true;
 
+        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        if(firebaseUser == null){
+            NavController navController = NavHostFragment.findNavController(this);
+            navController.navigate(R.id.action_bossRewardFragment_to_mainMenuFragment);
+        }
+
         ivChest.setImageResource(R.drawable.chest_open);
         soundPool.play(chestOpenSound, 1f, 1f, 1, 0, 1f);
 
+        bossRewardViewModel.rewardUserWithGold(firebaseUser.getUid(), this.goldReward, success -> {
+            if (success) {
+                Log.d("BossRewardViewModel", "Gold successfully added!");
+                goldColumn.setVisibility(View.VISIBLE);
+                tvGoldAmount.setText("+" + goldReward);
+            }
+        });
+
         Random rand = new Random();
-        hasGold = true;
-        hasEquipment = rand.nextDouble() < gearDropChance;
+        if (rand.nextDouble() < gearDropChance) {
+            bossRewardViewModel.giveRandomBossReward(firebaseUser.getUid(), equipment -> {
+                if (equipment != null) {
+                    equipmentColumn.setVisibility(View.VISIBLE);
+                    tvEquipmentName.setText(equipment.getName());
 
-        View goldColumn = getView().findViewById(R.id.goldColumn);
-        if (hasGold) {
-            goldColumn.setVisibility(View.VISIBLE);
-            tvGoldAmount.setText("+" + goldReward);
-        } else {
-            goldColumn.setVisibility(View.GONE);
-        }
+                    int resId = requireContext().getResources().getIdentifier(
+                            equipment.getId(),
+                            "drawable",
+                            requireContext().getPackageName()
+                    );
 
-        View equipmentColumn = getView().findViewById(R.id.equipmentColumn);
-        if (hasEquipment) {
-            equipmentColumn.setVisibility(View.VISIBLE);
-            tvEquipmentName.setText(equipmentName);
-        } else {
-            equipmentColumn.setVisibility(View.GONE);
+                    ivEquipment.setImageResource(resId != 0 ? resId : R.drawable.a1);
+                }
+            });
         }
 
         btnOpenChest.setVisibility(View.GONE);

@@ -1,9 +1,12 @@
 package com.example.valorquest.service;
 
+import android.media.audiofx.DynamicsProcessing;
 import android.util.Log;
 
 import com.example.valorquest.data.repositories.AllianceMissionRepository;
 import com.example.valorquest.data.repositories.AllianceRepository;
+import com.example.valorquest.data.repositories.BossRepository;
+import com.example.valorquest.data.repositories.EquipmentRepository;
 import com.example.valorquest.data.repositories.MissionContributionRepository;
 import com.example.valorquest.data.repositories.UserRepository;
 import com.example.valorquest.model.AllianceMission;
@@ -347,6 +350,8 @@ public class AllianceMissionService {
                             if (mission.getCurrentBossHp() <= 0) {
                                 mission.setStatus(AllianceMissionStatus.COMPLETED);
                                 // dodavanje nagrade korisnicima misija
+
+                                rewardUsers(alliance.getMembers());
                                 updated = true;
                             } else if (now.after(Date.from(end.atZone(ZoneId.systemDefault()).toInstant()))) {
                                 mission.setStatus(AllianceMissionStatus.FAILED);
@@ -368,5 +373,57 @@ public class AllianceMissionService {
                 });
             }
         });
+    }
+    private void rewardUsers(List<String> memberIds) {
+        if (memberIds == null || memberIds.isEmpty()) return;
+
+        EquipmentService equipmentService = new EquipmentService(new EquipmentRepository(), userRepository, new BossRepository());
+
+        for (String userId : memberIds) {
+            userRepository.getById(userId, user -> {
+                if (user == null) {
+                    Log.e("AllianceMissionService", "User not found: " + userId);
+                    return;
+                }
+
+                equipmentService.giveRandomEquipment(userId, "armor", eq -> {
+                    if (eq != null) {
+                        Log.i("AllianceMissionService",
+                                "User " + userId + " received armor: " + eq.toString());
+                    } else {
+                        Log.w("AllianceMissionService",
+                                "Failed to generate armor for user " + userId);
+                    }
+                });
+                equipmentService.giveRandomEquipment(userId, "potion", eq -> {
+                    if (eq != null) {
+                        Log.i("AllianceMissionService",
+                                "User " + userId + " received potion: " + eq.toString());
+                    } else {
+                        Log.w("AllianceMissionService",
+                                "Failed to generate potion for user " + userId);
+                    }
+                });
+
+                int goldReward = calculateGoldReward(user.getLevel());
+                user.setCoins(user.getCoins() + goldReward);
+                 userRepository.save(user.getId(), user, saveTask -> {
+                     if (saveTask.isSuccessful()) {
+                         Log.i("AllianceMissionService", "Successfully rewarded user " + user.getId() + " added gold: " + goldReward);
+                     } else {
+                         Log.e("AllianceMissionService", "Failed to reward user " + user.getId(), saveTask.getException());
+                     }
+                 });
+            });
+        }
+    }
+    private int calculateGoldReward(int level) {
+        double reward = 200;
+
+        for (int i = 1; i <= level; i++) {
+            reward *= 1.2;
+        }
+
+        return (int) (reward / 2.0);
     }
 }

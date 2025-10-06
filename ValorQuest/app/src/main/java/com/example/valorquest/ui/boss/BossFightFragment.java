@@ -43,6 +43,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import java.util.List;
+import java.util.Random;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
@@ -131,6 +132,13 @@ public class BossFightFragment extends Fragment {
             else if(equipment.getAttribute().equals("attackChance")){
                 double newHitChance = this.hitChance + equipment.getBonus() * this.hitChance;
                 this.hitChance = Math.min(newHitChance, 1.0);
+            }
+            else if(equipment.getAttribute().equals("extraAttack") && boss.getAttackLimit() == 5){
+                Random rand = new Random();
+                if (rand.nextDouble() < equipment.getBonus()) {
+                    boss.setAttacksRemaining(boss.getAttacksRemaining() + 1);
+                    boss.setAttackLimit(boss.getAttackLimit() + 1);
+                }
             }
         }
     }

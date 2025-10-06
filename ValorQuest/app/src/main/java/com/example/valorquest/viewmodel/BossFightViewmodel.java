@@ -1,5 +1,7 @@
 package com.example.valorquest.viewmodel;
 
+import android.util.Log;
+
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -20,7 +22,9 @@ import com.example.valorquest.service.EquipmentService;
 import com.example.valorquest.utils.RepositoryCallback;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.inject.Inject;
 
@@ -73,20 +77,30 @@ public class BossFightViewmodel extends ViewModel {
 
         userItemRepo.getAllItems(userItems -> {
             if (userItems == null) {
-                callback.onComplete(null);
+                callback.onComplete(Collections.emptyList());
+                return;
+            }
+
+            List<UserItem> activatedItems = new ArrayList<>();
+            for (UserItem item : userItems) {
+                if (item.isActivated()) activatedItems.add(item);
+            }
+
+            if (activatedItems.isEmpty()) {
+                callback.onComplete(Collections.emptyList());
                 return;
             }
 
             List<UserItemWithEquipmentDto> dtoList = new ArrayList<>();
-            for (UserItem item : userItems) {
-                if (!item.isActivated())
-                    continue;
+            AtomicInteger remaining = new AtomicInteger(activatedItems.size());
+
+            for (UserItem item : activatedItems) {
                 equipmentRepo.getById(item.getEquipmentId(), equipment -> {
                     if (equipment != null) {
                         dtoList.add(new UserItemWithEquipmentDto(item, equipment));
                     }
 
-                    if (dtoList.size() == userItems.size()) {
+                    if (remaining.decrementAndGet() == 0) {
                         callback.onComplete(dtoList);
                     }
                 });
@@ -96,7 +110,6 @@ public class BossFightViewmodel extends ViewModel {
     public LiveData<List<UserItemWithEquipmentDto>> getUserItemsWithEquipmentLiveData(String userId) {
         MutableLiveData<List<UserItemWithEquipmentDto>> liveData = new MutableLiveData<>();
 
-        // Call your callback-based method
         getUserItemsWithEquipment(userId, dtoList -> liveData.postValue(dtoList));
 
         return liveData;

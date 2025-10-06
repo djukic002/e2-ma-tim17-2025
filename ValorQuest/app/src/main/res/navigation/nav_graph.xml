@@ -35,9 +35,7 @@
             android:id="@+id/action_mainMenuFragment_to_socialFragment"
             app:destination="@id/friendListFragment" />
 
-        <action
-            android:id="@+id/action_mainMenuFragment_to_allianceMissionFragment"
-            app:destination="@id/allianceMissionFragment" />
+
 
     </fragment>
 
@@ -67,6 +65,9 @@
         <action
             android:id="@+id/action_friendListFragment_to_allianceMembersFragment"
             app:destination="@id/allianceMembersFragment" />
+        <action
+            android:id="@+id/action_friendListFragment_to_allianceMissionFragment"
+            app:destination="@id/allianceMissionFragment" />
     </fragment>
 
     <fragment

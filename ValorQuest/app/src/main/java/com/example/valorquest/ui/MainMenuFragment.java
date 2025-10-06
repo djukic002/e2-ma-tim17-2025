@@ -42,7 +42,6 @@ public class MainMenuFragment extends Fragment {
         MaterialButton btnCategories = view.findViewById(R.id.btnCategories);
         MaterialButton btnBossFight = view.findViewById(R.id.btnBoss);
         MaterialButton btnSocial = view.findViewById(R.id.btnSocial);
-        MaterialButton btnMission = view.findViewById(R.id.btnMission);
 
         btnQuests.setOnClickListener(v ->
                 Navigation.findNavController(v)
@@ -67,10 +66,6 @@ public class MainMenuFragment extends Fragment {
         btnSocial.setOnClickListener(v ->
                 Navigation.findNavController(v)
                         .navigate(R.id.action_mainMenuFragment_to_socialFragment));
-
-        btnMission.setOnClickListener(v ->
-                Navigation.findNavController(v)
-                        .navigate(R.id.action_mainMenuFragment_to_allianceMissionFragment));
 
 
         setupBossFightButton(btnBossFight);

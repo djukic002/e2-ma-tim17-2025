@@ -15,8 +15,10 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.example.valorquest.R;
 import com.example.valorquest.model.Equipment;
+import com.example.valorquest.utils.RepositoryCallback;
 import com.example.valorquest.viewmodel.ShopViewModel;
 import com.google.android.material.button.MaterialButton;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -42,6 +44,7 @@ public class ShopFragment extends Fragment {
 
         viewModel = new ViewModelProvider(this).get(ShopViewModel.class);
         adapter = new EquipmentAdapter(requireContext(), new ArrayList<>());
+        adapter.setViewModel(viewModel);
 
         initializeViews(root);
 
@@ -74,6 +77,20 @@ public class ShopFragment extends Fragment {
             else
                 viewModel.selectEquipment(selected);
         });
+
+        purchaseButton.setOnClickListener(v -> {
+            viewModel.purchaseSelectedEquipment(new RepositoryCallback<Boolean>() {
+                @Override
+                public void onComplete(Boolean success) {
+                    if (success) {
+                        Toast.makeText(requireContext(), "Equipment purchased successfully!", Toast.LENGTH_SHORT).show();
+                        viewModel.clearSelection();
+                    } else {
+                        Toast.makeText(requireContext(), "Failed to purchase equipment. Check your coins!", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+        });
     }
 
     private void observeViewModel() {
@@ -83,7 +100,12 @@ public class ShopFragment extends Fragment {
                 adapter.addAll(equipment);
                 adapter.notifyDataSetChanged();
             }
+        });
 
+        viewModel.getEquipmentPrices().observe(getViewLifecycleOwner(), prices -> {
+            if (prices != null) {
+                adapter.updatePrices(prices);
+            }
         });
 
         viewModel.getSelectedEquipment().observe(getViewLifecycleOwner(), eq -> {
@@ -112,5 +134,37 @@ public class ShopFragment extends Fragment {
                     equipmentImage.setImageResource(resId);
             }
         });
+
+        viewModel.getSelectedEquipmentPurchasable().observe(getViewLifecycleOwner(), isPurchasable -> {
+            if (isPurchasable != null) {
+                updatePurchaseButtonState(isPurchasable, viewModel.getSelectedEquipmentPrice().getValue());
+            }
+        });
+
+        viewModel.getSelectedEquipmentPrice().observe(getViewLifecycleOwner(), price -> {
+            Boolean isPurchasable = viewModel.getSelectedEquipmentPurchasable().getValue();
+            if (isPurchasable != null && isPurchasable) {
+                updatePurchaseButtonState(true, price);
+            }
+        });
+    }
+
+    private void updatePurchaseButtonState(boolean isPurchasable, Integer price) {
+        if (isPurchasable) {
+            if (price != null && price > 0) {
+                purchaseButton.setEnabled(true);
+                purchaseButton.setText("Purchase " + price);
+            } else if (price != null && price == 0) {
+                purchaseButton.setEnabled(false);
+                purchaseButton.setText("Unavailable");
+                purchaseButton.setIcon(null);
+            } else {
+                purchaseButton.setEnabled(true);
+                purchaseButton.setText("Loading...");
+            }
+        } else {
+            purchaseButton.setEnabled(false);
+            purchaseButton.setText("Unavailable");
+        }
     }
 }

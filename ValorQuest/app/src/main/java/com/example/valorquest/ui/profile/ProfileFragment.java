@@ -126,5 +126,4 @@ public class ProfileFragment extends Fragment {
             // ignore for now
         }
     }
-
 }

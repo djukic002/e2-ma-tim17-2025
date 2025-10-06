@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.example.valorquest.data.repositories.BossRepository;
 import com.example.valorquest.data.repositories.EquipmentRepository;
 import com.example.valorquest.data.repositories.UserItemRepository;
 import com.example.valorquest.data.repositories.UserRepository;
@@ -15,6 +16,7 @@ import com.example.valorquest.model.dto.UserItemWithEquipmentDto;
 import com.example.valorquest.model.enums.MissionContributionType;
 import com.example.valorquest.service.AllianceMissionService;
 import com.example.valorquest.service.BossService;
+import com.example.valorquest.service.EquipmentService;
 import com.example.valorquest.utils.RepositoryCallback;
 
 import java.util.ArrayList;
@@ -60,6 +62,11 @@ public class BossFightViewmodel extends ViewModel {
         return userItemRepository.getUserItems();
     }
 
+    public void damageEquipment() {
+        EquipmentService equipmentService = new EquipmentService(equipmentRepository, userRepository, new BossRepository());
+        equipmentService.damageEquipment();
+    }
+
     public void getUserItemsWithEquipment(String userId, RepositoryCallback<List<UserItemWithEquipmentDto>> callback) {
         UserItemRepository userItemRepo = new UserItemRepository(userId);
         EquipmentRepository equipmentRepo = new EquipmentRepository();
@@ -72,6 +79,8 @@ public class BossFightViewmodel extends ViewModel {
 
             List<UserItemWithEquipmentDto> dtoList = new ArrayList<>();
             for (UserItem item : userItems) {
+                if (!item.isActivated())
+                    continue;
                 equipmentRepo.getById(item.getEquipmentId(), equipment -> {
                     if (equipment != null) {
                         dtoList.add(new UserItemWithEquipmentDto(item, equipment));
@@ -91,46 +100,5 @@ public class BossFightViewmodel extends ViewModel {
         getUserItemsWithEquipment(userId, dtoList -> liveData.postValue(dtoList));
 
         return liveData;
-    }
-
-    public void seedUserItems(String userId) {
-        UserItemRepository repo = new UserItemRepository(userId);
-
-        // List of items to seed
-        List<UserItem> itemsToSeed = new ArrayList<>();
-
-        UserItem gauntlets = new UserItem();
-        gauntlets.setId("a1");
-        gauntlets.setEquipmentId("a1");
-        gauntlets.setRemainingBattles(2);
-        gauntlets.setReforgeLevel(0);
-        gauntlets.setUpgradeLevel(0);
-        itemsToSeed.add(gauntlets);
-
-        UserItem sword = new UserItem();
-        sword.setId("a2");
-        sword.setEquipmentId("a2");
-        sword.setRemainingBattles(3);
-        sword.setReforgeLevel(0);
-        sword.setUpgradeLevel(0);
-        itemsToSeed.add(sword);
-
-        // Loop through each item
-        for (UserItem item : itemsToSeed) {
-            repo.getById(item.getId(), existingItem -> {
-                if (existingItem == null) {
-                    // Item does not exist, save it
-                    repo.save(item.getId(), item, task -> {
-                        if (task.isSuccessful()) {
-                            System.out.println("✅ Added UserItem: " + item.getEquipmentId());
-                        } else {
-                            System.out.println("❌ Failed to add UserItem: " + task.getException());
-                        }
-                    });
-                } else {
-                    System.out.println("ℹ️ UserItem already exists: " + item.getEquipmentId());
-                }
-            });
-        }
     }
 }

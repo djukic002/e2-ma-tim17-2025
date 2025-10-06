@@ -147,6 +147,12 @@ public class FriendListFragment extends Fragment {
                     NavController navController = Navigation.findNavController(requireView());
                     navController.navigate(R.id.action_friendListFragment_to_allianceMembersFragment);
                 });
+                ImageButton btnAllianceMission = allianceView.findViewById(R.id.btn_alliance_mission);
+                btnAllianceMission.setOnClickListener(v -> {
+                    NavController navController = Navigation.findNavController(requireView());
+                    navController.navigate(R.id.action_friendListFragment_to_allianceMissionFragment);
+                });
+
             } else {
                 View emptyView = inflater.inflate(R.layout.layout_alliance_empty, allianceContainer, false);
                 allianceContainer.addView(emptyView);

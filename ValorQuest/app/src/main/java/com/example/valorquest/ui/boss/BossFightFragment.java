@@ -123,10 +123,10 @@ public class BossFightFragment extends Fragment {
     private void activateBuffs(List<UserItemWithEquipmentDto> userItems) {
         for(UserItemWithEquipmentDto equipment:userItems){
             if(equipment.getAttribute().equals("money")){
-                this.goldReward += (int)equipment.getBonus() * this.goldReward;
+                this.goldReward += (int)(equipment.getBonus() + equipment.getUpgradeLevel() * 0.01 + equipment.getReforgeLevel() * 0.02) * this.goldReward;
             }
             else if(equipment.getAttribute().equals("power")){
-                this.pp += (int)(this.pp * equipment.getBonus());
+                this.pp += (int)(this.pp * (equipment.getBonus() + equipment.getUpgradeLevel() * 0.01 + equipment.getReforgeLevel() * 0.02));
             }
             else if(equipment.getAttribute().equals("attackChance")){
                 double newHitChance = this.hitChance + equipment.getBonus() * this.hitChance;
@@ -185,7 +185,6 @@ public class BossFightFragment extends Fragment {
         if (firebaseUser != null) {
             loadCurrentUser(firebaseUser.getUid());
             loadActiveBoss(firebaseUser.getUid());
-            bossViewmodel.seedUserItems(firebaseUser.getUid()); // izbrisati kad bude postojali itemi
         } else {
             navController.popBackStack(R.id.mainMenuFragment, false);
         }
@@ -243,21 +242,21 @@ public class BossFightFragment extends Fragment {
         if (boss.getCurrentHp() == 0) {
             args.putBoolean("bossDefeated", true);
             args.putInt("gold", this.goldReward);
-
+            bossViewmodel.damageEquipment();
             Toast.makeText(requireContext(), "You got lucky!", Toast.LENGTH_SHORT).show();
             boss.setStatus(BossStatus.DEFEATED);
             navigate = true;
         } else if (boss.getAttacksRemaining() == 0 && boss.getCurrentHp() <= boss.getOriginalHp() / 2.0) {
             args.putBoolean("bossDefeated", false);
             args.putInt("gold", this.goldReward);
-
+            bossViewmodel.damageEquipment();
             Toast.makeText(requireContext(), "You got away this time!", Toast.LENGTH_SHORT).show();
             boss.setStatus(BossStatus.FAILED);
             navigate = true;
         } else if (boss.getAttacksRemaining() == 0 && boss.getCurrentHp() > boss.getOriginalHp() / 2.0) {
             playSound(Sounds.LAUGH, 1000);
             Toast.makeText(requireContext(), "You failed miserably!", Toast.LENGTH_SHORT).show();
-
+            bossViewmodel.damageEquipment();
             boss.setStatus(BossStatus.FAILED);
             navigate = true;
         } else{

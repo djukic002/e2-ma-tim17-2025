@@ -19,6 +19,7 @@ public class User {
     private Timestamp leveledUpAt;
     private List<String> friends = new ArrayList<>();
     private String allianceId;
+    private int completedMissions = 0;
 
     private List<String> fcmTokens = new ArrayList<>();
 
@@ -124,5 +125,12 @@ public class User {
 
     public void setCoins(int coins) {
         this.coins = coins;
+    }
+    public int getCompletedMissions() {
+        return completedMissions;
+    }
+
+    public void setCompletedMissions(int completedMissions) {
+        this.completedMissions = completedMissions;
     }
 }

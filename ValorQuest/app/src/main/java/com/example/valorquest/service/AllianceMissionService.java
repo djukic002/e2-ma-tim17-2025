@@ -407,6 +407,8 @@ public class AllianceMissionService {
 
                 int goldReward = calculateGoldReward(user.getLevel());
                 user.setCoins(user.getCoins() + goldReward);
+                user.setCompletedMissions(user.getCompletedMissions() + 1);
+
                  userRepository.save(user.getId(), user, saveTask -> {
                      if (saveTask.isSuccessful()) {
                          Log.i("AllianceMissionService", "Successfully rewarded user " + user.getId() + " added gold: " + goldReward);

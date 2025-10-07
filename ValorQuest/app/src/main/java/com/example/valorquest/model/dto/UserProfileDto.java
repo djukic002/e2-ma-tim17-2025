@@ -12,10 +12,11 @@ public class UserProfileDto {
     private int coins = 0;
     private int requiredXPForNextLevel = 0;
     private String title = "";
+    private int badges = 0;
 
     public UserProfileDto() {}
 
-    public UserProfileDto(String id, String username, int avatarId, int XP, int level, int basePP, int coins, int requiredXPForNextLevel, String title) {
+    public UserProfileDto(String id, String username, int avatarId, int XP, int level, int basePP, int coins, int requiredXPForNextLevel, String title, int badges) {
         this.id = id;
         this.username = username;
         this.avatarId = avatarId;
@@ -25,6 +26,15 @@ public class UserProfileDto {
         this.coins = coins;
         this.requiredXPForNextLevel = requiredXPForNextLevel;
         this.title = title;
+        this.badges = badges;
+    }
+
+    public int getBadges() {
+        return badges;
+    }
+
+    public void setBadges(int badges) {
+        this.badges = badges;
     }
 
     public String getId() {

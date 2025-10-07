@@ -543,17 +543,21 @@ public class QuestService {
 
     public int getConsecutiveCompletedDays(String userId) {
         int streak = 0;
-
         LocalDate today = LocalDate.now();
-        LocalDate currentDate = today;
+        LocalDate currentDate = today.plusDays(3);
+        int days = 0;
 
         while (true) {
             List<QuestExecution> executions = questDao.getActiveExecutionsBefore(
                     currentDate.atStartOfDay().toEpochSecond(ZoneOffset.UTC), QuestStatus.COMPLETED
             );
 
+            if (days++ >= 50)
+                break;
+
             if (executions.isEmpty()) {
                 currentDate = currentDate.minusDays(1);
+
                 continue;
             }
 
@@ -578,12 +582,20 @@ public class QuestService {
 
         for (int i = 0; i < 7; i++) {
             LocalDate day = today.minusDays(i);
+            
+            // Get beginning and end of the day
+            LocalDateTime startOfDay = day.atStartOfDay();
+            LocalDateTime endOfDay = day.atTime(LocalTime.MAX);
 
-            List<QuestExecution> executions = questDao.getExecutionsByUserAndDateAndStatus(
-                    userId, day, QuestStatus.COMPLETED
+            List<QuestExecution> executions = questDao.getExecutionsByUserAndDateRangeAndStatus(
+                    userId, startOfDay, endOfDay, QuestStatus.COMPLETED
             );
 
-            int xpSum = executions.stream().mapToInt(QuestExecution::getXpEarned).sum();
+            int xpSum = 0;
+            for (QuestExecution eq : executions) {
+                xpSum += eq.getXpEarned();
+                Log.d("XP EARNED", String.valueOf(eq.getXpEarned()));
+            }
 
             dailyXpList.add(new DailyXpDTO(day, xpSum));
         }

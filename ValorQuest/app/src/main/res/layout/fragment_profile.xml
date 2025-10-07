@@ -109,6 +109,21 @@
                                     android:textColor="@color/black"
                                     android:fontFamily="@font/main_font_family"
                                     tools:text="250" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Badges: "
+                                    android:textColor="@color/black"
+                                    android:fontFamily="@font/main_font_family" />
+
+                                <TextView
+                                    android:id="@+id/profile_badges"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:textColor="@color/black"
+                                    android:fontFamily="@font/main_font_family"
+                                    tools:text="120" />
                             </LinearLayout>
                         </LinearLayout>
 

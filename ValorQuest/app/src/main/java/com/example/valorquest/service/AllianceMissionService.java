@@ -48,7 +48,6 @@ public class AllianceMissionService {
     public void isUserLeader(String userId, AllianceService.BooleanCheckCallback callback) {
         userRepository.getById(userId, user -> {
             allianceRepository.getById(user.getAllianceId(), alliance -> {
-                Log.d("KURCINELA", alliance.getLeaderId() + " - " + userId);
                 boolean result = Objects.equals(alliance.getLeaderId(), userId);
                 callback.onResult(result);
             });

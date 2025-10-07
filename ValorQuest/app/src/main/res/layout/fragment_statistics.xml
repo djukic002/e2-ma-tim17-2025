@@ -1,0 +1,401 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/background">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <!-- Header Card -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="8dp"
+                app:strokeColor="#C9A227"
+                app:strokeWidth="2dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Quest Statistics"
+                        android:textColor="@color/black"
+                        android:textSize="24sp"
+                        android:textStyle="bold"
+                        android:fontFamily="@font/main_font_family"
+                        android:layout_gravity="center"
+                        android:layout_marginBottom="8dp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Your questing journey in numbers"
+                        android:textColor="#7A0F0F"
+                        android:textSize="16sp"
+                        android:fontFamily="@font/main_font_family"
+                        android:layout_gravity="center"
+                        android:textStyle="italic" />
+
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Quest Status Donut Chart Card -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="8dp"
+                app:strokeColor="#C9A227"
+                app:strokeWidth="2dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Quest Status Overview"
+                        android:textColor="@color/black"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        android:fontFamily="@font/main_font_family"
+                        android:layout_marginBottom="16dp" />
+
+                    <!-- Donut Chart -->
+                    <com.github.mikephil.charting.charts.PieChart
+                        android:id="@+id/pie_chart_quest_status"
+                        android:layout_width="match_parent"
+                        android:layout_height="300dp"
+                        android:layout_marginBottom="16dp" />
+
+                    <!-- Legend -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:weightSum="3">
+
+                        <!-- Completed -->
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical"
+                            android:gravity="center"
+                            android:background="@drawable/bg_button_fantasy"
+                            android:padding="8dp"
+                            android:layout_marginEnd="4dp">
+
+                            <TextView
+                                android:id="@+id/tv_completed_count"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="0"
+                                android:textColor="#C9A227"
+                                android:textSize="18sp"
+                                android:textStyle="bold"
+                                android:fontFamily="@font/main_font_family" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Completed"
+                                android:textColor="@color/black"
+                                android:textSize="10sp"
+                                android:fontFamily="@font/main_font_family"
+                                android:textStyle="bold" />
+
+                        </LinearLayout>
+
+                        <!-- Failed -->
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical"
+                            android:gravity="center"
+                            android:background="@drawable/bg_button_fantasy"
+                            android:padding="8dp"
+                            android:layout_marginHorizontal="2dp">
+
+                            <TextView
+                                android:id="@+id/tv_failed_count"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="0"
+                                android:textColor="#7A0F0F"
+                                android:textSize="18sp"
+                                android:textStyle="bold"
+                                android:fontFamily="@font/main_font_family" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Failed"
+                                android:textColor="@color/black"
+                                android:textSize="10sp"
+                                android:fontFamily="@font/main_font_family"
+                                android:textStyle="bold" />
+
+                        </LinearLayout>
+
+                        <!-- Active -->
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical"
+                            android:gravity="center"
+                            android:background="@drawable/bg_button_fantasy"
+                            android:padding="8dp"
+                            android:layout_marginStart="4dp">
+
+                            <TextView
+                                android:id="@+id/tv_active_count"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="0"
+                                android:textColor="#C9A227"
+                                android:textSize="18sp"
+                                android:textStyle="bold"
+                                android:fontFamily="@font/main_font_family" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Active"
+                                android:textColor="@color/black"
+                                android:textSize="10sp"
+                                android:fontFamily="@font/main_font_family"
+                                android:textStyle="bold" />
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Streak and Difficulty Card -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="8dp"
+                app:strokeColor="#C9A227"
+                app:strokeWidth="2dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Achievement Stats"
+                        android:textColor="@color/black"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        android:fontFamily="@font/main_font_family"
+                        android:layout_marginBottom="16dp" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:weightSum="2">
+
+                        <!-- Consecutive Days -->
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical"
+                            android:gravity="center"
+                            android:background="@drawable/bg_button_fantasy"
+                            android:padding="16dp"
+                            android:layout_marginEnd="8dp">
+
+                            <TextView
+                                android:id="@+id/tv_consecutive_days"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="0 days"
+                                android:textColor="#C9A227"
+                                android:textSize="20sp"
+                                android:textStyle="bold"
+                                android:fontFamily="@font/main_font_family" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Consecutive Days"
+                                android:textColor="@color/black"
+                                android:textSize="12sp"
+                                android:fontFamily="@font/main_font_family"
+                                android:textStyle="bold"
+                                android:gravity="center" />
+
+                        </LinearLayout>
+
+                        <!-- Most Completed Difficulty -->
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical"
+                            android:gravity="center"
+                            android:background="@drawable/bg_button_fantasy"
+                            android:padding="16dp"
+                            android:layout_marginStart="8dp">
+
+                            <TextView
+                                android:id="@+id/tv_most_completed_difficulty"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="None"
+                                android:textColor="#7A0F0F"
+                                android:textSize="16sp"
+                                android:textStyle="bold"
+                                android:fontFamily="@font/main_font_family"
+                                android:gravity="center" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Most Completed"
+                                android:textColor="@color/black"
+                                android:textSize="12sp"
+                                android:fontFamily="@font/main_font_family"
+                                android:textStyle="bold"
+                                android:gravity="center" />
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Category Stats Card -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="8dp"
+                app:strokeColor="#C9A227"
+                app:strokeWidth="2dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Quests by Category"
+                        android:textColor="@color/black"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        android:fontFamily="@font/main_font_family"
+                        android:layout_marginBottom="16dp" />
+
+                    <!-- Bar Chart -->
+                    <com.github.mikephil.charting.charts.BarChart
+                        android:id="@+id/bar_chart_categories"
+                        android:layout_width="match_parent"
+                        android:layout_height="300dp"
+                        android:layout_marginBottom="16dp" />
+
+                    <TextView
+                        android:id="@+id/tv_category_stats"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Loading category data..."
+                        android:textColor="@color/black"
+                        android:textSize="12sp"
+                        android:fontFamily="@font/main_font_family"
+                        android:lineSpacingMultiplier="1.2"
+                        android:gravity="center" />
+
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Daily XP Stats Card -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="8dp"
+                app:strokeColor="#C9A227"
+                app:strokeWidth="2dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="XP Over Last 7 Days"
+                        android:textColor="@color/black"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        android:fontFamily="@font/main_font_family"
+                        android:layout_marginBottom="16dp" />
+
+                    <!-- Line Chart -->
+                    <com.github.mikephil.charting.charts.LineChart
+                        android:id="@+id/line_chart_daily_xp"
+                        android:layout_width="match_parent"
+                        android:layout_height="300dp"
+                        android:layout_marginBottom="16dp" />
+
+                    <TextView
+                        android:id="@+id/tv_daily_xp_stats"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Loading XP data..."
+                        android:textColor="@color/black"
+                        android:textSize="12sp"
+                        android:fontFamily="@font/main_font_family"
+                        android:lineSpacingMultiplier="1.2"
+                        android:gravity="center" />
+
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+        </LinearLayout>
+    </ScrollView>
+
+</FrameLayout>

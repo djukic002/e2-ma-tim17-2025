@@ -28,6 +28,7 @@
         android:layout_gravity="bottom|start"
         android:layout_marginStart="16dp"
         android:layout_marginBottom="16dp"
+        style="@style/HomeButton"
         app:srcCompat="@drawable/baseline_home_24" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

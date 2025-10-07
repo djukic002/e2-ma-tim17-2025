@@ -40,6 +40,8 @@ public class ProfileFragment extends Fragment {
     private TextView usernameText;
     private TextView titleText;
     private TextView ppText;
+
+    private TextView badges;
     private TextView coinsText;
     private TextView levelText;
     private ProgressBar xpBar;
@@ -78,6 +80,7 @@ public class ProfileFragment extends Fragment {
         equippedList = view.findViewById(R.id.equipped_list);
         btnChangePassword = view.findViewById(R.id.btn_change_password);
         btnStatistics = view.findViewById(R.id.btn_statistics);
+        badges = view.findViewById(R.id.profile_badges);
 
         // Initialize adapters
         inventoryAdapter = new InventoryAdapter(requireContext(), new ArrayList<>());
@@ -188,8 +191,9 @@ public class ProfileFragment extends Fragment {
         });
         
         btnStatistics.setOnClickListener(v -> {
-            // TODO: Navigate to statistics fragment when implemented
-            Toast.makeText(requireContext(), "Statistics feature coming soon!", Toast.LENGTH_SHORT).show();
+            // Navigate to statistics fragment
+            androidx.navigation.Navigation.findNavController(requireView())
+                .navigate(R.id.action_profileFragment_to_statisticsFragment);
         });
     }
 
@@ -205,6 +209,7 @@ public class ProfileFragment extends Fragment {
         ppText.setText(String.valueOf(dto.getBasePP()));
         coinsText.setText(String.valueOf(dto.getCoins()));
         levelText.setText("Lv. " + dto.getLevel());
+        badges.setText(String.valueOf(dto.getBadges()));
 
         xpBar.setMax(dto.getRequiredXPForNextLevel());
         xpBar.setProgress(dto.getXP());

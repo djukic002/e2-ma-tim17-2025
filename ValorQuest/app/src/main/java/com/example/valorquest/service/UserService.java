@@ -101,7 +101,8 @@ public class UserService {
                     user.getBasePP(),
                     user.getCoins(),
                     requiredXPForNextLevel,
-                    title
+                    title,
+                    user.getCompletedMissions()
             );
 
             callback.onComplete(dto);

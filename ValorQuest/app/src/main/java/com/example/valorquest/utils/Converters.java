@@ -8,6 +8,7 @@ import com.example.valorquest.model.enums.QuestStatus;
 import com.google.firebase.Timestamp;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 
@@ -23,6 +24,19 @@ public class Converters {
     public static LocalDateTime toLocalDateTime(Long millis) {
         return millis == null ? null :
                 LocalDateTime.ofInstant(Instant.ofEpochMilli(millis), ZoneId.systemDefault());
+    }
+
+    // === LocalDate ===
+    @TypeConverter
+    public static Long fromLocalDate(LocalDate date) {
+        return date == null ? null :
+                date.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli();
+    }
+
+    @TypeConverter
+    public static LocalDate toLocalDate(Long millis) {
+        return millis == null ? null :
+                LocalDate.ofInstant(Instant.ofEpochMilli(millis), ZoneId.systemDefault());
     }
 
     // === Enums (Difficulty, Importance, QuestStatus) ===

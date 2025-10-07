@@ -7,4 +7,11 @@
         <item name="android:padding">8dp</item>
         <item name="android:tint">#C9A227</item>
     </style>
+    <style name="HomeButton" parent="Widget.Design.FloatingActionButton">
+        <item name="android:layout_width">24dp</item>
+        <item name="android:layout_height">24dp</item>
+        <item name="android:background">@drawable/bg_button_fantasy</item>
+        <item name="android:padding">8dp</item>
+        <item name="android:tint">#C9A227</item>
+    </style>
 </resources>

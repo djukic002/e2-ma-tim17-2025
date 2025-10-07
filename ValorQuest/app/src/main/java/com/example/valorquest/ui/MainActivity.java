@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import com.example.valorquest.R;
+import com.example.valorquest.data.EquipmentUploader;
 import com.example.valorquest.data.repositories.AllianceNotificationRepository;
 import com.example.valorquest.data.repositories.AllianceRepository;
 import com.example.valorquest.data.repositories.UserRepository;

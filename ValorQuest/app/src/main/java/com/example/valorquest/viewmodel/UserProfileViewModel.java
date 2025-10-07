@@ -6,13 +6,19 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.example.valorquest.data.repositories.BossRepository;
+import com.example.valorquest.data.repositories.EquipmentRepository;
+import com.example.valorquest.data.repositories.UserRepository;
 import com.example.valorquest.model.dto.UserProfileDto;
 import com.example.valorquest.model.dto.UserItemDTO;
+import com.example.valorquest.service.AllianceMissionService;
 import com.example.valorquest.service.UserService;
 import com.example.valorquest.service.EquipmentService;
 import com.example.valorquest.utils.RepositoryCallback;
 
 import java.util.List;
+
+import javax.inject.Provider;
 
 public class UserProfileViewModel extends ViewModel {
     private final UserService userService;
@@ -29,11 +35,8 @@ public class UserProfileViewModel extends ViewModel {
 
     public UserProfileViewModel() {
         this.userService = new UserService();
-        this.equipmentService = new EquipmentService(
-            new com.example.valorquest.data.repositories.EquipmentRepository(),
-            new com.example.valorquest.data.repositories.UserRepository(),
-            new com.example.valorquest.data.repositories.BossRepository()
-        );
+        Provider<AllianceMissionService> provider = () -> new AllianceMissionService();
+        equipmentService = new EquipmentService(new EquipmentRepository(), new UserRepository(), new BossRepository(), provider);
     }
 
     public void loadProfile(String userId) {

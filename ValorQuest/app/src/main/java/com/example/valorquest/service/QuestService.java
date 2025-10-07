@@ -14,6 +14,8 @@ import com.example.valorquest.model.QuestWithExecutions;
 import com.example.valorquest.model.Result;
 import com.example.valorquest.model.User;
 import com.example.valorquest.model.dto.AddQuestDto;
+import com.example.valorquest.model.dto.CategoryQuestCountDTO;
+import com.example.valorquest.model.dto.DailyXpDTO;
 import com.example.valorquest.model.dto.DetailedQuestExecutionDto;
 import com.example.valorquest.model.enums.Difficulty;
 import com.example.valorquest.model.enums.Importance;
@@ -25,8 +27,10 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -229,8 +233,8 @@ public class QuestService {
                 if(questExec.quest.isRepeating()){
                     int deletedCnt = 0;
                     for (QuestExecution exec: questExec.executions) {
-                        if((exec.getStatus() != QuestStatus.ACTIVE ||
-                                exec.getStatus() != QuestStatus.PAUSED) &&
+                        if((exec.getStatus() == QuestStatus.ACTIVE ||
+                                exec.getStatus() == QuestStatus.PAUSED) &&
                                 exec.getDate().isAfter(LocalDateTime.now())){
                             questDao.deleteExecution(exec);
                             deletedCnt++;
@@ -520,5 +524,72 @@ public class QuestService {
                 Log.d("QuestService", "Importance contribution attempted: " + importanceAction);
             });
         });
+    }
+
+    // za usera broj po statusu
+    public int getQuestExecutionCountByStatus(String userId, QuestStatus status) {
+        return questDao.countQuestExecutionsForUserByStatus(userId, status);
+    }
+
+    // uradjeni po kateogriji za usera
+    public List<CategoryQuestCountDTO> getCompletedQuestCountByCategory(String userId) {
+        return questDao.countCompletedQuestExecutionsByCategoryForUser(userId, QuestStatus.COMPLETED);
+    }
+
+    // prosecna ocena zadataka
+    public String getMostCompletedDifficulty(String userId) {
+        return questDao.getMostCompletedDifficultyForUser(userId, QuestStatus.COMPLETED);
+    }
+
+    public int getConsecutiveCompletedDays(String userId) {
+        int streak = 0;
+
+        LocalDate today = LocalDate.now();
+        LocalDate currentDate = today;
+
+        while (true) {
+            List<QuestExecution> executions = questDao.getActiveExecutionsBefore(
+                    currentDate.atStartOfDay().toEpochSecond(ZoneOffset.UTC), QuestStatus.COMPLETED
+            );
+
+            if (executions.isEmpty()) {
+                currentDate = currentDate.minusDays(1);
+                continue;
+            }
+
+            List<QuestExecution> failedExecutions = questDao.getExecutionsByUserAndDateAndStatus(
+                    userId, currentDate, QuestStatus.FAILED
+            );
+
+            if (!failedExecutions.isEmpty()) {
+                break;
+            }
+
+            streak++;
+            currentDate = currentDate.minusDays(1);
+        }
+
+        return streak;
+    }
+    public List<DailyXpDTO> getLast7DaysXp(String userId) {
+        List<DailyXpDTO> dailyXpList = new ArrayList<>();
+
+        LocalDate today = LocalDate.now();
+
+        for (int i = 0; i < 7; i++) {
+            LocalDate day = today.minusDays(i);
+
+            List<QuestExecution> executions = questDao.getExecutionsByUserAndDateAndStatus(
+                    userId, day, QuestStatus.COMPLETED
+            );
+
+            int xpSum = executions.stream().mapToInt(QuestExecution::getXpEarned).sum();
+
+            dailyXpList.add(new DailyXpDTO(day, xpSum));
+        }
+
+        Collections.reverse(dailyXpList);
+
+        return dailyXpList;
     }
 }

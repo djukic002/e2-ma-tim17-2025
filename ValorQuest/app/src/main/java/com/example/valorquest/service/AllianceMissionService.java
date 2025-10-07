@@ -32,6 +32,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 import javax.inject.Singleton;
 
 @Singleton
@@ -214,8 +215,7 @@ public class AllianceMissionService {
 
         if (actionType == MissionContributionType.MESSAGE) {
             contributionRepo.hasUserContributedToday(userId, actionType, allowed -> {
-                // allowed = false means user already contributed today
-                callback.onResult(!allowed);
+                callback.onResult(allowed);
             });
             return;
         }
@@ -377,7 +377,9 @@ public class AllianceMissionService {
     private void rewardUsers(List<String> memberIds) {
         if (memberIds == null || memberIds.isEmpty()) return;
 
-        EquipmentService equipmentService = new EquipmentService(new EquipmentRepository(), userRepository, new BossRepository());
+        Provider<AllianceMissionService> provider = () -> this;
+
+        EquipmentService equipmentService = new EquipmentService(new EquipmentRepository(), userRepository, new BossRepository(), provider);
 
         for (String userId : memberIds) {
             userRepository.getById(userId, user -> {
@@ -407,6 +409,8 @@ public class AllianceMissionService {
 
                 int goldReward = calculateGoldReward(user.getLevel());
                 user.setCoins(user.getCoins() + goldReward);
+                user.setCompletedMissions(user.getCompletedMissions() + 1);
+
                  userRepository.save(user.getId(), user, saveTask -> {
                      if (saveTask.isSuccessful()) {
                          Log.i("AllianceMissionService", "Successfully rewarded user " + user.getId() + " added gold: " + goldReward);

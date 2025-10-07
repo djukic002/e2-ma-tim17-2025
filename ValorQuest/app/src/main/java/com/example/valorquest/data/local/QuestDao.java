@@ -11,8 +11,10 @@ import androidx.room.Update;
 import com.example.valorquest.model.Quest;
 import com.example.valorquest.model.QuestExecution;
 import com.example.valorquest.model.QuestWithExecutions;
+import com.example.valorquest.model.dto.CategoryQuestCountDTO;
 import com.example.valorquest.model.enums.QuestStatus;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -127,4 +129,42 @@ public interface QuestDao {
             "AND qe.completedInLevel = :level " +
             "AND qe.createdInLevel < :level")
     List<QuestExecution> getOldCompletedForLevelWithoutQuotaExceeding(String userId, int level,QuestStatus completedStatus);
+
+    // query za statistike
+    // days never finished master got me working
+
+    @Query("SELECT COUNT(qe.id) " +
+            "FROM quest_executions qe " +
+            "INNER JOIN quests q ON q.id = qe.questId " +
+            "WHERE q.userId = :userId AND qe.status = :status")
+    int countQuestExecutionsForUserByStatus(String userId, QuestStatus status);
+    @Query("SELECT c.name AS categoryName, " +
+            "       c.color AS color, " +
+            "       COUNT(qe.id) AS count " +
+            "FROM quest_executions qe " +
+            "INNER JOIN quests q ON q.id = qe.questId " +
+            "INNER JOIN categories c ON c.id = q.categoryId " +
+            "WHERE q.userId = :userId AND qe.status = :completedStatus " +
+            "GROUP BY c.id, c.name, c.color " +
+            "ORDER BY COUNT(qe.id) DESC")
+    List<CategoryQuestCountDTO> countCompletedQuestExecutionsByCategoryForUser(String userId, QuestStatus completedStatus);
+    @Query("SELECT qe.* " +
+            "FROM quest_executions qe " +
+            "INNER JOIN quests q ON q.id = qe.questId " +
+            "WHERE q.userId = :userId AND date(qe.date) = :day")
+    List<QuestExecution> getExecutionsByUserAndDate(String userId, LocalDate day);
+    @Query("SELECT qe.* " +
+            "FROM quest_executions qe " +
+            "INNER JOIN quests q ON q.id = qe.questId " +
+            "WHERE q.userId = :userId AND date(qe.date) = :day AND qe.status = :status")
+    List<QuestExecution> getExecutionsByUserAndDateAndStatus(String userId, LocalDate day, QuestStatus status);
+
+    @Query("SELECT q.difficulty " +
+            "FROM quest_executions qe " +
+            "INNER JOIN quests q ON q.id = qe.questId " +
+            "WHERE q.userId = :userId AND qe.status = :completedStatus " +
+            "GROUP BY q.difficulty " +
+            "ORDER BY COUNT(qe.id) DESC " +
+            "LIMIT 1")
+    String getMostCompletedDifficultyForUser(String userId, QuestStatus completedStatus);
 }

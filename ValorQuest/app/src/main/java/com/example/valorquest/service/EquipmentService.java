@@ -10,6 +10,7 @@ import com.example.valorquest.model.Boss;
 import com.example.valorquest.model.Equipment;
 import com.example.valorquest.model.User;
 import com.example.valorquest.model.UserItem;
+import com.example.valorquest.model.enums.MissionContributionType;
 import com.example.valorquest.utils.RepositoryCallback;
 import com.google.firebase.auth.FirebaseAuth;
 
@@ -17,15 +18,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import javax.inject.Provider;
+
 public class EquipmentService {
     private final EquipmentRepository equipmentRepository;
     private final UserRepository userRepository;
     private final BossRepository bossRepository;
+    private final Provider<AllianceMissionService> missionService;
 
-    public EquipmentService(EquipmentRepository equipmentRepository, UserRepository userRepository, BossRepository bossRepository) {
+    public EquipmentService(EquipmentRepository equipmentRepository, UserRepository userRepository, BossRepository bossRepository,
+                            Provider<AllianceMissionService> missionService) {
         this.equipmentRepository = equipmentRepository;
         this.userRepository = userRepository;
         this.bossRepository = bossRepository;
+        this.missionService = missionService;
     }
     public void buyEquipment(String equipmentId, RepositoryCallback<Boolean> callback) {
         String userId = getCurrentUserId();
@@ -96,6 +102,7 @@ public class EquipmentService {
                         // Save UserItem
                         UserItemRepository userItemRepo = new UserItemRepository(userId);
                         userItemRepo.save(userItem.getId(), userItem, itemTask -> {
+                            contributeToMission();
                             callback.onComplete(itemTask.isSuccessful());
                         });
                     });
@@ -104,7 +111,12 @@ public class EquipmentService {
         });
     }
 
-
+    public void contributeToMission() {
+        AllianceMissionService mission = missionService.get();
+        mission.contribute(MissionContributionType.SHOPPING, ignored -> {
+            Log.d("AllianceService", "Mission shopping contribution");
+        });
+    }
 
     public void getActualPrice(String equipmentId, RepositoryCallback<Integer> callback) {
         String userId = getCurrentUserId();

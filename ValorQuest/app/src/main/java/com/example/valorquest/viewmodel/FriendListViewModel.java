@@ -9,6 +9,7 @@ import com.example.valorquest.data.repositories.AllianceRepository;
 import com.example.valorquest.data.repositories.UserRepository;
 import com.example.valorquest.model.Alliance;
 import com.example.valorquest.model.User;
+import com.example.valorquest.service.AllianceMissionService;
 import com.example.valorquest.service.AllianceService;
 import com.example.valorquest.service.FriendService;
 
@@ -27,7 +28,7 @@ public class FriendListViewModel extends ViewModel {
 
     public FriendListViewModel() {
         this.friendService = new FriendService(new UserRepository());
-        this.allianceService = new AllianceService(new AllianceRepository(), new AllianceNotificationRepository(), new UserRepository(), this.friendService);
+        this.allianceService = new AllianceService(new AllianceRepository(), new AllianceNotificationRepository(), new UserRepository(), this.friendService, new AllianceMissionService());
     }
 
     public LiveData<List<User>> getFriendsLiveData() {

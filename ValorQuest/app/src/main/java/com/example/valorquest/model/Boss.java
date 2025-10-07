@@ -40,7 +40,7 @@ public class Boss {
         this.userId = boss.getUserId();
         this.name = boss.getName();
         this.level = boss.getLevel() + 1;
-        this.originalHp = boss.getOriginalHp() * 2 + boss.getCurrentHp() / 2;
+        this.originalHp = boss.getOriginalHp() * 2 + boss.getOriginalHp() / 2;
         this.currentHp = originalHp;
         this.hitChance = hitChance;
         this.attackLimit = 5;

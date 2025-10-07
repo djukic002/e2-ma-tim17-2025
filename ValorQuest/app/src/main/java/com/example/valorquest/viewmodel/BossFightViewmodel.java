@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 
 import dagger.hilt.android.lifecycle.HiltViewModel;
 
@@ -67,7 +68,8 @@ public class BossFightViewmodel extends ViewModel {
     }
 
     public void damageEquipment() {
-        EquipmentService equipmentService = new EquipmentService(equipmentRepository, userRepository, new BossRepository());
+        Provider<AllianceMissionService> provider = () -> new AllianceMissionService();
+        EquipmentService equipmentService = new EquipmentService(equipmentRepository, userRepository, new BossRepository(), provider);
         equipmentService.damageEquipment();
     }
 

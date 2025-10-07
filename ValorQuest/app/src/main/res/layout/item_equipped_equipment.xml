@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="12dp"
+    android:background="@drawable/avatar_selection_background"
+    android:layout_marginBottom="8dp">
+
+    <ImageView
+        android:id="@+id/equipment_image"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:src="@drawable/avatar_1"
+        android:contentDescription="Equipment"
+        android:scaleType="centerCrop" />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:layout_marginStart="12dp"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:id="@+id/equipment_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Equipment Name"
+            android:textColor="@color/black"
+            android:textSize="18sp"
+            android:fontFamily="@font/main_font_family"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/equipment_bonus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="power +20%"
+            android:textColor="@color/black"
+            android:textSize="14sp"
+            android:fontFamily="@font/main_font_family" />
+
+        <TextView
+            android:id="@+id/equipment_type"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="potion"
+            android:textColor="#7A0F0F"
+            android:textSize="12sp"
+            android:fontFamily="@font/main_font_family" />
+
+
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/remaining_battles"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="2 battles left"
+        android:textColor="#7A0F0F"
+        android:textSize="12sp"
+        android:fontFamily="@font/main_font_family"
+        android:textStyle="italic"
+        android:layout_gravity="center"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_upgrade"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:text="Upgrade"
+        android:textAllCaps="false"
+        android:textSize="12sp"
+        android:textColor="#C9A227"
+        android:fontFamily="@font/main_font_family"
+        android:textStyle="bold"
+        android:background="@drawable/bg_button_fantasy"
+        app:backgroundTint="@null"
+        app:rippleColor="#33C9A227"
+        app:cornerRadius="8dp"
+        app:iconTint="@null"
+        android:visibility="gone" />
+
+</LinearLayout>

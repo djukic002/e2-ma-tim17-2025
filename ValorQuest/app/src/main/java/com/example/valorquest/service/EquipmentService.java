@@ -157,10 +157,73 @@ public class EquipmentService {
             for (UserItem userItem : userItems) {
                 if (userItem.isActivated()) {
                     activeItems.add(userItem);
+                    Log.d("OPREMA", userItem.getId());
                 }
             }
 
             callback.onComplete(activeItems);
+        });
+    }
+
+    public void getInactiveEquipment(RepositoryCallback<List<UserItem>> callback) {
+        String userId = getCurrentUserId();
+        if (userId == null) {
+            callback.onComplete(null);
+            return;
+        }
+
+        UserItemRepository userItemRepo = new UserItemRepository(userId);
+        userItemRepo.getAll(userItems -> {
+            if (userItems == null) {
+                callback.onComplete(null);
+                return;
+            }
+
+            // Filter for active items only
+            List<UserItem> activeItems = new ArrayList<>();
+            for (UserItem userItem : userItems) {
+                if (!userItem.isActivated()) {
+                    activeItems.add(userItem);
+                }
+            }
+
+            callback.onComplete(activeItems);
+        });
+    }
+
+    public void activateEquipment(String userItemId, RepositoryCallback<UserItem> callback) {
+        UserItemRepository userItemRepository = new UserItemRepository(FirebaseAuth.getInstance().getCurrentUser().getUid());
+        userItemRepository.getById(userItemId, item -> {
+            item.setActivated(true);
+            userItemRepository.save(item.getId(), item, task -> {
+                if (task.isSuccessful())
+                    callback.onComplete(item);
+                else
+                    callback.onComplete(null);
+            });
+        });
+    }
+
+    public void upgradeWeapon(String weaponId, RepositoryCallback<UserItem> callback) {
+        userRepository.getById(FirebaseAuth.getInstance().getCurrentUser().getUid(), user -> {
+            UserItemRepository userItemRepository = new UserItemRepository(user.getId());
+            userItemRepository.getById(weaponId, item -> {
+                getActualPrice(item.getEquipmentId(), price -> {
+                    if (user.getCoins() >= price) {
+                        int upgradeLevel = item.getUpgradeLevel();
+                        item.setUpgradeLevel(++upgradeLevel);
+                        userItemRepository.save(item.getId(), item, task -> {
+                            if (task.isSuccessful())
+                                callback.onComplete(item);
+                            else
+                                callback.onComplete(null);
+                        });
+                        return;
+                    }
+
+                    callback.onComplete(null);
+                });
+            });
         });
     }
 

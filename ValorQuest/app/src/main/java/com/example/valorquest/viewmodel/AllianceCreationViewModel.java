@@ -8,6 +8,7 @@ import com.example.valorquest.data.repositories.AllianceNotificationRepository;
 import com.example.valorquest.data.repositories.AllianceRepository;
 import com.example.valorquest.data.repositories.UserRepository;
 import com.example.valorquest.model.User;
+import com.example.valorquest.service.AllianceMissionService;
 import com.example.valorquest.service.AllianceService;
 import com.example.valorquest.service.FriendService;
 
@@ -29,7 +30,8 @@ public class AllianceCreationViewModel extends ViewModel {
                 new AllianceRepository(),
                 new AllianceNotificationRepository(),
                 new UserRepository(),
-                this.friendService
+                this.friendService,
+                new AllianceMissionService()
         );
     }
 

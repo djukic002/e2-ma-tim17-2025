@@ -214,8 +214,7 @@ public class AllianceMissionService {
 
         if (actionType == MissionContributionType.MESSAGE) {
             contributionRepo.hasUserContributedToday(userId, actionType, allowed -> {
-                // allowed = false means user already contributed today
-                callback.onResult(!allowed);
+                callback.onResult(allowed);
             });
             return;
         }

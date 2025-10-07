@@ -8,6 +8,7 @@ import com.example.valorquest.data.repositories.AllianceNotificationRepository;
 import com.example.valorquest.data.repositories.AllianceRepository;
 import com.example.valorquest.data.repositories.UserRepository;
 import com.example.valorquest.model.dto.AllianceMessageDto;
+import com.example.valorquest.service.AllianceMissionService;
 import com.example.valorquest.service.AllianceService;
 import com.example.valorquest.service.FriendService;
 import com.example.valorquest.utils.RepositoryCallback;
@@ -24,7 +25,7 @@ public class AllianceChatViewModel extends ViewModel {
     private String allianceId;
 
     public AllianceChatViewModel() {
-        this.allianceService = new AllianceService(new AllianceRepository(), new AllianceNotificationRepository(), new UserRepository(), new FriendService(new UserRepository()));
+        this.allianceService = new AllianceService(new AllianceRepository(), new AllianceNotificationRepository(), new UserRepository(), new FriendService(new UserRepository()), new AllianceMissionService());
     }
 
     public void setAllianceId(String allianceId) {

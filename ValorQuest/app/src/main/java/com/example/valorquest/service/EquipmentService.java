@@ -106,6 +106,8 @@ public class EquipmentService {
 
 
 
+
+
     public void getActualPrice(String equipmentId, RepositoryCallback<Integer> callback) {
         String userId = getCurrentUserId();
         if (userId == null) {

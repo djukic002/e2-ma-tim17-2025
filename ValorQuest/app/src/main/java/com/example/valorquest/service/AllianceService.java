@@ -12,6 +12,9 @@ import com.example.valorquest.model.AllianceNotification;
 import com.example.valorquest.model.User;
 import com.example.valorquest.model.dto.AllianceMessageDto;
 import com.example.valorquest.model.enums.AllianceNotificationStatus;
+import com.example.valorquest.model.enums.Difficulty;
+import com.example.valorquest.model.enums.Importance;
+import com.example.valorquest.model.enums.MissionContributionType;
 import com.example.valorquest.utils.RepositoryCallback;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -41,16 +44,18 @@ public class AllianceService {
     private final AllianceNotificationRepository notificationRepository;
     private final UserRepository userRepository;
     private final FriendService friendService;
-
+    private final AllianceMissionService missionService;
     @Inject
     public AllianceService(AllianceRepository allianceRepository,
                            AllianceNotificationRepository notificationRepository,
                            UserRepository userRepository,
-                           FriendService friendService) {
+                           FriendService friendService,
+                           AllianceMissionService missionService) {
         this.allianceRepository = allianceRepository;
         this.notificationRepository = notificationRepository;
         this.userRepository = userRepository;
         this.friendService = friendService;
+        this.missionService = missionService;
     }
 
     public String getCurrentUserId() {
@@ -445,10 +450,17 @@ public class AllianceService {
         
         messageRepository.save(messageId, message, task -> {
             if (task.isSuccessful()) {
+                contributeToMission();
                 callback.onComplete(true);
             } else {
                 callback.onComplete(false);
             }
+        });
+    }
+
+    public void contributeToMission() {
+        missionService.contribute(MissionContributionType.MESSAGE, ignored -> {
+            Log.d("AllianceService", "Mission message contribution");
         });
     }
 

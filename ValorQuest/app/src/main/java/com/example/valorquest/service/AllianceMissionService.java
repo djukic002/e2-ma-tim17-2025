@@ -32,6 +32,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 import javax.inject.Singleton;
 
 @Singleton
@@ -376,7 +377,9 @@ public class AllianceMissionService {
     private void rewardUsers(List<String> memberIds) {
         if (memberIds == null || memberIds.isEmpty()) return;
 
-        EquipmentService equipmentService = new EquipmentService(new EquipmentRepository(), userRepository, new BossRepository());
+        Provider<AllianceMissionService> provider = () -> this;
+
+        EquipmentService equipmentService = new EquipmentService(new EquipmentRepository(), userRepository, new BossRepository(), provider);
 
         for (String userId : memberIds) {
             userRepository.getById(userId, user -> {

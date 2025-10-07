@@ -229,8 +229,8 @@ public class QuestService {
                 if(questExec.quest.isRepeating()){
                     int deletedCnt = 0;
                     for (QuestExecution exec: questExec.executions) {
-                        if((exec.getStatus() != QuestStatus.ACTIVE ||
-                                exec.getStatus() != QuestStatus.PAUSED) &&
+                        if((exec.getStatus() == QuestStatus.ACTIVE ||
+                                exec.getStatus() == QuestStatus.PAUSED) &&
                                 exec.getDate().isAfter(LocalDateTime.now())){
                             questDao.deleteExecution(exec);
                             deletedCnt++;

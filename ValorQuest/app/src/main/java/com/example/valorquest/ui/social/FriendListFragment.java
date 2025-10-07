@@ -152,6 +152,13 @@ public class FriendListFragment extends Fragment {
                     NavController navController = Navigation.findNavController(requireView());
                     navController.navigate(R.id.action_friendListFragment_to_allianceMissionFragment);
                 });
+                ImageButton btnAllianceChat = allianceView.findViewById(R.id.btn_alliance_chat);
+                btnAllianceChat.setOnClickListener(v -> {
+                    NavController navController = Navigation.findNavController(requireView());
+                    Bundle args = new Bundle();
+                    args.putString("allianceId", viewModel.getAllianceLiveData().getValue().getId());
+                    navController.navigate(R.id.action_friendListFragment_to_allianceChatFragment, args);
+                });
 
             } else {
                 View emptyView = inflater.inflate(R.layout.layout_alliance_empty, allianceContainer, false);

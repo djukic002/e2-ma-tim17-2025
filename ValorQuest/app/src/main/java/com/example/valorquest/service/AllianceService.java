@@ -2,12 +2,15 @@ package com.example.valorquest.service;
 
 import android.util.Log;
 
+import com.example.valorquest.data.repositories.AllianceMessageRepository;
 import com.example.valorquest.data.repositories.AllianceNotificationRepository;
 import com.example.valorquest.data.repositories.AllianceRepository;
 import com.example.valorquest.data.repositories.UserRepository;
 import com.example.valorquest.model.Alliance;
+import com.example.valorquest.model.AllianceMessage;
 import com.example.valorquest.model.AllianceNotification;
 import com.example.valorquest.model.User;
+import com.example.valorquest.model.dto.AllianceMessageDto;
 import com.example.valorquest.model.enums.AllianceNotificationStatus;
 import com.example.valorquest.utils.RepositoryCallback;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -425,6 +428,77 @@ public class AllianceService {
         }).start();
     }
 
+    // Alliance Chat Methods
 
+    public void sendMessage(String allianceId, String messageText, RepositoryCallback<Boolean> callback) {
+        String currentUserId = getCurrentUserId();
+        if (currentUserId == null) {
+            callback.onComplete(false);
+            return;
+        }
+
+        // Generate a unique document ID
+        String messageId = UUID.randomUUID().toString();
+        AllianceMessage message = new AllianceMessage(currentUserId, messageText, Timestamp.now());
+        message.setId(messageId);
+        AllianceMessageRepository messageRepository = new AllianceMessageRepository(allianceId);
+        
+        messageRepository.save(messageId, message, task -> {
+            if (task.isSuccessful()) {
+                callback.onComplete(true);
+            } else {
+                callback.onComplete(false);
+            }
+        });
+    }
+
+    public void getAllianceMessages(String allianceId, RepositoryCallback<List<AllianceMessageDto>> callback) {
+        String currentUserId = getCurrentUserId();
+        if (currentUserId == null) {
+            callback.onComplete(null);
+            return;
+        }
+
+        AllianceMessageRepository messageRepository = new AllianceMessageRepository(allianceId);
+        messageRepository.getAll(messages -> {
+            if (messages == null) {
+                callback.onComplete(new ArrayList<>());
+                return;
+            }
+
+            // Convert to DTOs with user info
+            List<AllianceMessageDto> messageDtos = new ArrayList<>();
+            final AtomicInteger completed = new AtomicInteger(0);
+            final int total = messages.size();
+
+            if (total == 0) {
+                callback.onComplete(messageDtos);
+                return;
+            }
+
+            for (AllianceMessage message : messages) {
+                userRepository.getById(message.getSenderId(), user -> {
+                    if (user != null) {
+                        AllianceMessageDto dto = new AllianceMessageDto(
+                            message.getId(),
+                            message.getSenderId(),
+                            user.getUsername(),
+                            user.getAvatarId(),
+                            message.getText(),
+                            message.getTimestamp(),
+                            message.getSenderId().equals(currentUserId)
+                        );
+                        messageDtos.add(dto);
+                    }
+
+                    if (completed.incrementAndGet() == total) {
+                        // Sort by timestamp
+                        messageDtos.sort((m1, m2) -> m1.getTimestamp().compareTo(m2.getTimestamp()));
+                        callback.onComplete(messageDtos);
+                    }
+                });
+            }
+        });
+    }
 
 }

@@ -68,6 +68,9 @@
         <action
             android:id="@+id/action_friendListFragment_to_allianceMissionFragment"
             app:destination="@id/allianceMissionFragment" />
+        <action
+            android:id="@+id/action_friendListFragment_to_allianceChatFragment"
+            app:destination="@id/allianceChatFragment" />
     </fragment>
 
     <fragment
@@ -177,5 +180,13 @@
         android:name="com.example.valorquest.ui.social.QrScanFragment"
         android:label="Scan QR Code"
         tools:layout="@layout/fragment_qr_scan" />
+
+    <fragment
+        android:id="@+id/allianceChatFragment"
+        android:name="com.example.valorquest.ui.social.AllianceChatFragment"
+        android:label="Alliance Chat"
+        tools:layout="@layout/fragment_alliance_chat">
+        <argument android:name="allianceId" android:defaultValue="" app:argType="string" />
+    </fragment>
 
 </navigation>

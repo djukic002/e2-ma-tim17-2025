@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    
+    <!-- Beautiful parchment background -->
+    <gradient
+        android:type="linear"
+        android:angle="135"
+        android:startColor="#F7E7C4"
+        android:centerColor="#F0D5A8"
+        android:endColor="#E8C896" />
+    
+    <!-- Border -->
+    <stroke
+        android:width="2dp"
+        android:color="#C9A227" />
+    
+    <!-- Rounded corners -->
+    <corners
+        android:radius="16dp"
+        android:topRightRadius="4dp" />
+
+</shape>

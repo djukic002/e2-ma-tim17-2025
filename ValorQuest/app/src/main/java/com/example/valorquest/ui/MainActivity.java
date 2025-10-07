@@ -7,6 +7,7 @@ import com.example.valorquest.R;
 import com.example.valorquest.data.repositories.AllianceNotificationRepository;
 import com.example.valorquest.data.repositories.AllianceRepository;
 import com.example.valorquest.data.repositories.UserRepository;
+import com.example.valorquest.service.AllianceMissionService;
 import com.example.valorquest.service.AllianceService;
 import com.example.valorquest.service.FriendService;
 import com.google.android.material.snackbar.Snackbar;
@@ -105,7 +106,7 @@ public class MainActivity extends AppCompatActivity {
             String senderId = intent.getStringExtra("senderId");
             String notificationId = intent.getStringExtra("notificationId");
 
-            AllianceService allianceService = new AllianceService(new AllianceRepository(), new AllianceNotificationRepository(), new UserRepository(), new FriendService(new UserRepository()));
+            AllianceService allianceService = new AllianceService(new AllianceRepository(), new AllianceNotificationRepository(), new UserRepository(), new FriendService(new UserRepository()), new AllianceMissionService());
             allianceService.isCurrentUserInAlliance(isInAlliance -> {
                 if (isInAlliance)
                     showAllianceDecisionDialog(allianceId, senderId, notificationId, allianceService);

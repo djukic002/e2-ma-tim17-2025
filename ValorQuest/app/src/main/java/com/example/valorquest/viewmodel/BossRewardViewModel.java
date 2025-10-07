@@ -16,18 +16,19 @@ import com.example.valorquest.utils.RepositoryCallback;
 import java.util.Random;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 
 import dagger.hilt.android.lifecycle.HiltViewModel;
 
 @HiltViewModel
 public class BossRewardViewModel extends ViewModel {
     private final UserRepository userRepository;
-
     private final EquipmentService equipmentService;
     @Inject
     public BossRewardViewModel() {
         userRepository = new UserRepository();
-        equipmentService = new EquipmentService(new EquipmentRepository(), userRepository, new BossRepository());
+        Provider<AllianceMissionService> provider = () -> new AllianceMissionService();
+        equipmentService = new EquipmentService(new EquipmentRepository(), userRepository, new BossRepository(), provider);
     }
     public void rewardUserWithGold(String userId, int gold, RepositoryCallback<Boolean> callback) {
         userRepository.getById(userId, user -> {

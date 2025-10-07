@@ -9,11 +9,14 @@ import com.example.valorquest.data.repositories.BossRepository;
 import com.example.valorquest.data.repositories.EquipmentRepository;
 import com.example.valorquest.data.repositories.UserRepository;
 import com.example.valorquest.model.Equipment;
+import com.example.valorquest.service.AllianceMissionService;
 import com.example.valorquest.service.EquipmentService;
 import com.example.valorquest.utils.RepositoryCallback;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.inject.Provider;
 
 public class ShopViewModel extends ViewModel {
     private static final String WEAPON_TYPE = "weapon";
@@ -33,10 +36,11 @@ public class ShopViewModel extends ViewModel {
 
     public ShopViewModel() {
         equipmentRepository = new EquipmentRepository();
+        Provider<AllianceMissionService> provider = () -> new AllianceMissionService();
         equipmentService = new EquipmentService(
             equipmentRepository,
             new UserRepository(),
-            new BossRepository()
+            new BossRepository(), provider
         );
 
         equipment.addSource(allEquipment, equipments -> {

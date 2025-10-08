@@ -544,32 +544,29 @@ public class QuestService {
     public int getConsecutiveCompletedDays(String userId) {
         int streak = 0;
         LocalDate today = LocalDate.now();
-        LocalDate currentDate = today.plusDays(3);
-        int days = 0;
+        LocalDate currentDate = today.plusDays(4);
+        int daysChecked = 0;
 
-        while (true) {
-            List<QuestExecution> executions = questDao.getActiveExecutionsBefore(
-                    currentDate.atStartOfDay().toEpochSecond(ZoneOffset.UTC), QuestStatus.COMPLETED
-            );
+        while (daysChecked++ < 50) {
+            LocalDateTime startOfDay = currentDate.atStartOfDay();
+            LocalDateTime endOfDay = currentDate.atTime(LocalTime.MAX);
 
-            if (days++ >= 50)
-                break;
-
-            if (executions.isEmpty()) {
-                currentDate = currentDate.minusDays(1);
-
-                continue;
-            }
-
-            List<QuestExecution> failedExecutions = questDao.getExecutionsByUserAndDateAndStatus(
-                    userId, currentDate, QuestStatus.FAILED
+            List<QuestExecution> failedExecutions = questDao.getExecutionsByUserAndDateRangeAndStatus(
+                    userId, startOfDay, endOfDay, QuestStatus.FAILED
             );
 
             if (!failedExecutions.isEmpty()) {
                 break;
             }
 
-            streak++;
+            List<QuestExecution> completedExecutions = questDao.getExecutionsByUserAndDateRangeAndStatus(
+                    userId, startOfDay, endOfDay, QuestStatus.COMPLETED
+            );
+
+            if (!completedExecutions.isEmpty()) {
+                streak++;
+            }
+
             currentDate = currentDate.minusDays(1);
         }
 
@@ -578,7 +575,7 @@ public class QuestService {
     public List<DailyXpDTO> getLast7DaysXp(String userId) {
         List<DailyXpDTO> dailyXpList = new ArrayList<>();
 
-        LocalDate today = LocalDate.now();
+        LocalDate today = LocalDate.now().plusDays(3);
 
         for (int i = 0; i < 7; i++) {
             LocalDate day = today.minusDays(i);

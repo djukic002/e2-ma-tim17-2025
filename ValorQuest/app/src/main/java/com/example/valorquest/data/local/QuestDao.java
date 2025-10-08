@@ -151,13 +151,15 @@ public interface QuestDao {
     @Query("SELECT qe.* " +
             "FROM quest_executions qe " +
             "INNER JOIN quests q ON q.id = qe.questId " +
-            "WHERE q.userId = :userId AND date(qe.date) = date(:day)")
-    List<QuestExecution> getExecutionsByUserAndDate(String userId, LocalDate day);
-    @Query("SELECT qe.* " +
-            "FROM quest_executions qe " +
-            "INNER JOIN quests q ON q.id = qe.questId " +
-            "WHERE q.userId = :userId AND date(qe.date) = date(:day) AND qe.status = :status")
-    List<QuestExecution> getExecutionsByUserAndDateAndStatus(String userId, LocalDate day, QuestStatus status);
+            "WHERE q.userId = :userId " +
+            "AND qe.date BETWEEN :startOfDay AND :endOfDay " +
+            "AND qe.status = :status")
+    List<QuestExecution> getExecutionsByUserAndDateAndStatus(
+            String userId,
+            LocalDateTime startOfDay,
+            LocalDateTime endOfDay,
+            QuestStatus status
+    );
     
     @Query("SELECT qe.* " +
             "FROM quest_executions qe " +

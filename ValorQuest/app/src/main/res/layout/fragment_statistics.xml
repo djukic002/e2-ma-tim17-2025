@@ -22,10 +22,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="8dp"
-                app:strokeColor="#C9A227"
-                app:strokeWidth="2dp">
+                android:layout_marginTop="16dp"
+                app:cardBackgroundColor="@color/zxing_transparent">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -62,10 +60,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="8dp"
-                app:strokeColor="#C9A227"
-                app:strokeWidth="2dp">
+                app:cardBackgroundColor="@color/zxing_transparent"
+                >
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -145,7 +141,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="0"
-                                android:textColor="#7A0F0F"
+                                android:textColor="#C9A227"
                                 android:textSize="18sp"
                                 android:textStyle="bold"
                                 android:fontFamily="@font/main_font_family" />
@@ -203,10 +199,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="8dp"
-                app:strokeColor="#C9A227"
-                app:strokeWidth="2dp">
+                app:cardBackgroundColor="@color/zxing_transparent">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -279,7 +272,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="None"
-                                android:textColor="#7A0F0F"
+                                android:textColor="#C9A227"
                                 android:textSize="16sp"
                                 android:textStyle="bold"
                                 android:fontFamily="@font/main_font_family"
@@ -307,10 +300,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="8dp"
-                app:strokeColor="#C9A227"
-                app:strokeWidth="2dp">
+                app:cardBackgroundColor="@color/zxing_transparent">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -353,10 +343,7 @@
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="8dp"
-                app:strokeColor="#C9A227"
-                app:strokeWidth="2dp">
+                app:cardBackgroundColor="@color/zxing_transparent">
 
                 <LinearLayout
                     android:layout_width="match_parent"
